@@ -51,33 +51,33 @@
                                                           <?php foreach ($getDraft as $p0) : ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $p0['JUDUL']; ?></td>
-                                                              <td><?= $p0['NAMA_REV'] ?></td>
+                                                              <td><?= $p0['judul']; ?></td>
+                                                              <td><?= $p0['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getInventor as $inv) { ?>
-                                                                  <?php if ($inv['ID_PATEN'] == $p0['ID']) { ?>
+                                                                  <?php if ($inv['ID_PATEN'] == $p0['id']) { ?>
                                                                   <?= $inv['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getInventorNon as $invn) { ?>
-                                                                  <?php if ($invn['ID_PATEN'] == $p0['ID']) { ?>
+                                                                  <?php if ($invn['ID_PATEN'] == $p0['id']) { ?>
                                                                   <?= $invn['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
-                                                              <td><?= $p0['KETERANGAN'] ?></td>
+                                                              <td><?= $p0['keterangan'] ?></td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($p0['TGL_INPUT'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($p0['createdAt'])) ?></td>
                                                               <td>
                                                                   <?php
                                                                         $role_id = $this->session->userdata('role_id');
                                                                         if ($role_id == 14 || $role_id == 15 || $role_id == 18) {
                                                                             ?>
-                                                                  <a href="<?= base_url() ?>paten/edit/<?= $p0['ID']; ?>" class="text-warning" value="<?= $p0['ID'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
-                                                                  <a href="<?= base_url() ?>paten/ajukan/<?= $p0['ID']; ?>" class="text-info" value="<?= $p0['ID'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan paten?');"><i class="fa fa-send"> Ajukan</i></a>
-                                                                  <?php if ($p0['PERNAH_DIAJUKAN'] != 1) { ?>
-                                                                  <a href="<?= base_url() ?>paten/hapusdraft/<?= $p0['ID']; ?>" class="text-danger" value="<?= $p0['ID'] ?>;" onclick="return confirm('Anda yakin ingin menghapus paten?');"><i class="fa fa-trash"> Hapus</i></a>
+                                                                  <a href="<?= base_url() ?>paten/edit/<?= $p0['id']; ?>" class="text-warning" value="<?= $p0['id'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
+                                                                  <a href="<?= base_url() ?>paten/ajukan/<?= $p0['id']; ?>" class="text-info" value="<?= $p0['id'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan paten?');"><i class="fa fa-send"> Ajukan</i></a>
+                                                                  <?php if ($p0['pernah_diajukan'] != 1) { ?>
+                                                                  <a href="<?= base_url() ?>paten/hapusdraft/<?= $p0['id']; ?>" class="text-danger" value="<?= $p0['id'] ?>;" onclick="return confirm('Anda yakin ingin menghapus paten?');"><i class="fa fa-trash"> Hapus</i></a>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>

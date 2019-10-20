@@ -7,7 +7,7 @@ class Auth extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library('form_validation');
+		$this->load->library(array('form_validation','lapan_api_library'));
 	}
 
 
@@ -28,18 +28,33 @@ class Auth extends CI_Controller
 		$email = $this->input->post('email');
 		$password = $this->input->post('password');
 
-		$user = $this->db->get_where('msuser', ['email' => $email])->row_array();
 
-		if ($user) {
-
+		$data2 = array(
+			'email' => $email,
+			'password' => $password);
+		$user = $this->lapan_api_library->call('users/login',$data2);
+		// print_r($user['status_rev']);
+		// exit;
+		if ($user['status'] == 200) {
 			//cek aktif
 			if ($user['is_active'] == 3) {
-				if (password_verify($password, $user['password'])) {
+				// print_r($user['role_id']);
+				// exit;
+				if ($user['token']) {
 					$data = [
 						'email' => $user['email'],
-						'role_id' => $user['role_id']
+						'role_id' => $user['role'],
+						'user_id' => $user['user_id'],
+						'name' => $user['name'],
+						'is_active' => $user['is_active'],
+						'name_rev' => $user['name_rev'],
+						'status' => $user['status_rev'],
+						'keterangan' => $user['keterangan'],
+						'golongan' => $user['golongan'],
+						'token' => $user['token']
 					];
 					$this->session->set_userdata($data);
+					// echo "berhasil";
 					redirect('dashboard');
 				} else {
 					$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">

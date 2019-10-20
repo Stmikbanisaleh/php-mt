@@ -11,7 +11,7 @@
             </a>
           </li>
           <?php
-          $roleid = $user['role_id'];
+          $roleid = $this->session->userdata('role_id');
           if ($roleid == 14 || $roleid == 15) {
             include('menu_inventor.php');
             include('menu_verifikasi.php');
@@ -21,21 +21,18 @@
           ?>
 
           <?php
-          $roleid = $user['role_id'];
           if ($roleid == 16) {
             include('menu_kasatker.php');
           }
           ?>
 
           <?php
-          $roleid = $user['role_id'];
           if ($roleid == 17) {
             include('menu_verifikasi.php');
           }
           ?>
 
           <?php
-          $roleid = $user['role_id'];
           if ($roleid == 18) {
             include('menu_inventor.php');
           }

@@ -111,7 +111,7 @@
             <a class="nav-link navbar-avatar" data-toggle="dropdown" href="#" aria-expanded="false" data-animation="scale-up" role="button">
 
               <span class="avatar avatar-online">
-                <img src="<?= base_url('assets/img/profile/') . $user['image']; ?>" alt="...">
+                <img src="<?= base_url('assets/img/profile/') . $this->session->userdata('image'); ?>" alt="...">
                 <i></i>
 
               </span>
@@ -121,8 +121,8 @@
               <?php
 
               ?>
-              <h5 class="text-center"><?php echo $user['name']; ?></h5>
-              <p class="text-center"><?php echo $role['NAMA_REV']; ?></p>
+              <h5 class="text-center"><?php echo $this->session->userdata('email'); ?></h5>
+              <p class="text-center"><?php echo $this->session->userdata('name_rev'); ?></p>
               <div class="dropdown-divider" role="presentation"></div>
               <a class="dropdown-item" href="<?= base_url('profil') ?>" role="menuitem"><i class="icon wb-user" aria-hidden="true"></i> Profile</a>
               <div class="dropdown-divider" role="presentation"></div>

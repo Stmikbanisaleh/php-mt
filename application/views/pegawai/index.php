@@ -25,17 +25,20 @@
                                       </thead>
                                       <tbody>
                                           <?php $i = 1; ?>
-                                          <?php foreach ($getPegawai as $gp) : ?>
+                                          <?php 
+                                          $pegawai = $getPegawai['data']['rows'];
+                                          foreach ($pegawai as $key => $gp) : 
+                                            ?>
                                               <tr>
                                                   <td><?= $i ?></td>
-                                                  <td><?= $gp['KODE_KEPEGAWAIAN']; ?></td>
-                                                  <td><?= $gp['NIK']; ?></td>
-                                                  <td><?= $gp['NAMA']; ?></td>
+                                                  <td><?= $gp['kode_kepegawaian']; ?></td>
+                                                  <td><?= $gp['nik']; ?></td>
+                                                  <td><?= $gp['nama']; ?></td>
                                                   <td>
-                                                      <a href="<?= base_url() ?>pegawai/edit_pegawai/<?= $gp['ID']; ?>" class="btn btn-xs btn-primary">
+                                                      <a href="<?= base_url() ?>pegawai/edit_pegawai/<?= $gp['id']; ?>" class="btn btn-xs btn-primary">
                                                           <li class="fa fa-pencil"></li>
                                                       </a>
-                                                      <a href="<?= base_url() ?>pegawai/hapus_pegawai/<?= $gp['ID']; ?>" class="btn btn-xs btn-danger" onclick="return confirm('Anda yakin ingin menghapus pegawai?');">
+                                                      <a href="<?= base_url() ?>pegawai/hapus_pegawai/<?= $gp['id']; ?>" class="btn btn-xs btn-danger" onclick="return confirm('Anda yakin ingin menghapus pegawai?');">
                                                           <li class="fa fa-trash"></li>
                                                       </a>
                                                   </td>

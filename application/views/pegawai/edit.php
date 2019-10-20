@@ -12,15 +12,15 @@
                     <div class="col-xl-6">
                         <form method="post" action="<?= base_url('pegawai/update_pegawai');  ?>">
                             <?= $this->session->flashdata('message'); ?>
-                            <input type="hidden" name="id" value="<?= $peg['ID'] ?>">
+                            <input type="hidden" name="id" value="<?= $peg['id'] ?>">
                             KODE KEPEGAWAIAN
-                            <input type="text" class="form-control" name="kode_kepegawaian" id="kode_kepegawaian" value="<?= $peg['KODE_KEPEGAWAIAN'] ?>">
+                            <input type="text" class="form-control" name="kode_kepegawaian" id="kode_kepegawaian" value="<?= $peg['kode_kepegawaian'] ?>">
                             <small class="form-text text-danger"><?= form_error('kode_kepegawaian'); ?></small>
                             NIK
-                            <input type="text" class="form-control" name="nik" id="nik" value="<?= $peg['NIK'] ?>">
+                            <input type="text" class="form-control" name="nik" id="nik" value="<?= $peg['nik'] ?>">
                             <small class="form-text text-danger"><?= form_error('nik'); ?></small>
                             Nama
-                            <input type="text" class="form-control" name="nama" id="nama" value="<?= $peg['NAMA'] ?>">
+                            <input type="text" class="form-control" name="nama" id="nama" value="<?= $peg['nama'] ?>">
                             <small class="form-text text-danger"><?= form_error('nama'); ?></small>
 
                             <div class="text-right my-20">
