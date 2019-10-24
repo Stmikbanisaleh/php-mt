@@ -164,7 +164,6 @@ class Hakcipta extends CI_Controller
 				$kp['nik'] = $kopeg['nik'];
 
 				$insert = $this->lapan_api_library->call('hakciptas/adddhakcipta', $kp);
-				print_r(json_encode($insert));exit;
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
