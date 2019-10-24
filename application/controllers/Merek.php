@@ -73,6 +73,7 @@ class Merek extends CI_Controller
 		$user = $this->db->get_where('msuser', ['email' =>
 		$this->session->userdata('email')])->row_array();
 		
+
 		$data = [
 			'token' => $this->session->userdata('token'),
 			'id_haki' => 2,
@@ -82,7 +83,7 @@ class Merek extends CI_Controller
 
 		$post = $this->input->post();
 
-		$userid =  $user['id'];
+		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 		$ipmancode = $this->input->post('ipman_code');
 

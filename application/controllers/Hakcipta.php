@@ -24,18 +24,20 @@ class Hakcipta extends CI_Controller
 
 	public function input()
 	{
+		$data['user'] = $this->db->get_where('msuser', ['email' =>
+		$this->session->userdata('email')])->row_array();
+		$roleId = $data['user']['role_id'];
 		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['jenispaten'] = $this->db->get_where('msrev', array('golongan' => 7))->result_array();
-		$data['dokpaten'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 1, 'ID_ROLE' => 1))->result_array();
+		$data['unitkerja'] = $this->db->get_where('msrev', array('GOLONGAN' => 3))->result_array();
+		$data['object'] = $this->db->get_where('msrev', array('GOLONGAN' => 4))->result_array();
+		$data['dokhakcipta'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 3, 'ID_ROLE' => 1))->result_array();
 		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
 		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
 
 		$this->load->model('Hakcipta_model', 'hakcipta');
 		$data['ipmancode'] = $this->hakcipta->getIpmancode();
-		print_r(json_encode($data['ipmancode']));exit;
 
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
 		$this->load->view('hakcipta/input', $data);
 		$this->load->view('templates/footer');
@@ -68,77 +70,101 @@ class Hakcipta extends CI_Controller
 
 	public function save()
 	{
-
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$dokhakcipta = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 3, 'ID_ROLE' => 1))->result_array();
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id_haki' => 3,
+			'id_role' => 1,
+		];
+		$dokmerek = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data);
 
 		$post = $this->input->post();
 
-		$userid =  $user['id'];
+		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 		$ipmancode = $this->input->post('ipman_code');
 
+		
 
 
 		$data = [
-			'JUDUL' => htmlspecialchars($this->input->post('judul', true)),
-			'UNIT_KERJA' => $this->input->post('unit_kerja'),
-			'OBJECT' => $this->input->post('object'),
-			'STATUS' => 19,
-			'NO_HANDPHONE' => $this->input->post('no_handphone'),
-			'IPMAN_CODE' => $this->input->post('ipman_code'),
-			'KODE_INPUT' => $user['id'],
-			'TGL_INPUT' => date('Y-m-d h:i:s'),
+			'token' => $this->session->userdata('token'),
+			'judul' => htmlspecialchars($this->input->post('judul', true)),
+			'unit_kerja' => $this->input->post('unit_kerja'),
+			'object' => $this->input->post('object'),
+			'status' => 19,
+			'no_handphone' => $this->input->post('no_handphone'),
+			'ipman_code' => $this->input->post('ipman_code'),
+			'kode_input' => $this->session->userdata('user_id'),
 		];
 
-		if ($this->db->insert('mshakcipta', $data)) {
-			$dataId = $this->db->insert_id();
-			$this->db->query("UPDATE msipmancode SET NO_URUT = NO_URUT + 1 WHERE KODE= 'HC' ");
+		$insert = $this->lapan_api_library->call('hakciptas/addhakcipta', $data);
+
+		if ($insert) {
+			$dataId = $insert['id'];
+
+			$data = array(
+				'token' => $this->session->userdata('token'),
+				'kode' => 'HC',
+			);
+			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
 
 			$i = 1;
-			foreach ($dokhakcipta as $dh) {
+			$dokmerek = $dokmerek['data']['rows'];
+			foreach ($dokmerek as $dh) {
+				$config['file_name']          = $ipmancode . '_' . $dh['penamaan_file'];
+				$config['allowed_types']        = 'doc|docx|pdf|';
+				
+				$file_tmp = $_FILES['dokumen'.$i]['tmp_name'];
+				if(!empty($_FILES['dokumen'.$i]['tmp_name']) 
+				     && file_exists($_FILES['dokumen'.$i]['tmp_name'])) {
+				    $data_getcontent = addslashes(file_get_contents($_FILES['dokumen'.$i]['tmp_name']));
+				}
+				$dokumen_base64 = base64_encode($data_getcontent);
 
-				$config['file_name']          = $ipmancode . '_' . $dh['PENAMAAN_FILE'];
-				$config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
-				$config['allowed_types']        = 'doc|docx|pdf';
-				$config['overwrite']        = TRUE;
 
 				$this->upload->initialize($config);
 
 				// script uplaod dokumen pertama
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
-					$this->upload->do_upload('dokumen' . $i);
-					$filename = $this->upload->data('file_name');
-					$size = $this->upload->data('file_size');
-					$type = $this->upload->data('file_ext');
-					$jenisdok = $dh['ID'];
+					$filename = $_FILES['dokumen' . $i]['name'];
+					$size = $_FILES['dokumen' . $i]['size'];
+					$type = $_FILES['dokumen' . $i]['type'];
+					$jenisdok = $dh['id'];
 				} else {
-					$filename = $ipmancode . '_' . $dh['PENAMAAN_FILE'];
+					$filename = $ipmancode . '_' . $dh['penamaan_file'];
 					$size = '';
 					$type = '';
-					$jenisdok = $dh['ID'];
+					$jenisdok = $dh['id'];
 				}
-				$dokumen = array($filename, $size, $type, 1, $jenisdok, $date, $userid);
 
-				$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-				$md['NAME'] = $dokumen[0];
-				$md['SIZE'] = $dokumen[1];
-				$md['TYPE'] = $dokumen[2];
-				$md['ROLE'] = $dokumen[3];
-				$md['JENIS_DOKUMEN'] = $dokumen[4];
-				$md['TGL_INPUT'] = $dokumen[5];
-				$md['KODE_INPUT'] = $dokumen[6];
+				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 
-				$this->db->insert('msdokumen', $md);
+				$md['token'] = $this->session->userdata('token');
+				$md['nomor_pendaftar'] = $ipmancode;
+				$md['dokumen'] = $dokumen[0];
+				$md['type'] = $dokumen[1];
+				$md['role'] = $dokumen[2];
+				$md['jenis_dokumen'] = $dokumen[3];
+				$md['tgl_input'] = $dokumen[4];
+				$md['kode_input'] = $dokumen[5];
+				$md['downloadable'] = 1;
+				$md['name'] = $dokumen[6];
+				$md['size'] = $dokumen[7];	
+
+				
+				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
+				
 				$i++;
 			};
 
 			$kp = array();
 			foreach ($post['pencipta'] as $kopeg) {
-				$kp['ID_HAKCIPTA'] = $dataId;
-				$kp['NIK'] = $kopeg['nik'];
-				$this->db->insert('dhakcipta', $kp);
+				$kp['token'] = $this->session->userdata('token');
+				$kp['id_hakcipta'] = $insert['id'];
+				$kp['nik'] = $kopeg['nik'];
+
+				$insert = $this->lapan_api_library->call('hakciptas/adddhakcipta', $kp);
+				print_r(json_encode($insert));exit;
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
