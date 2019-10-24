@@ -24,18 +24,16 @@ class Hakcipta extends CI_Controller
 
 	public function input()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
 		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('GOLONGAN' => 3))->result_array();
-		$data['object'] = $this->db->get_where('msrev', array('GOLONGAN' => 4))->result_array();
-		$data['dokhakcipta'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 3, 'ID_ROLE' => 1))->result_array();
+		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
+		$data['jenispaten'] = $this->db->get_where('msrev', array('golongan' => 7))->result_array();
+		$data['dokpaten'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 1, 'ID_ROLE' => 1))->result_array();
 		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
 		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
 
 		$this->load->model('Hakcipta_model', 'hakcipta');
 		$data['ipmancode'] = $this->hakcipta->getIpmancode();
+		print_r(json_encode($data['ipmancode']));exit;
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');
