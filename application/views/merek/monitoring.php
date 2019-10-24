@@ -47,8 +47,8 @@
                                                           <?php foreach ($getDraft as $m0) : ?>
                                                               <tr>
                                                                   <td><?= $i ?></td>
-                                                                  <td><?= $m0['JUDUL']; ?></td>
-                                                                  <td><?= $m0['NAMA_REV'] ?></td>
+                                                                  <td><?= $m0['judul']; ?></td>
+                                                                  <td><?= $m0['nama_rev'] ?></td>
                                                                   <td></td>
                                                                   <td></td>
                                                                   <td></td>
@@ -58,9 +58,9 @@
                                                                             $role_id = $this->session->userdata('role_id');
                                                                             if ($role_id == 14 || $role_id == 15 || $role_id == 18) {
                                                                                 ?>
-                                                                          <a href="<?= base_url() ?>merek/edit/<?= $m0['ID']; ?>" class="text-warning" value="<?= $m0['ID'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
-                                                                          <a href="<?= base_url() ?>merek/ajukan/<?= $m0['ID']; ?>" class="text-info" value="<?= $m0['ID'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan Merek?');"><i class="fa fa-send"> Ajukan</i></a>
-                                                                          <a href="<?= base_url() ?>merek/hapusdraft/<?= $m0['ID']; ?>" class="text-danger" value="<?= $m0['ID'] ?>;" onclick="return confirm('Anda yakin ingin menghapus Merek?');"><i class="fa fa-trash"> Hapus</i></a>
+                                                                          <a href="<?= base_url() ?>merek/edit/<?= $m0['id']; ?>" class="text-warning" value="<?= $m0['id'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
+                                                                          <a href="<?= base_url() ?>merek/ajukan/<?= $m0['id']; ?>" class="text-info" value="<?= $m0['id'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan Merek?');"><i class="fa fa-send"> Ajukan</i></a>
+                                                                          <a href="<?= base_url() ?>merek/hapusdraft/<?= $m0['id']; ?>" class="text-danger" value="<?= $m0['id'] ?>;" onclick="return confirm('Anda yakin ingin menghapus Merek?');"><i class="fa fa-trash"> Hapus</i></a>
                                                                       <?php } ?>
                                                                   </td>
                                                               </tr>
@@ -94,7 +94,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDiajukan as $m1) : ?>
                                                               <?php
-                                                                    $waktuinput  = date_create($m1['TGL_INPUT']);
+                                                                    $waktuinput  = date_create($m1['createdAt']);
                                                                     $waktusekarang = date_create();
                                                                     $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -104,14 +104,14 @@
                                                                     ?>
                                                               <tr>
                                                                   <td><?= $i; ?></td>
-                                                                  <td><?= $m1['JUDUL']; ?></td>
-                                                                  <td><?= $m1['NAMA_REV'] ?></td>
+                                                                  <td><?= $m1['judul']; ?></td>
+                                                                  <td><?= $m1['nama_rev'] ?></td>
                                                                   <td>
-                                                                      <a data-toggle="modal" href="#modal_<?= $m1['ID'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
+                                                                      <a data-toggle="modal" href="#modal_<?= $m1['id'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
                                                                   </td>
                                                                   <td></td>
                                                                   <td></td>
-                                                                  <td><?= date('d-m-Y', strtotime($m1['TGL_INPUT'])) ?></td>
+                                                                  <td><?= date('d-m-Y', strtotime($m1['createdAt'])) ?></td>
                                                                   <td><?= $diff->m; ?></td>
                                                                   <td></td>
                                                               </tr>
@@ -145,7 +145,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDisetujui as $m2) : ?>
                                                               <?php
-                                                                    $waktuinput  = date_create($m2['TGL_INPUT']);
+                                                                    $waktuinput  = date_create($m2['createdAt']);
                                                                     $waktusekarang = date_create();
                                                                     $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -155,14 +155,14 @@
                                                                     ?>
                                                               <tr>
                                                                   <td><?= $i; ?></td>
-                                                                  <td><?= $m2['JUDUL']; ?></td>
-                                                                  <td><?= $m2['NAMA_REV'] ?></td>
+                                                                  <td><?= $m2['judul']; ?></td>
+                                                                  <td><?= $m2['nama_rev'] ?></td>
                                                                   <td>
-                                                                      <a data-toggle="modal" href="#modal_<?= $m2['ID'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
+                                                                      <a data-toggle="modal" href="#modal_<?= $m2['id'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
                                                                   </td>
                                                                   <td></td>
                                                                   <td></td>
-                                                                  <td><?= date('d-m-Y', strtotime($m2['TGL_INPUT'])) ?></td>
+                                                                  <td><?= date('d-m-Y', strtotime($m2['createdAt'])) ?></td>
                                                                   <td><?= $diff->m; ?></td>
                                                                   <td></td>
                                                               </tr>
@@ -194,7 +194,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitolak as $m3) : ?>
                                                               <?php
-                                                                    $waktuinput  = date_create($m3['TGL_INPUT']);
+                                                                    $waktuinput  = date_create($m3['createdAt']);
                                                                     $waktusekarang = date_create();
                                                                     $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -204,14 +204,14 @@
                                                                     ?>
                                                               <tr>
                                                                   <td><?= $i ?></td>
-                                                                  <td><?= $m3['JUDUL']; ?></td>
-                                                                  <td><?= $m3['NAMA_REV'] ?></td>
+                                                                  <td><?= $m3['judul']; ?></td>
+                                                                  <td><?= $m3['nama_rev'] ?></td>
                                                                   <td>
-                                                                      <a data-toggle="modal" href="#modal_<?= $m3['ID'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
+                                                                      <a data-toggle="modal" href="#modal_<?= $m3['id'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
                                                                   </td>
                                                                   <td></td>
                                                                   <td></td>
-                                                                  <td><?= date('d-m-Y', strtotime($m3['TGL_INPUT'])) ?></td>
+                                                                  <td><?= date('d-m-Y', strtotime($m3['createdAt'])) ?></td>
                                                                   <td><?= $diff->m; ?></td>
                                                                   <td></td>
                                                               </tr>
@@ -242,7 +242,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitangguhkan as $m4) : ?>
                                                               <?php
-                                                                    $waktuinput  = date_create($m4['TGL_INPUT']);
+                                                                    $waktuinput  = date_create($m4['createdAt']);
                                                                     $waktusekarang = date_create();
                                                                     $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -252,14 +252,14 @@
                                                                     ?>
                                                               <tr>
                                                                   <td><?= $i ?></td>
-                                                                  <td><?= $m4['JUDUL']; ?></td>
-                                                                  <td><?= $m4['NAMA_REV'] ?></td>
+                                                                  <td><?= $m4['judul']; ?></td>
+                                                                  <td><?= $m4['nama_rev'] ?></td>
                                                                   <td>
-                                                                      <a data-toggle="modal" href="#modal_<?= $m4['ID'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
+                                                                      <a data-toggle="modal" href="#modal_<?= $m4['id'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
                                                                   </td>
                                                                   <td></td>
                                                                   <td></td>
-                                                                  <td><?= date('d-m-Y', strtotime($m4['TGL_INPUT'])) ?></td>
+                                                                  <td><?= date('d-m-Y', strtotime($m4['createdAt'])) ?></td>
                                                                   <td><?= $diff->m; ?></td>
                                                                   <td></td>
                                                               </tr>
