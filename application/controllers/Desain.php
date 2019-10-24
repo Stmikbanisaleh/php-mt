@@ -70,75 +70,97 @@ class Desain extends CI_Controller
 
 	public function save()
 	{
-
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$dokdesain = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 4, 'ID_ROLE' => 1))->result_array();
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id_haki' => 4,
+			'id_role' => 1,
+		];
+		$dokdesain = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data);
 
 		$post = $this->input->post();
 
-		$userid =  $user['id'];
+		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 		$ipmancode = $this->input->post('ipman_code');
 
-
-
 		$data = [
-			'JUDUL' => htmlspecialchars($this->input->post('judul', true)),
-			'UNIT_KERJA' => $this->input->post('unit_kerja'),
-			'STATUS' => 19,
-			'NO_HANDPHONE' => $this->input->post('no_handphone'),
-			'IPMAN_CODE' => $this->input->post('ipman_code'),
-			'KODE_INPUT' => $user['id'],
-			'TGL_INPUT' => date('Y-m-d h:i:s'),
+			'token' => $this->session->userdata('token'),
+			'judul' => htmlspecialchars($this->input->post('judul', true)),
+			'unit_kerja' => $this->input->post('unit_kerja'),
+			'status' => 19,
+			'no_handphone' => $this->input->post('no_handphone'),
+			'ipman_code' => $this->input->post('ipman_code'),
+			'kode_input' => $this->session->userdata('user_id'),
+			'tgl_input' => date('Y-m-d h:i:s'),
 		];
-		if ($this->db->insert('msdesainindustri', $data)) {
-			$dataId = $this->db->insert_id();
-			$this->db->query("UPDATE msipmancode SET NO_URUT = NO_URUT + 1 WHERE KODE= 'DI' ");
+
+		$insert = $this->lapan_api_library->call('desain/adddesainindustri', $data);
+		
+
+		if ($insert) {
+			$dataId = $insert['id'];
+			$data = array(
+				'token' => $this->session->userdata('token'),
+				'kode' => 'DI',
+			);
+			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
 
 			$i = 1;
+			$dokdesain = $dokdesain['data']['rows'];
 			foreach ($dokdesain as $dd) {
 
-				$config['file_name']          = $ipmancode . '_' . $dd['PENAMAAN_FILE'];
-				$config['upload_path']          = './assets/dokumen/dokumen_desainindustri';
-				$config['allowed_types']        = 'doc|docx|pdf';
-				$config['overwrite']        = TRUE;
+				$config['file_name']          = $ipmancode . '_' . $dd['penamaan_file'];
+				$config['allowed_types']        = 'doc|docx|pdf|';
+				
+				$file_tmp = $_FILES['dokumen'.$i]['tmp_name'];
+				if(!empty($_FILES['dokumen'.$i]['tmp_name']) 
+				     && file_exists($_FILES['dokumen'.$i]['tmp_name'])) {
+				    $data_getcontent = addslashes(file_get_contents($_FILES['dokumen'.$i]['tmp_name']));
+				}
+				$dokumen_base64 = base64_encode($data_getcontent);
 
 				$this->upload->initialize($config);
 
 				// script uplaod dokumen pertama
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					$this->upload->do_upload('dokumen' . $i);
-					$filename = $this->upload->data('file_name');
-					$size = $this->upload->data('file_size');
-					$type = $this->upload->data('file_ext');
-					$jenisdok = $dd['ID'];
+					$filename = $_FILES['dokumen' . $i]['name'];
+					$size = $_FILES['dokumen' . $i]['size'];
+					$type = $_FILES['dokumen' . $i]['type'];
+					$jenisdok = $dd['id'];
 				} else {
-					$filename =  $ipmancode . '_' . $dd['PENAMAAN_FILE'];
+					$filename =  $ipmancode . '_' . $dd['penamaan_file'];
 					$size = '';
 					$type = '';
-					$jenisdok = $dd['ID'];
+					$jenisdok = $dd['id'];
 				}
-				$dokumen = array($filename, $size, $type, '1', $jenisdok, $date, $userid);
 
-				$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-				$md['NAME'] = $dokumen[0];
-				$md['SIZE'] = $dokumen[1];
-				$md['TYPE'] = $dokumen[2];
-				$md['ROLE'] = $dokumen[3];
-				$md['JENIS_DOKUMEN'] = $dokumen[4];
-				$md['TGL_INPUT'] = $dokumen[5];
-				$md['KODE_INPUT'] = $dokumen[6];
+				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 
-				$this->db->insert('msdokumen', $md);
+
+				$md['token'] = $this->session->userdata('token');
+				$md['nomor_pendaftar'] = $ipmancode;
+				$md['dokumen'] = $dokumen[0];
+				$md['type'] = $dokumen[1];
+				$md['role'] = $dokumen[2];
+				$md['jenis_dokumen'] = $dokumen[3];
+				$md['tgl_input'] = $dokumen[4];
+				$md['kode_input'] = $dokumen[5];
+				$md['downloadable'] = 1;
+				$md['name'] = $dokumen[6];
+				$md['size'] = $dokumen[7];	
+
+				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				$i++;
 			}
 
 			$kp = array();
 			foreach ($post['pendesain'] as $kopeg) {
-				$kp['ID_DESAIN_INDUSTRI'] = $dataId;
-				$kp['NIK'] = $kopeg['nik'];
-				$this->db->insert('ddesainindustri', $kp);
+				$kp['token'] = $this->session->userdata('token');
+				$kp['id_desain_industri'] = $insert['id'];
+				$kp['nik'] = $kopeg['nik'];
+
+				$insert = $this->lapan_api_library->call('desain/addddesainindustri', $kp);
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
