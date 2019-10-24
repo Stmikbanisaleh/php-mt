@@ -49,18 +49,18 @@
                                                           <?php foreach ($getDraft as $h0) : ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $h0['JUDUL']; ?></td>
-                                                              <td><?= $h0['NAMA_REV'] ?></td>
+                                                              <td><?= $h0['judul']; ?></td>
+                                                              <td><?= $h0['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getPencipta as $cip) { ?>
-                                                                  <?php if ($cip['ID_HAKCIPTA'] == $h0['ID']) { ?>
-                                                                  <?= $cip['NAMA']; ?>;<br>
+                                                                  <?php if ($cip['id_hakcipta'] == $h0['id']) { ?>
+                                                                  <?= $cip['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getPenciptaNon as $cipn) { ?>
-                                                                  <?php if ($cipn['ID_HAKCIPTA'] == $h0['ID']) { ?>
-                                                                  <?= $cipn['NAMA']; ?>;<br>
+                                                                  <?php if ($cipn['id_hakcipta'] == $h0['id']) { ?>
+                                                                  <?= $cipn['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
@@ -72,9 +72,9 @@
                                                                         $role_id = $this->session->userdata('role_id');
                                                                         if ($role_id == 14 || $role_id == 15 || $role_id == 18) {
                                                                             ?>
-                                                                  <a href="<?= base_url() ?>hakcipta/edit/<?= $h0['ID']; ?>" class="text-warning" value="<?= $h0['ID'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
-                                                                  <a href="<?= base_url() ?>hakcipta/ajukan/<?= $h0['ID']; ?>" class="text-info" value="<?= $h0['ID'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan Hak Cipta?');"><i class="fa fa-send"> Ajukan</i></a>
-                                                                  <a href="<?= base_url() ?>hakcipta/hapusdraft/<?= $h0['ID']; ?>" class="text-danger" value="<?= $h0['ID'] ?>;" onclick="return confirm('Anda yakin ingin menghapus Hak Cipta?');"><i class="fa fa-trash"> Hapus</i></a>
+                                                                  <a href="<?= base_url() ?>hakcipta/edit/<?= $h0['id']; ?>" class="text-warning" value="<?= $h0['id'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
+                                                                  <a href="<?= base_url() ?>hakcipta/ajukan/<?= $h0['id']; ?>" class="text-info" value="<?= $h0['id'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan Hak Cipta?');"><i class="fa fa-send"> Ajukan</i></a>
+                                                                  <a href="<?= base_url() ?>hakcipta/hapusdraft/<?= $h0['id']; ?>" class="text-danger" value="<?= $h0['id'] ?>;" onclick="return confirm('Anda yakin ingin menghapus Hak Cipta?');"><i class="fa fa-trash"> Hapus</i></a>
                                                                   <?php  } ?>
                                                               </td>
                                                           </tr>
@@ -107,7 +107,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDiajukan as $h1) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($h1['TGL_INPUT']);
+                                                                $waktuinput  = date_create($h1['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -117,23 +117,23 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $h1['JUDUL']; ?></td>
-                                                              <td><?= $h1['NAMA_REV'] ?></td>
+                                                              <td><?= $h1['judul']; ?></td>
+                                                              <td><?= $h1['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getPencipta as $cip) { ?>
-                                                                  <?php if ($cip['ID_HAKCIPTA'] == $h1['ID']) { ?>
-                                                                  <?= $cip['NAMA']; ?>;<br>
+                                                                  <?php if ($cip['id_hakcipta'] == $h1['id']) { ?>
+                                                                  <?= $cip['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getPenciptaNon as $cipn) { ?>
-                                                                  <?php if ($cipn['ID_HAKCIPTA'] == $h1['ID']) { ?>
-                                                                  <?= $cipn['NAMA']; ?>;<br>
+                                                                  <?php if ($cipn['id_hakcipta'] == $h1['id']) { ?>
+                                                                  <?= $cipn['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($h1['TGL_INPUT'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($h1['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -168,7 +168,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDisetujui as $h2) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($h2['TGL_INPUT']);
+                                                                $waktuinput  = date_create($h2['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -178,24 +178,24 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i; ?></td>
-                                                              <td><?= $h2['JUDUL']; ?></td>
-                                                              <td><?= $h2['NAMA_REV'] ?></td>
+                                                              <td><?= $h2['judul']; ?></td>
+                                                              <td><?= $h2['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getPencipta as $cip) { ?>
-                                                                  <?php if ($cip['ID_HAKCIPTA'] == $h2['ID']) { ?>
-                                                                  <?= $cip['NAMA']; ?>;<br>
+                                                                  <?php if ($cip['id_hakcipta'] == $h2['id']) { ?>
+                                                                  <?= $cip['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getPenciptaNon as $cipn) { ?>
-                                                                  <?php if ($cipn['ID_HAKCIPTA'] == $h2['ID']) { ?>
-                                                                  <?= $cipn['NAMA']; ?>;<br>
+                                                                  <?php if ($cipn['id_hakcipta'] == $h2['id']) { ?>
+                                                                  <?= $cipn['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($h2['TGL_INPUT'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($h2['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -228,7 +228,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitolak as $h3) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($h3['TGL_INPUT']);
+                                                                $waktuinput  = date_create($h3['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -238,23 +238,23 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $h3['JUDUL']; ?></td>
-                                                              <td><?= $h3['NAMA_REV'] ?></td>
+                                                              <td><?= $h3['judul']; ?></td>
+                                                              <td><?= $h3['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getPencipta as $cip) { ?>
-                                                                  <?php if ($cip['ID_HAKCIPTA'] == $h3['ID']) { ?>
-                                                                  <?= $cip['NAMA']; ?>;<br>
+                                                                  <?php if ($cip['id_hakcipta'] == $h3['id']) { ?>
+                                                                  <?= $cip['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getPenciptaNon as $cipn) { ?>
-                                                                  <?php if ($cipn['ID_HAKCIPTA'] == $h3['ID']) { ?>
-                                                                  <?= $cipn['NAMA']; ?>;<br>
+                                                                  <?php if ($cipn['id_hakcipta'] == $h3['id']) { ?>
+                                                                  <?= $cipn['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($h2['TGL_INPUT'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($h2['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -285,7 +285,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitangguhkan as $h4) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($h4['TGL_INPUT']);
+                                                                $waktuinput  = date_create($h4['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -295,23 +295,23 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $h4['JUDUL']; ?></td>
-                                                              <td><?= $h4['NAMA_REV'] ?></td>
+                                                              <td><?= $h4['judul']; ?></td>
+                                                              <td><?= $h4['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getPencipta as $cip) { ?>
-                                                                  <?php if ($cip['ID_HAKCIPTA'] == $h4['ID']) { ?>
-                                                                  <?= $cip['NAMA']; ?>;<br>
+                                                                  <?php if ($cip['id_hakcipta'] == $h4['id']) { ?>
+                                                                  <?= $cip['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getPenciptaNon as $cipn) { ?>
-                                                                  <?php if ($cipn['ID_HAKCIPTA'] == $h4['ID']) { ?>
-                                                                  <?= $cipn['NAMA']; ?>;<br>
+                                                                  <?php if ($cipn['id_hakcipta'] == $h4['id']) { ?>
+                                                                  <?= $cipn['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($h4['TGL_INPUT'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($h4['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
