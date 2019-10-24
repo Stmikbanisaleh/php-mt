@@ -55,13 +55,13 @@
                                                               <td><?= $p0['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getInventor as $inv) { ?>
-                                                                  <?php if ($inv['ID_PATEN'] == $p0['id']) { ?>
+                                                                  <?php if ($inv['id_paten'] == $p0['id']) { ?>
                                                                   <?= $inv['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getInventorNon as $invn) { ?>
-                                                                  <?php if ($invn['ID_PATEN'] == $p0['id']) { ?>
+                                                                  <?php if ($invn['id_paten'] == $p0['id']) { ?>
                                                                   <?= $invn['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
@@ -111,7 +111,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDiajukan as $p1) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($p1['TGL_INPUT']);
+                                                                $waktuinput  = date_create($p1['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -121,17 +121,17 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $p1['JUDUL']; ?></td>
-                                                              <td><?= $p1['NAMA_REV']; ?></td>
+                                                              <td><?= $p1['judul']; ?></td>
+                                                              <td><?= $p1['nama_rev']; ?></td>
                                                               <td>
                                                                   <?php foreach ($getInventor as $inv) { ?>
-                                                                  <?php if ($inv['ID_PATEN'] == $p1['ID']) { ?>
+                                                                  <?php if ($inv['id_paten'] == $p1['id']) { ?>
                                                                   <?= $inv['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
-                                                              <td><?= $p1['KETERANGAN']; ?></td>
-                                                              <td><?= date('d-m-Y', strtotime($p1['TGL_INPUT'])) ?></td>
+                                                              <td><?= $p1['keterangan']; ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($p1['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -164,7 +164,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDisetujui as $p2) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($p2['TGL_INPUT']);
+                                                                $waktuinput  = date_create($p2['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -174,17 +174,17 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $p2['JUDUL']; ?></td>
-                                                              <td><?= $p2['NAMA_REV'] ?></td>
+                                                              <td><?= $p2['judul']; ?></td>
+                                                              <td><?= $p2['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getInventor as $inv) { ?>
-                                                                  <?php if ($inv['ID_PATEN'] == $p2['ID']) { ?>
+                                                                  <?php if ($inv['id_paten'] == $p2['id']) { ?>
                                                                   <?= $inv['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
-                                                              <td><?= $p2['KETERANGAN']; ?></td>
-                                                              <td><?= date('d-m-Y', strtotime($p2['TGL_INPUT'])) ?></td>
+                                                              <td><?= $p2['keterangan']; ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($p2['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -216,7 +216,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitolak as $p3) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($p3['TGL_INPUT']);
+                                                                $waktuinput  = date_create($p3['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -226,17 +226,17 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $p3['JUDUL']; ?></td>
-                                                              <td><?= $p3['NAMA_REV'] ?></td>
+                                                              <td><?= $p3['judul']; ?></td>
+                                                              <td><?= $p3['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getInventor as $inv) { ?>
-                                                                  <?php if ($inv['ID_PATEN'] == $p3['ID']) { ?>
+                                                                  <?php if ($inv['id_paten'] == $p3['id']) { ?>
                                                                   <?= $inv['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
-                                                              <td><?= $p3['KETERANGAN']; ?></td>
-                                                              <td><?= date('d-m-Y', strtotime($p3['TGL_INPUT'])) ?></td>
+                                                              <td><?= $p3['keterangan']; ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($p3['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -267,7 +267,7 @@
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitangguhkan as $p4) : ?>
                                                           <?php
-                                                                $waktuinput  = date_create($p4['TGL_INPUT']);
+                                                                $waktuinput  = date_create($p4['createdAt']);
                                                                 $waktusekarang = date_create();
                                                                 $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -277,17 +277,17 @@
                                                                 ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $p4['JUDUL']; ?></td>
-                                                              <td><?= $p4['NAMA_REV'] ?></td>
+                                                              <td><?= $p4['judul']; ?></td>
+                                                              <td><?= $p4['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getInventor as $inv) { ?>
-                                                                  <?php if ($inv['ID_PATEN'] == $p4['ID']) { ?>
+                                                                  <?php if ($inv['id_paten'] == $p4['id']) { ?>
                                                                   <?= $inv['NAMA']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
-                                                              <td><?= $p4['KETERANGAN']; ?></td>
-                                                              <td><?= date('d-m-Y', strtotime($p4['TGL_INPUT'])) ?></td>
+                                                              <td><?= $p4['keterangan']; ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($p4['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>

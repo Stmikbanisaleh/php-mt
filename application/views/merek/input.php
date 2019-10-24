@@ -124,7 +124,7 @@
                                     <button class="btn btn-primary" type="button" id="prevBtn" onclick="nextPrev(-1)"><i class="fa fa-chevron-circle-left"></i></button>
                                 </div>
                                 <div style="float:right;">
-                                    <button class="btn btn-primary" type="button" id="nextBtn" onclick="nextPrev(1)"><i class="fa fa-chevron-circle-right"></i></button>
+                                    <button class="btn btn-primary" type="button" id="nextBtn" onclick="nextPrev(1)" name="button"><i class="fa fa-chevron-circle-right"></i></button>
                                 </div>
                             </div>
 

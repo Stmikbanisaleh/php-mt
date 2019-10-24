@@ -47,12 +47,14 @@ class Auth extends CI_Controller
 						'user_id' => $user['user_id'],
 						'name' => $user['name'],
 						'is_active' => $user['is_active'],
-						'name_rev' => $user['name_rev'],
+						'name_rev' => $user['nama_rev'],
 						'status' => $user['status_rev'],
 						'keterangan' => $user['keterangan'],
 						'golongan' => $user['golongan'],
 						'token' => $user['token']
 					];
+
+
 					$this->session->set_userdata($data);
 					// echo "berhasil";
 					redirect('dashboard');

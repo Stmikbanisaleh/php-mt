@@ -29,14 +29,15 @@ class Merek extends CI_Controller
 		$roleId = $data['user']['role_id'];
 		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
 		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['dokmerek'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2, 'ID_ROLE' => 1))->result_array();
+		$data['jenispaten'] = $this->db->get_where('msrev', array('golongan' => 7))->result_array();
+		$data['dokpaten'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 1, 'ID_ROLE' => 1))->result_array();
 		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
 		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
 
 		$this->load->model('Merek_model', 'merek');
 		$data['ipmancode'] = $this->merek->getIpmancode();
 
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
 		$this->load->view('merek/input', $data);
 		$this->load->view('templates/footer');
@@ -72,7 +73,15 @@ class Merek extends CI_Controller
 
 		$user = $this->db->get_where('msuser', ['email' =>
 		$this->session->userdata('email')])->row_array();
-		$dokmerek = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2, 'ID_ROLE' => 1))->result_array();
+		// $dokmerek = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2, 'ID_ROLE' => 1))->result_array();
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id_haki' => 2,
+			'id_role' => 1,
+		];
+		$dokmerek = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data);
+
+		// print_r(json_encode($dokmerek));exit;
 
 		$post = $this->input->post();
 
@@ -82,56 +91,99 @@ class Merek extends CI_Controller
 
 
 
+		// $data = [
+		// 	'JUDUL' => htmlspecialchars($this->input->post('judul', true)),
+		// 	'KELAS' => htmlspecialchars($this->input->post('kelas', true)),
+		// 	'UNIT_KERJA' => $this->input->post('unit_kerja'),
+		// 	'STATUS' => 19,
+		// 	'NO_HANDPHONE' => $this->input->post('no_handphone'),
+		// 	'IPMAN_CODE' => $this->input->post('ipman_code'),
+		// 	'KODE_INPUT' => $user['id'],
+		// 	'TGL_INPUT' => date('Y-m-d h:i:s'),
+		// ];
+
 		$data = [
-			'JUDUL' => htmlspecialchars($this->input->post('judul', true)),
-			'KELAS' => htmlspecialchars($this->input->post('kelas', true)),
-			'UNIT_KERJA' => $this->input->post('unit_kerja'),
-			'STATUS' => 19,
-			'NO_HANDPHONE' => $this->input->post('no_handphone'),
-			'IPMAN_CODE' => $this->input->post('ipman_code'),
-			'KODE_INPUT' => $user['id'],
-			'TGL_INPUT' => date('Y-m-d h:i:s'),
+			'token' => $this->session->userdata('token'),
+			'judul' => htmlspecialchars($this->input->post('judul', true)),
+			'unit_kerja' => $this->input->post('unit_kerja'),
+			'status' => 19,
+			'no_handphone' => $this->input->post('no_handphone'),
+			'ipman_code' => $ipmancode,
+			'kode_input' => $this->session->userdata('user_id'),
+			'tgl_input' => date('Y-m-d h:i:s'),
+			'kelas' => htmlspecialchars($this->input->post('kelas', true)),
 		];
 
-		if ($this->db->insert('msmerek', $data)) {
-			$dataId = $this->db->insert_id();
-			$this->db->query("UPDATE msipmancode SET NO_URUT = NO_URUT + 1 WHERE KODE = 'MR'");
+		$insert = $this->lapan_api_library->call('mereks/addmerek', $data);
+		
+
+		if ($insert) {
+			$dataId = $insert['id'];
+			
+			
+			// $this->db->query("UPDATE msipmancode SET NO_URUT = NO_URUT + 1 WHERE KODE = 'MR'");
+			$data = array(
+				'token' => $this->session->userdata('token'),
+				'kode' => 'MR',
+			);
+			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
+			
 
 
 			$i = 1;
+			$dokmerek = $dokmerek['data']['rows'];
 			foreach ($dokmerek as $dm) {
 
-				$config['file_name']          = $ipmancode . '_' . $dm['PENAMAAN_FILE'];
-				$config['upload_path']          = './assets/dokumen/dokumen_merek/';
+				$config['file_name']          = $ipmancode . '_' . $dm['penamaan_file'];
+				// $config['upload_path']          = './assets/dokumen/dokumen_merek/';
 				$config['allowed_types']        = 'doc|docx|pdf|';
 				$config['overwrite']        = TRUE;
 
-				$this->upload->initialize($config);
+				// $this->upload->initialize($config);
 
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					$this->upload->do_upload('dokumen' . $i);
 					$filename = $this->upload->data('file_name');
 					$size = $this->upload->data('file_size');
 					$type = $this->upload->data('file_ext');
-					$jenisdok = $dm['ID'];
+					$jenisdok = $dm['id'];
 				} else {
 					$filename = $ipmancode . '_' . $dm['PENAMAAN_FILE'];
 					$size = '';
 					$type = '';
-					$jenisdok = $dm['ID'];
+					$jenisdok = $dm['id'];
 				}
 				$dokumen = array($filename, $size, $type, 1, $jenisdok, $date, $userid);
 
-				$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-				$md['NAME'] = $dokumen[0];
-				$md['SIZE'] = $dokumen[1];
-				$md['TYPE'] = $dokumen[2];
-				$md['ROLE'] = $dokumen[3];
-				$md['JENIS_DOKUMEN'] = $dokumen[4];
-				$md['TGL_INPUT'] = $dokumen[5];
-				$md['KODE_INPUT'] = $dokumen[6];
+				// $md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
+				// $md['NAME'] = $dokumen[0];
+				// $md['SIZE'] = $dokumen[1];
+				// $md['TYPE'] = $dokumen[2];
+				// $md['ROLE'] = $dokumen[3];
+				// $md['JENIS_DOKUMEN'] = $dokumen[4];
+				// $md['TGL_INPUT'] = $dokumen[5];
+				// $md['KODE_INPUT'] = $dokumen[6];
 
-				$this->db->insert('msdokumen', $md);
+				// print_r($md);exit;
+
+				// $this->db->insert('msdokumen', $md);
+
+				$md['token'] = $this->session->userdata('token');
+				$md['nomor_pendaftar'] = $ipmancode;
+				$md['dokumen'] = $dokumen[0];
+				
+				$md['type'] = $dokumen[2];
+				$md['role'] = $dokumen[3];
+				$md['jenis_dokumen'] = $dokumen[4];
+				$md['downloadable'] = $dokumen[5];
+				$md['tgl_input'] = $dokumen[6];
+				$md['kode_input'] = $dokumen[7];
+				$md['size'] = $dokumen[1];
+
+				print_r(json_encode($md));exit;
+				
+
+				$insert_doc = $this->lapan_api_library->call('patens/adddokumen', $md);
 				$i++;
 			}
 
@@ -344,19 +396,24 @@ class Merek extends CI_Controller
 
 	public function monitoring()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
+		$return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
 
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		$return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
+		$return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
+		$return_paten = $this->lapan_api_library->call('patens/getpaten', ['token' => $this->session->userdata('token')]);
 
-		$this->load->model('Merek_model', 'merek');
-		$data['getMerek'] = $this->db->get('msmerek')->result_array();
-		$data['getDraft'] = $this->merek->getMerekDraft();
-		$data['getDiajukan'] = $this->merek->getMerekDiajukan();
-		$data['getDisetujui'] = $this->merek->getMerekDisetujui();
-		$data['getDitolak'] = $this->merek->getMerekDitolak();
-		$data['getDitangguhkan'] = $this->merek->getMerekDitangguhkan();
+		$data['getDraft'] = $return_draft['data'][0];
+		$data['getDiajukan'] = $return_diajukan['data'][0];
+		$data['getDisetujui'] = $return_disetujui['data'][0];
+		$data['getDitolak'] = $return_ditolak['data'][0];
+		$data['getDitangguhkan'] = $return_ditangguhkan['data'][0];
+		$data['getInventor'] = $return_inventor['data'][0];
+		$data['getInventorNon'] = $return_noninventor['data'][0];
+		$data['data'] = $return_paten['data']['rows'];
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');
