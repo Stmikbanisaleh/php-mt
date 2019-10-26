@@ -877,17 +877,12 @@ class Hakcipta extends CI_Controller
 
 	public function hapusdraft($id)
 	{
-		$this->db->trans_begin();
-
-		$this->db->query('DELETE FROM mshakcipta WHERE ID=' . $id);
-		$this->db->query('DELETE FROM dhakcipta WHERE ID_HAKCIPTA=' . $id);
-
-		if ($this->db->trans_status() === FALSE) {
-			$this->db->trans_rollback();
-		} else {
-			$this->db->trans_commit();
-			redirect('hakcipta/monitoring');
-		}
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+		];
+		$dokmerek = $this->lapan_api_library->call('hakciptas/deletedraft', $data);
+		redirect('hakcipta/monitoring');
 	}
 
 	public function input_pencipta()

@@ -870,17 +870,12 @@ class Merek extends CI_Controller
 
 	public function hapusdraft($id)
 	{
-		$this->db->trans_begin();
-
-		$this->db->query('DELETE FROM msmerek WHERE ID=' . $id);
-		$this->db->query('DELETE FROM dmerek WHERE ID_MEREK=' . $id);
-
-		if ($this->db->trans_status() === FALSE) {
-			$this->db->trans_rollback();
-		} else {
-			$this->db->trans_commit();
-			redirect('merek/monitoring');
-		}
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+		];
+		$dokmerek = $this->lapan_api_library->call('mereks/deletedraft', $data);
+		redirect('merek/monitoring');
 	}
 
 	public function input_pendesain()

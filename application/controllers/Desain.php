@@ -854,17 +854,12 @@ class Desain extends CI_Controller
 
 	public function hapusdraft($id)
 	{
-		$this->db->trans_begin();
-
-		$this->db->query('DELETE FROM msdesainindustri WHERE ID=' . $id);
-		$this->db->query('DELETE FROM ddesainindustri WHERE ID_DESAIN_INDUSTRI=' . $id);
-
-		if ($this->db->trans_status() === FALSE) {
-			$this->db->trans_rollback();
-		} else {
-			$this->db->trans_commit();
-			redirect('desain/monitoring');
-		}
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+		];
+		$dokmerek = $this->lapan_api_library->call('desain/deletedraft', $data);
+		redirect('desain/monitoring');
 	}
 
 	public function input_pendesain()

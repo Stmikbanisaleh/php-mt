@@ -973,18 +973,12 @@ class Paten extends CI_Controller
 
 	public function hapusdraft($id)
 	{
-		$this->db->trans_begin();
-
-		$this->db->query('DELETE FROM mspaten WHERE ID=' . $id);
-		$this->db->query('DELETE FROM dpaten WHERE ID_PATEN=' . $id);
-		$this->db->query('DELETE FROM msdokumen WHERE NOMOR_PENDAFTAR=' . $id);
-
-		if ($this->db->trans_status() === FALSE) {
-			$this->db->trans_rollback();
-		} else {
-			$this->db->trans_commit();
-			redirect('paten/monitoring');
-		}
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+		];
+		$dokmerek = $this->lapan_api_library->call('patens/deletedraft', $data);
+		redirect('paten/monitoring');
 	}
 
 	function reload_paten($id = '')
