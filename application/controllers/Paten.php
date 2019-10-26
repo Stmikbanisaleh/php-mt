@@ -73,7 +73,8 @@ class Paten extends CI_Controller
 		$dokpaten = $this->lapan_api_library->call('dokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
 
 		$jenispaten = $this->input->post('jenis_paten');
-
+		$userid =  $this->session->userdata('user_id');
+		$date = date('Y-m-d h:i:s');
 		switch ($jenispaten) {
 			case "24":
 				$getpb = $this->lapan_api_library->call('lib/getcodepb', ['token' => $this->session->userdata('token')]);
@@ -149,6 +150,17 @@ class Paten extends CI_Controller
 			$dokpaten = $dokpaten['data']['rows'];
 			
 			foreach ($dokpaten as $dp) {
+				$config['file_name']          = $ipmancode . '_' . $dp['penamaan_file'];
+				$config['allowed_types']        = 'doc|docx|pdf|';
+
+				$file_tmp = $_FILES['dokumen'.$i]['tmp_name'];
+				if(!empty($_FILES['dokumen'.$i]['tmp_name']) 
+				     && file_exists($_FILES['dokumen'.$i]['tmp_name'])) {
+				    $data_getcontent = addslashes(file_get_contents($_FILES['dokumen'.$i]['tmp_name']));
+				}
+				$dokumen_base64 = base64_encode($data_getcontent);
+
+
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					$size = $_FILES['dokumen' . $i]['size'];
 					$type = $_FILES['dokumen' . $i]['type'];
@@ -162,21 +174,21 @@ class Paten extends CI_Controller
 					$jenisdok = $dp['id'];
 					$downloadable = 0;
 				}
+				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 
-				$dokumen = array($filename, $size, $type, 1, $jenisdok, $downloadable, '', $this->session->userdata('user_id'));
-
-				$md['nomor_pendaftar'] = $ipmancode;
-				$md['name'] = $dokumen[0];
-				$md['size'] = $dokumen[1];
-				$md['type'] = $dokumen[2];
-				$md['role'] = $dokumen[3];
-				$md['jenis_dokumen'] = $dokumen[4];
-				$md['downloadable'] = $dokumen[5];
-				$md['tgl_input'] = $dokumen[6];
-				$md['kode_input'] = $dokumen[7];
 				$md['token'] = $this->session->userdata('token');
+				$md['nomor_pendaftar'] = $ipmancode;
+				$md['dokumen'] = $dokumen[0];
+				$md['type'] = $dokumen[1];
+				$md['role'] = $dokumen[2];
+				$md['jenis_dokumen'] = $dokumen[3];
+				$md['tgl_input'] = $dokumen[4];
+				$md['kode_input'] = $dokumen[5];
+				$md['downloadable'] = 1;
+				$md['name'] = $dokumen[6];
+				$md['size'] = $dokumen[7];
 
-				$insert_doc = $this->lapan_api_library->call('patens/adddokumen', $md);
+				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				$i++;
 			}
 
