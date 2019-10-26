@@ -72,6 +72,8 @@ class Paten extends CI_Controller
 	{
 		$dokpaten = $this->lapan_api_library->call('dokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
 
+
+
 		$jenispaten = $this->input->post('jenis_paten');
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
@@ -93,7 +95,11 @@ class Paten extends CI_Controller
 				$ipmancode = $ipm;
 		}
 
+		// print_r(json_encode($getpb));exit;
+
 		$post = $this->input->post();
+
+		// print_r(json_encode($post));exit;
 
 		$configab['file_name']          =  $ipmancode . '_abstrak';
 
@@ -124,6 +130,8 @@ class Paten extends CI_Controller
 			redirect('paten/input');
 		}
 
+
+
 		$data = [
 			'token' => $this->session->userdata('token'),
 			'judul' => htmlspecialchars($this->input->post('judul', true)),
@@ -137,6 +145,7 @@ class Paten extends CI_Controller
 			'gambar' => $gambar_base64,
 			'abstrak' => $abstrak_base64,
 		];
+		// print_r(json_encode($data));exit;
 
 		$insert = $this->lapan_api_library->call('patens/addpaten', $data);
 
@@ -148,6 +157,8 @@ class Paten extends CI_Controller
 			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
 			$i = 1;
 			$dokpaten = $dokpaten['data']['rows'];
+
+			// print_r(json_encode($dokpaten));exit;
 			
 			foreach ($dokpaten as $dp) {
 				$config['file_name']          = $ipmancode . '_' . $dp['penamaan_file'];
@@ -159,6 +170,9 @@ class Paten extends CI_Controller
 				    $data_getcontent = addslashes(file_get_contents($_FILES['dokumen'.$i]['tmp_name']));
 				}
 				$dokumen_base64 = base64_encode($data_getcontent);
+
+
+				// print_r(json_encode($dokumen_base64));exit;
 
 
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
@@ -198,8 +212,6 @@ class Paten extends CI_Controller
 				$kp['nik'] = $kopeg['nik'];
 				$kp['token'] = $this->session->userdata('token');
 				$insert = $this->lapan_api_library->call('patens/adddpaten', $kp);
-				print_r(json_encode($insert));
-				exit;
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">

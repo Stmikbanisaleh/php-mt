@@ -85,4 +85,5 @@ defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automat
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
 //Define API URL MT
-define('URL_API_MT', 'https://api-mt.herokuapp.com');
+// define('URL_API_MT', 'https://api-mt.herokuapp.com');
+define('URL_API_MT', 'http://192.168.1.20:3000');

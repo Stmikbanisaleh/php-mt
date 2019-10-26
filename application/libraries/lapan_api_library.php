@@ -27,7 +27,7 @@ class Lapan_api_library
 	 * @param  array  $args   An array of arguments to pass to the method. Will be json-encoded for you.
 	 * @return array          Associative array of json decoded API response.
 	 */
-	public function call($func, $args=array(), $timeout = 10)
+	public function call($func, $args=array(), $timeout = 200)
 	{
 		return $this->makeRequest($func, $args, $timeout);
 	}
@@ -37,7 +37,7 @@ class Lapan_api_library
 	 * @param  array  $args   Assoc array of parameters to be passed
 	 * @return array          Assoc array of decoded response
 	 */
-	private function makeRequest($func, $args=array(), $timeout = 10)
+	private function makeRequest($func, $args=array(), $timeout = 200)
 	{      
 		$url = $this->api_endpoint.'/'.$func;
 		if (function_exists('curl_init') && function_exists('curl_setopt')){
