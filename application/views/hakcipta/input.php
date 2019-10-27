@@ -165,7 +165,7 @@
                     var nextRow = row + 1;
                     var markup = "<tr><td><select name='pencipta[" + nextRow + "][nik]' id='kode_" + nextRow + "' class='selectfield form-control'><option value=''>Kode Kepegawaian</option>";
                     <?php foreach ($pegawai as $pg) : ?>
-                        markup += "<option value='<?php echo $pg['KODE_KEPEGAWAIAN'] ?>'><?php echo $pg['KODE_KEPEGAWAIAN'] . ' - ' . $pg['NAMA']; ?></option>";
+                        markup += "<option value='<?php echo $pg['NIK'] ?>'><?php echo $pg['KODE_KEPEGAWAIAN'] . ' - ' . $pg['NAMA']; ?></option>";
                     <?php endforeach; ?>
                     markup += "</select></td>";
                     markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\

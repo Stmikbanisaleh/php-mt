@@ -104,7 +104,7 @@
               <select name="role_id" id="role_id" class="form-control" placeholder="Unit Kerja">
                 <option value="">Select Role</option>
                 <?php foreach ($getRole as $gr) : ?>
-                  <option value="<?= $gr['ID']; ?>"><?= $gr['NAMA_REV'] ?></option>
+                  <option value="<?= $gr['id']; ?>"><?= $gr['nama_rev'] ?></option>
                 <?php endforeach; ?>
               </select>
               <?= form_error(

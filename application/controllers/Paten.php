@@ -440,7 +440,7 @@ class Paten extends CI_Controller
 	public function monitoring()
 	{
 		$return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
-		print_r(json_encode($return_draft));EXIT;
+		// print_r(json_encode($return_draft));EXIT;
 		$return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
 		$return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
 		$return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
@@ -471,6 +471,8 @@ class Paten extends CI_Controller
 	{
 		$this->load->model('Paten_model', 'paten');
 		$paten = $this->paten->getExportDiajukan();
+		$paten = $this->lapan_api_library->call('exportexcel/getallpaten', ['token' => $this->session->userdata('token')]);
+		$paten = $paten['data']['0'];
 
 		// Load plugin PHPExcel nya
 		include APPPATH . 'third_party/PHPExcel/PHPExcel.php';

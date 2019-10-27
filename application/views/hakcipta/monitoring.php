@@ -254,7 +254,7 @@
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($h2['createdAt'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($h3['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
