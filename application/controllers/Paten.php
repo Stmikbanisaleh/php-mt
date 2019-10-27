@@ -94,9 +94,6 @@ class Paten extends CI_Controller
 	public function save()
 	{
 		$dokpaten = $this->lapan_api_library->call('dokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
-
-
-
 		$jenispaten = $this->input->post('jenis_paten');
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
@@ -117,20 +114,10 @@ class Paten extends CI_Controller
 				$ipm = $pb[0]['kode'] . '_' . $nourut;
 				$ipmancode = $ipm;
 		}
-
-		// print_r(json_encode($getpb));exit;
-
 		$post = $this->input->post();
-
-		// print_r(json_encode($post));exit;
-
 		$configab['file_name']          =  $ipmancode . '_abstrak';
-
-
 		$upload_abstrak = $this->upload->initialize($configab);
-
-		if ($upload_abstrak) {
-
+		if (!empty($_FILES['abstrak']['tmp_name'])) {
 			$file_tmp = $_FILES['abstrak']['tmp_name'];
 			$data = file_get_contents($file_tmp);
 			$abstrak_base64 = base64_encode($data);
@@ -138,12 +125,10 @@ class Paten extends CI_Controller
 			$this->session->set_flashdata('message_errorabs', '<div class="alert alert-danger my-5" role="alert">
             File Abstrak belum terunggah!</div>');
 		}
-
 		//Upload Foto paten yang ingin ditampilkan
 		$cgambar['file_name']          =  $ipmancode . 'gambar_paten_';
 		$upload_gambar = $this->upload->initialize($cgambar);
-
-		if ($upload_gambar) {
+		if (!empty($_FILES['gambar']['tmp_name'])) {
 			$file_tmp = $_FILES['gambar']['tmp_name'];
 			$data = file_get_contents($file_tmp);
 			$gambar_base64 = base64_encode($data);
@@ -152,9 +137,6 @@ class Paten extends CI_Controller
             Gambar belum terunggah!</div>');
 			redirect('paten/input');
 		}
-
-
-
 		$data = [
 			'token' => $this->session->userdata('token'),
 			'judul' => htmlspecialchars($this->input->post('judul', true)),
@@ -657,24 +639,22 @@ class Paten extends CI_Controller
 
 	public function monitoring_verifikator()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$this->load->model('User_model', 'user');
-		$data['getUser'] = $this->user->getUserRole();
+		$return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
+		$return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
+		$return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
+		$data['getPaten'] = $return_draft['data'][0];
+		$data['getDiajukan'] = $return_diajukan['data'][0];
+		$data['getDisetujui'] = $return_disetujui['data'][0];
+		$data['getDitolak'] = $return_ditolak['data'][0];
+		$data['getDitangguhkan'] =  $return_ditangguhkan['data'][0];
+		$data['getInventor'] = $return_inventor['data'][0];
+		$data['getInventorNon'] = $return_noninventor['data'][0];
 
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-		$this->load->model('Paten_model', 'paten');
-		$data['getPaten'] = $this->db->get('mspaten')->result_array();
-		$data['getDiajukan'] = $this->paten->getPatenDiajukan();
-		$data['getDisetujui'] = $this->paten->getPatenDisetujui();
-		$data['getDitolak'] = $this->paten->getPatenDitolak();
-		$data['getDitangguhkan'] = $this->paten->getPatenDitangguhkan();
-		$data['getInventor'] = $this->paten->getInventor();
-		$data['getInventorNon'] = $this->paten->getInventorNon();
-
-		if ($roleId == 18) {
+		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
 			$this->load->view('403.html');
@@ -992,10 +972,13 @@ class Paten extends CI_Controller
 
 	public function ajukan($id)
 	{
-		$this->db->set('STATUS', 20);
-		$this->db->set('PERNAH_DIAJUKAN', 1);
-		$this->db->where('ID', $id);
-		$this->db->update('mspaten');
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+			'status' => 20,
+			'pernah_diajukan' => 1
+		];
+		$return = $this->lapan_api_library->call('patens/ajukan', $data);
 		redirect('paten/monitoring');
 	}
 

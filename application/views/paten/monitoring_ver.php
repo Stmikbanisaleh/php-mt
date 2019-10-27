@@ -47,7 +47,7 @@
                                                         <?php $i = 1; ?>
                                                         <?php foreach ($getDiajukan as $p1) : ?>
                                                         <?php
-                                                            $waktuinput  = date_create($p1['TGL_INPUT']);
+                                                            $waktuinput  = date_create($p1['createdAt']);
                                                             $waktusekarang = date_create();
                                                             $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -57,33 +57,33 @@
                                                             ?>
                                                         <tr>
                                                             <td><?= $i; ?></td>
-                                                            <td><?= $p1['JUDUL']; ?></td>
-                                                            <td><?= $p1['NAMA_REV']; ?></td>
+                                                            <td><?= $p1['judul']; ?></td>
+                                                            <td><?= $p1['nama_rev']; ?></td>
                                                             <td>
                                                                 <!-- Inventor Pegawai -->
                                                                 <?php foreach ($getInventor as $inv) { ?>
-                                                                <?php if ($inv['ID_PATEN'] == $p1['ID']) { ?>
+                                                                <?php if ($inv['id_paten'] == $p1['id']) { ?>
                                                                 <?= $inv['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
 
                                                                 <!-- Inventor Non Pegawai -->
                                                                 <?php foreach ($getInventorNon as $invnon) { ?>
-                                                                <?php if ($invnon['ID_PATEN'] == $p1['ID']) { ?>
+                                                                <?php if ($invnon['id_paten'] == $p1['id']) { ?>
                                                                 <?= $invnon['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
                                                             </td>
-                                                            <td><?= $p1['KETERANGAN']; ?></td>
+                                                            <td><?= $p1['keterangan']; ?></td>
                                                             <td></td>
-                                                            <td><?= date('d-m-Y', strtotime($p1['TGL_INPUT'])); ?></td>
+                                                            <td><?= date('d-m-Y', strtotime($p1['createdAt'])); ?></td>
                                                             <td><?= $diff->m; ?></td>
                                                             <td>
                                                                 <?php
                                                                     $role_id = $this->session->userdata('role_id');
                                                                     if ($role_id == 15 || $role_id == 17) {
                                                                         ?>
-                                                                <a href="<?= base_url() ?>paten/verifikasi/<?= $p1['ID']; ?>" class="text-info"><i class="fa fa-check-square-o"> Verifikasi</i></a>
+                                                                <a href="<?= base_url() ?>paten/verifikasi/<?= $p1['id']; ?>" class="text-info"><i class="fa fa-check-square-o"> Verifikasi</i></a>
                                                                 <?php } ?>
                                                             </td>
 
@@ -129,20 +129,20 @@
                                                             ?>
                                                         <tr>
                                                             <td><?= $i; ?></td>
-                                                            <td><?= $p2['JUDUL']; ?></td>
-                                                            <td><?= $p2['NAMA_REV']; ?></td>
+                                                            <td><?= $p2['judul']; ?></td>
+                                                            <td><?= $p2['nama_rev']; ?></td>
                                                             <td>
                                                                 <!-- Inventor Pegawai -->
                                                                 <?php foreach ($getInventor as $inv) { ?>
-                                                                <?php if ($inv['ID_PATEN'] == $p2['ID']) { ?>
-                                                                <?= $inv['NAMA']; ?>;<br>
+                                                                <?php if ($inv['id_paten'] == $p2['id']) { ?>
+                                                                <?= $inv['nama']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
 
                                                                 <!-- Inventor Non Pegawai -->
                                                                 <?php foreach ($getInventorNon as $invnon) { ?>
-                                                                <?php if ($invnon['ID_PATEN'] == $p2['ID']) { ?>
-                                                                <?= $invnon['NAMA']; ?>;<br>
+                                                                <?php if ($invnon['id_paten'] == $p2['id']) { ?>
+                                                                <?= $invnon['nama']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
                                                             </td>
@@ -192,26 +192,26 @@
                                                             ?>
                                                         <tr>
                                                             <td><?= $i; ?></td>
-                                                            <td><?= $p3['JUDUL']; ?></td>
-                                                            <td><?= $p3['NAMA_REV']; ?></td>
+                                                            <td><?= $p3['judul']; ?></td>
+                                                            <td><?= $p3['nama_rev']; ?></td>
                                                             <td>
                                                                 <!-- Inventor Pegawai -->
                                                                 <?php foreach ($getInventor as $inv) { ?>
-                                                                <?php if ($inv['ID_PATEN'] == $p3['ID']) { ?>
-                                                                <?= $inv['NAMA']; ?>;<br>
+                                                                <?php if ($inv['id_paten'] == $p3['id']) { ?>
+                                                                <?= $inv['nama']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
 
                                                                 <!-- Inventor Non Pegawai -->
                                                                 <?php foreach ($getInventorNon as $invnon) { ?>
-                                                                <?php if ($invnon['ID_PATEN'] == $p3['ID']) { ?>
-                                                                <?= $invnon['NAMA']; ?>;<br>
+                                                                <?php if ($invnon['id_paten'] == $p3['id']) { ?>
+                                                                <?= $invnon['nama']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
                                                             </td>
                                                             <td></td>
-                                                            <td><?= $p3['KETERANGAN']; ?></td>
-                                                            <td><?= date('d-m-Y', strtotime($p3['TGL_INPUT'])) ?></td>
+                                                            <td><?= $p3['keterangan']; ?></td>
+                                                            <td><?= date('d-m-Y', strtotime($p3['createdat'])) ?></td>
                                                             <td><?= $diff->m; ?></td>
                                                             <td></td>
 
@@ -244,7 +244,7 @@
                                                         <?php $i = 1; ?>
                                                         <?php foreach ($getDitangguhkan as $p4) : ?>
                                                         <?php
-                                                            $waktuinput  = date_create($p4['TGL_INPUT']);
+                                                            $waktuinput  = date_create($p4['createdAt']);
                                                             $waktusekarang = date_create();
                                                             $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -254,26 +254,26 @@
                                                             ?>
                                                         <tr>
                                                             <td><?= $i; ?></td>
-                                                            <td><?= $p4['JUDUL']; ?></td>
-                                                            <td><?= $p4['NAMA_REV']; ?></td>
+                                                            <td><?= $p4['judul']; ?></td>
+                                                            <td><?= $p4['nama_rev']; ?></td>
                                                             <td>
                                                                 <!-- Inventor Pegawai -->
                                                                 <?php foreach ($getInventor as $inv) { ?>
-                                                                <?php if ($inv['ID_PATEN'] == $p4['ID']) { ?>
+                                                                <?php if ($inv['id_paten'] == $p4['id']) { ?>
                                                                 <?= $inv['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
 
                                                                 <!-- Inventor Non Pegawai -->
                                                                 <?php foreach ($getInventorNon as $invnon) { ?>
-                                                                <?php if ($invnon['ID_PATEN'] == $p4['ID']) { ?>
+                                                                <?php if ($invnon['id_paten'] == $p4['id']) { ?>
                                                                 <?= $invnon['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
                                                             </td>
                                                             <td></td>
                                                             <td></td>
-                                                            <td><?= date('d-m-Y', strtotime($p4['TGL_INPUT'])) ?></td>
+                                                            <td><?= date('d-m-Y', strtotime($p4['createdAt'])) ?></td>
                                                             <td><?= $diff->m; ?></td>
                                                             <td></td>
 

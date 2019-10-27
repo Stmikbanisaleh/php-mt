@@ -49,7 +49,7 @@
                                     <?php $i = 1; ?>
                                     <?php foreach ($getDiajukan as $m1) : ?>
                                     <?php 
-                                        $waktuinput  = date_create($m1['TGL_INPUT']); 
+                                        $waktuinput  = date_create($m1['createdAt']); 
                                         $waktusekarang = date_create(); 
                                         $diff  = date_diff($waktuinput, $waktusekarang);
                                             
@@ -59,33 +59,34 @@
                                     ?>
                                 <tr>
                                     <td><?= $i; ?></td>
-                                    <td><?= $m1['JUDUL']; ?></td> 
-                                    <td><?= $m1['NAMA_REV']; ?></td>
+                                    <td><?= $m1['judul']; ?></td> 
+                                    <td><?= $m1['nama_rev']; ?></td>
                                     <td>
                                         <!-- Pendesain Pegawai -->
-                                        <?php foreach ($getPendesain as $des) { ?>
-                                        <?php if ($des['ID_MEREK'] == $m1['ID']) { ?>
-                                        <?= $des['NAMA']; ?>;<br>
+                                        <?php foreach ($getPendesain as $des) {
+                                            ?>
+                                        <?php if ($des['id_merek'] == $m1['id']) { ?>
+                                        <?= $des['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
 
                                         <!-- Pendesain Non Pegawai -->
                                         <?php foreach ($getPendesainNon as $desnon) { ?>
-                                        <?php if ($desnon['ID_MEREK'] == $m1['ID']) { ?>
-                                        <?= $desnon['NAMA']; ?>;<br>
+                                        <?php if ($desnon['id_merek'] == $m1['id']) { ?>
+                                        <?= $desnon['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
                                     </td>
                                     <td></td>
                                     <td></td>
-                                    <td><?= date('d-m-Y', strtotime($m1['TGL_INPUT']))?></td>
+                                    <td><?= date('d-m-Y', strtotime($m1['createdAt']))?></td>
                                     <td><?=$diff->m;?></td>
                                     <td>
                                         <?php 
                                             $role_id = $this->session->userdata('role_id'); 
                                             if ($role_id == 15 || $role_id == 17 ) {
                                         ?>
-                                            <a href="<?= base_url()?>merek/verifikasi/<?=$m1['ID'];?>" class="text-info" ><i class="fa fa-check-square-o"> Verifikasi</i></a>
+                                            <a href="<?= base_url()?>merek/verifikasi/<?=$m1['id'];?>" class="text-info" ><i class="fa fa-check-square-o"> Verifikasi</i></a>
                                             <?php } ?>
                                     </td>
                                     
@@ -235,6 +236,7 @@
                                         <th>Nama Pendesain</th>
                                         <th>Keterangan</th>
                                         <th>Tanggal Ajuan</th>
+                                        <th>Bulan Ke</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -242,7 +244,7 @@
                                     <?php $i = 1; ?>
                                     <?php foreach ($getDitangguhkan as $m4) : ?>
                                     <?php 
-                                        $waktuinput  = date_create($m4['TGL_INPUT']); 
+                                        $waktuinput  = date_create($m4['createdAt']); 
                                         $waktusekarang = date_create(); 
                                         $diff  = date_diff($waktuinput, $waktusekarang);
                                             
@@ -253,26 +255,25 @@
                                     
                                 <tr>
                                     <td><?= $i; ?></td>
-                                    <td><?= $m4['JUDUL']; ?></td> 
-                                    <td><?= $m4['NAMA_REV']; ?></td> 
+                                    <td><?= $m4['judul']; ?></td> 
+                                    <td><?= $m4['nama_rev']; ?></td> 
                                     <td>
                                         <!-- Pendesain Pegawai -->
                                         <?php foreach ($getPendesain as $des) { ?>
-                                        <?php if ($des['ID_MEREK'] == $m4['ID']) { ?>
-                                        <?= $des['NAMA']; ?>;<br>
+                                        <?php if ($des['id_merek'] == $m4['id']) { ?>
+                                        <?= $des['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
 
                                         <!-- Pendesain Non Pegawai -->
                                         <?php foreach ($getPendesainNon as $desnon) { ?>
-                                        <?php if ($desnon['ID_MEREK'] == $m4['ID']) { ?>
-                                        <?= $desnon['NAMA']; ?>;<br>
+                                        <?php if ($desnon['id_merek'] == $m4['id']) { ?>
+                                        <?= $desnon['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
                                     </td>
                                     <td></td>
-                                    <td></td>
-                                    <td><?= date('d-m-Y', strtotime($m4['TGL_INPUT']))?></td>
+                                    <td><?= date('d-m-Y', strtotime($m4['createdAt']))?></td>
                                     <td><?=$diff->m;?></td>
                                     <td></td>
                                     

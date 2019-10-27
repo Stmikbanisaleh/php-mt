@@ -850,10 +850,13 @@ class Desain extends CI_Controller
 
 	public function ajukan($id)
 	{
-		$this->db->set('STATUS', 20);
-		$this->db->set('PERNAH_DIAJUKAN', 1);
-		$this->db->where('ID', $id);
-		$this->db->update('msdesainindustri');
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+			'status' => 20,
+			'pernah_diajukan' => 1
+		];
+		$return = $this->lapan_api_library->call('desain/ajukan', $data);
 		redirect('desain/monitoring');
 	}
 

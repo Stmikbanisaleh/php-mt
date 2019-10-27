@@ -47,7 +47,7 @@ class Dashboard extends CI_Controller
 
 		// $data['grafikPaten'] = $this->dashboard->JumlahPatenPertahun();
 
-		print_r(json_encode($data['grafikMerek']));exit;		
+		// print_r(json_encode($data['grafikMerek']));exit;		
 		$data['grafikMerek'] = $this->dashboard->JumlahMerekPertahun();
 		$data['grafikHakcipta'] = $this->dashboard->JumlahHakciptaPertahun();
 		$data['grafikDesain'] = $this->dashboard->JumlahDesainPertahun();

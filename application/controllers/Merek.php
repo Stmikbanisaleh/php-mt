@@ -341,22 +341,25 @@ class Merek extends CI_Controller
 
 	public function monitoring_verifikator()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('GOLONGAN' => 3))->result_array();
+		// print_r($this->session->userdata());exit;
+		$return_merek = $this->lapan_api_library->call('mereks/getmerek', ['token' => $this->session->userdata('token')]);
+		$return_draft = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
+		$return_diajukan = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_pendesain = $this->lapan_api_library->call('desain/getallpendesain', ['token' => $this->session->userdata('token')]);
+		$return_nonpendesain = $this->lapan_api_library->call('desain/getallnonpendesain', ['token' => $this->session->userdata('token')]);
+		
+		$data['getMerek'] = $return_merek['data']['rows'];
+		$data['getDiajukan'] = $return_diajukan['data'][0];
+		$data['getDisetujui'] =  $return_disetujui['data'][0];
+		$data['getDitolak'] = $return_ditolak['data'][0];
+		$data['getDitangguhkan'] = $return_ditangguhkan['data'][0];
+		$data['getPendesain'] = $return_pendesain['data'][0];
+		$data['getPendesainNon'] = $return_nonpendesain['data'][0];
 
-		$this->load->model('Merek_model', 'merek');
-		$data['getMerek'] = $this->db->get('msmerek')->result_array();
-		$data['getDiajukan'] = $this->merek->getMerekDiajukan();
-		$data['getDisetujui'] = $this->merek->getMerekDisetujui();
-		$data['getDitolak'] = $this->merek->getMerekDitolak();
-		$data['getDitangguhkan'] = $this->merek->getMerekDitangguhkan();
-		$data['getPendesain'] = $this->merek->getPendesain();
-		$data['getPendesainNon'] = $this->merek->getPendesainNon();
-
-		if ($roleId == 18) {
+		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
 			$this->load->view('403.html');
@@ -863,10 +866,18 @@ class Merek extends CI_Controller
 
 	public function ajukan($id)
 	{
-		$this->db->set('STATUS', 20);
-		$this->db->set('PERNAH_DIAJUKAN', 1);
-		$this->db->where('ID', $id);
-		$this->db->update('msmerek');
+		$data = [
+			'token' => $this->session->userdata('token'),
+			'id' => $id,
+			'status' => 20,
+			'pernah_diajukan' => 1
+		];
+		$return = $this->lapan_api_library->call('mereks/ajukan', $data);
+
+		// $this->db->set('STATUS', 20);
+		// $this->db->set('PERNAH_DIAJUKAN', 1);
+		// $this->db->where('ID', $id);
+		// $this->db->update('msmerek');
 		redirect('merek/monitoring');
 	}
 
