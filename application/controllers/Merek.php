@@ -400,9 +400,9 @@ class Merek extends CI_Controller
 
 	public function export()
 	{
-		$this->load->model('Merek_model', 'merek');
-		$merek = $this->merek->getExportDiajukan();
-
+		$merek = $this->lapan_api_library->call('exportexcel/getallmerek', ['token' => $this->session->userdata('token')]);
+		$merek = $merek['data']['0'];
+		
 		// Load plugin PHPExcel nya
 		include APPPATH . 'third_party/PHPExcel/PHPExcel.php';
 

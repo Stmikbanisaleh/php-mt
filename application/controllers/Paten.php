@@ -469,8 +469,8 @@ class Paten extends CI_Controller
 
 	public function export()
 	{
-		$this->load->model('Paten_model', 'paten');
-		$paten = $this->paten->getExportDiajukan();
+		// $this->load->model('Paten_model', 'paten');
+		// $paten = $this->paten->getExportDiajukan();
 		$paten = $this->lapan_api_library->call('exportexcel/getallpaten', ['token' => $this->session->userdata('token')]);
 		$paten = $paten['data']['0'];
 
