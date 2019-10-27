@@ -47,32 +47,32 @@
                                                           <?php foreach ($getDraft as $d0) : ?>
                                                           <tr>
                                                               <td><?= $i ?></td>
-                                                              <td><?= $d0['JUDUL']; ?></td>
-                                                              <td><?= $d0['NAMA_REV'] ?></td>
+                                                              <td><?= $d0['judul']; ?></td>
+                                                              <td><?= $d0['nama_rev'] ?></td>
                                                               <td>
                                                                   <?php foreach ($getPendesain as $des) { ?>
-                                                                  <?php if ($des['ID_DESAIN_INDUSTRI'] == $d0['ID']) { ?>
-                                                                  <?= $des['NAMA']; ?>;<br>
+                                                                  <?php if ($des['id_desain_industri'] == $d0['id']) { ?>
+                                                                  <?= $des['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
 
                                                                   <?php foreach ($getPendesainNon as $desn) { ?>
-                                                                  <?php if ($desn['ID_DESAIN_INDUSTRI'] == $d0['ID']) { ?>
-                                                                  <?= $desn['NAMA']; ?>;<br>
+                                                                  <?php if ($desn['id_desain_industri'] == $d0['id']) { ?>
+                                                                  <?= $desn['nama']; ?>;<br>
                                                                   <?php } ?>
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($d0['TGL_INPUT'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($d0['createdAt'])) ?></td>
                                                               <td>
                                                                   <?php
                                                                         $role_id = $this->session->userdata('role_id');
                                                                         if ($role_id == 14 || $role_id == 15 || $role_id == 18) {
                                                                             ?>
-                                                                  <a href="<?= base_url() ?>desain/edit/<?= $d0['ID']; ?>" class="text-warning" value="<?= $d0['ID'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
-                                                                  <a href="<?= base_url() ?>desain/ajukan/<?= $d0['ID']; ?>" class="text-info" value="<?= $d0['ID'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan Desain Industri?');"><i class="fa fa-send"> Ajukan</i></a>
-                                                                  <a href="<?= base_url() ?>desain/hapusdraft/<?= $d0['ID']; ?>" class="text-danger" value="<?= $d0['ID'] ?>;" onclick="return confirm('Anda yakin ingin menghapus Desain Industri?');"><i class="fa fa-trash"> Hapus</i></a>
+                                                                  <a href="<?= base_url() ?>desain/edit/<?= $d0['id']; ?>" class="text-warning" value="<?= $d0['id'] ?>;"><i class="fa fa-pencil"> Edit</i></a>
+                                                                  <a href="<?= base_url() ?>desain/ajukan/<?= $d0['id']; ?>" class="text-info" value="<?= $d0['id'] ?>;" onclick="return confirm('Anda yakin ingin mengajukan Desain Industri?');"><i class="fa fa-send"> Ajukan</i></a>
+                                                                  <a href="<?= base_url() ?>desain/hapusdraft/<?= $d0['id']; ?>" class="text-danger" value="<?= $d0['id'] ?>;" onclick="return confirm('Anda yakin ingin menghapus Desain Industri?');"><i class="fa fa-trash"> Hapus</i></a>
                                                                   <?php } ?>
                                                               </td>
                                                           </tr>

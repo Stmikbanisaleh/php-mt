@@ -334,20 +334,41 @@ class Desain extends CI_Controller
 
 	public function monitoring()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $roleId = $data['user']['role_id'];
+		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
 
 		$this->load->model('Desain_model', 'desain');
-		$data['getDesain'] = $this->db->get('msdesainindustri')->result_array();
+		// $data['getDesain'] = $this->db->get('msdesainindustri')->result_array();
 		$data['getDraft'] = $this->desain->getDesainDraft();
-		$data['getDiajukan'] = $this->desain->getDesainDiajukan();
-		$data['getDisetujui'] = $this->desain->getDesainDisetujui();
-		$data['getDitolak'] = $this->desain->getDesainDitolak();
-		$data['getDitangguhkan'] = $this->desain->getDesainDitangguhkan();
+		// $data['getDiajukan'] = $this->desain->getDesainDiajukan();
+		// $data['getDisetujui'] = $this->desain->getDesainDisetujui();
+		// $data['getDitolak'] = $this->desain->getDesainDitolak();
+		// $data['getDitangguhkan'] = $this->desain->getDesainDitangguhkan();
 		$data['getPendesain'] = $this->desain->getPendesain();
 		$data['getPendesainNon'] = $this->desain->getPendesainNon();
+
+
+		$return_desain = $this->lapan_api_library->call('desain/getdesain', ['token' => $this->session->userdata('token')]);
+		$return_diajukan = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_pendesain = $this->lapan_api_library->call('desain/getpendesain', ['token' => $this->session->userdata('token')]);
+		$return_nonpendesain = $this->lapan_api_library->call('desain/getnonpendesain', ['token' => $this->session->userdata('token')]);
+
+		// print_r(json_encode($return_diajukan));exit;
+		$data['getDraft'] = $return_desain['data']['rows'];
+		print_r(json_encode($data['getDraft']));exit;
+		$data['getDiajukan'] = $return_diajukan['data'];
+		$data['getDisetujui'] = $return_disetujui['data'];
+		$data['getDitolak'] = $return_ditolak['data'];
+		$data['getDitangguhkan'] = $return_ditangguhkan['data'];
+		$data['getPendesain'] = $return_pendesain;
+		$data['getPendesainNon'] = $return_nonpendesain;
+
+		// print_r(json_encode($data['getDesain']));exit;
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');

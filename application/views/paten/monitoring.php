@@ -1,4 +1,7 @@
   <!-- Page -->
+  <?php 
+// print_r(json_encode($getDitangguhkan));exit;
+  ?>
   <div class="page">
 
       <div class="page-content container-fluid">
@@ -247,7 +250,7 @@
                                               </div>
                                           </div>
                                       </div>
-                                      <div class="tab-pane" id="TabsDitangguhkan" role="tabpanel">
+                                      <div class="tab-pane" id="TabsDitarik" role="tabpanel">
                                           <div class="panel">
                                               <div class="table-responsive">
                                                   <table class="table table-hover table-bordered dataTable table-striped w-full" data-plugin="dataTable">
@@ -266,6 +269,7 @@
                                                       <tbody>
                                                           <?php $i = 1; ?>
                                                           <?php foreach ($getDitangguhkan as $p4) : ?>
+
                                                           <?php
                                                                 $waktuinput  = date_create($p4['createdAt']);
                                                                 $waktusekarang = date_create();

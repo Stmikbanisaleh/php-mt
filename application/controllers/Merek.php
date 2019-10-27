@@ -371,15 +371,15 @@ class Merek extends CI_Controller
 
 	public function monitoring()
 	{
-		$return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
-
-		$return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
-		$return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
-		$return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
-		$return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_draft = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
+		
+		$return_diajukan = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
 		$return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
 		$return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
-		$return_paten = $this->lapan_api_library->call('patens/getpaten', ['token' => $this->session->userdata('token')]);
+		// $return_paten = $this->lapan_api_library->call('patens/getpaten', ['token' => $this->session->userdata('token')]);
 
 		$data['getDraft'] = $return_draft['data'][0];
 		$data['getDiajukan'] = $return_diajukan['data'][0];
@@ -388,7 +388,9 @@ class Merek extends CI_Controller
 		$data['getDitangguhkan'] = $return_ditangguhkan['data'][0];
 		$data['getInventor'] = $return_inventor['data'][0];
 		$data['getInventorNon'] = $return_noninventor['data'][0];
-		$data['data'] = $return_paten['data']['rows'];
+		// $data['data'] = $return_paten['data']['rows'];
+
+
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');

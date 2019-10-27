@@ -27,9 +27,9 @@ class Lapan_api_library
 	 * @param  array  $args   An array of arguments to pass to the method. Will be json-encoded for you.
 	 * @return array          Associative array of json decoded API response.
 	 */
-	public function call($func, $args=array(), $timeout = 200)
+	public function call($func, $args=array(), $timeout = 300)
 	{
-		return $this->makeRequest($func, $args, $timeout);
+		return $this->makeRequest($func, $args, 0);
 	}
 	/**
 	 * Performs the underlying HTTP request. Not very exciting
@@ -37,7 +37,7 @@ class Lapan_api_library
 	 * @param  array  $args   Assoc array of parameters to be passed
 	 * @return array          Assoc array of decoded response
 	 */
-	private function makeRequest($func, $args=array(), $timeout = 200)
+	private function makeRequest($func, $args=array(), $timeout = 300)
 	{      
 		$url = $this->api_endpoint.'/'.$func;
 		if (function_exists('curl_init') && function_exists('curl_setopt')){
@@ -45,7 +45,8 @@ class Lapan_api_library
 		    curl_setopt($ch, CURLOPT_URL, $url);
 		    curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-MCAPI/2.0');       
 		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		    curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		    curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+		    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
 		    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verify_ssl);
 		    curl_setopt($ch, CURLOPT_POST, 1);
 		    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($args));

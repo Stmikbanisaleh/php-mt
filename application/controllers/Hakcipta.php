@@ -137,7 +137,7 @@ class Hakcipta extends CI_Controller
 					$jenisdok = $dh['id'];
 				}
 
-				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
+				$dokumen = array($file_tmp, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 
 				$md['token'] = $this->session->userdata('token');
 				$md['nomor_pendaftar'] = $ipmancode;
@@ -339,23 +339,12 @@ class Hakcipta extends CI_Controller
 
 	public function monitoring()
 	{
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-		// $this->load->model('User_model', 'user');
-		// $data['getUser'] = $this->user->getUserRole();
-		// $roleId = $data['user']['role_id'];
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-		$this->load->model('Hakcipta_model', 'hakcipta');
-		// $data['getHakcipta'] = $this->db->get('mshakcipta')->result_array();
-
 		$return_hakcipta = $this->lapan_api_library->call('hakciptas/gethakcipta', ['token' => $this->session->userdata('token')]);
-		$return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
-
-		$return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
-		$return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
-		$return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
-		$return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_draft = $this->lapan_api_library->call('hakciptas/gethakciptastatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
+		$return_diajukan = $this->lapan_api_library->call('hakciptas/gethakciptastatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('hakciptas/gethakciptastatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('hakciptas/gethakciptastatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('hakciptas/gethakciptastatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
 		$return_pencipta = $this->lapan_api_library->call('hakciptas/getpencipta', ['token' => $this->session->userdata('token')]);
 		$return_nonpencipta = $this->lapan_api_library->call('hakciptas/getnonpencipta', ['token' => $this->session->userdata('token')]);
 
