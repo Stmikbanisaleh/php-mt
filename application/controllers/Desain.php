@@ -391,10 +391,10 @@ class Desain extends CI_Controller
 	}
 
 	public function export()
-	{
-		$this->load->model('desain_model', 'desain');
-		$desain = $this->desain->getExportDiajukan();
-
+	{	
+		$desain = $this->lapan_api_library->call('exportexcel/getalldesain', ['token' => $this->session->userdata('token')]);
+		$desain = $desain['data']['0'];
+		
 		// Load plugin PHPExcel nya
 		include APPPATH . 'third_party/PHPExcel/PHPExcel.php';
 

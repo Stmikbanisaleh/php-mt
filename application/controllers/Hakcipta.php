@@ -408,9 +408,9 @@ class Hakcipta extends CI_Controller
 	}
 
 	public function export()
-	{
-		$this->load->model('Hakcipta_model', 'hakcipta');
-		$hakcipta = $this->hakcipta->getExportDiajukan();
+	{	
+		$hakcipta = $this->lapan_api_library->call('exportexcel/getallhakcipta', ['token' => $this->session->userdata('token')]);
+		$hakcipta = $hakcipta['data']['0'];
 
 		// Load plugin PHPExcel nya
 		include APPPATH . 'third_party/PHPExcel/PHPExcel.php';
