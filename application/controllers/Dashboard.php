@@ -14,11 +14,6 @@ class Dashboard extends CI_Controller
 
 	public function index()
 	{
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-
-		// $roleId = $data['user']['role_id'];
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
 
 		$this->load->model('Dashboard_model', 'dashboard');
 
@@ -34,8 +29,11 @@ class Dashboard extends CI_Controller
 		$data['grafikMerek'] = $this->lapan_api_library->call('mereks/getmerekbyyear', ['token' => $this->session->userdata('token')]);
 		$data['grafikMerek'] = $data['grafikMerek']['data'][0];
 
-		$data['grafikHakcipta'] = $this->dashboard->JumlahHakciptaPertahun();
-		$data['grafikDesain'] = $this->dashboard->JumlahDesainPertahun();
+		$data['grafikHakcipta'] = $this->lapan_api_library->call('hakciptas/gethakciptabyyear', ['token' => $this->session->userdata('token')]);
+		$data['grafikHakcipta'] = $data['grafikHakcipta']['data'][0];
+
+		$data['grafikDesain'] = $this->lapan_api_library->call('desain/getdesainbyyear', ['token' => $this->session->userdata('token')]);
+		$data['grafikDesain'] = $data['grafikDesain']['data'][0];
 
 
 		$data['jumlahPaten'] = $data['jumlahPaten']['data']['count'];
@@ -43,13 +41,6 @@ class Dashboard extends CI_Controller
 		$data['jumlahHakcipta'] = $data['jumlahHakcipta']['data']['count'];
 		$data['jumlahDesain'] = $data['jumlahDesain']['data']['count'];
 
-
-		// $data['grafikPaten'] = $this->dashboard->JumlahPatenPertahun();
-
-		// print_r(json_encode($data['grafikPaten']));exit;		
-		$data['grafikMerek'] = $this->dashboard->JumlahMerekPertahun();
-		$data['grafikHakcipta'] = $this->dashboard->JumlahHakciptaPertahun();
-		$data['grafikDesain'] = $this->dashboard->JumlahDesainPertahun();
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');

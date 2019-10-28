@@ -97,8 +97,8 @@
                         <div>
                             <?php if ($grafikMerek) {
                                 foreach ($grafikMerek as $data) {
-                                    $tahunmerek[] = (float) $data->tahun;
-                                    $totalmerek[] = (float) $data->total;
+                                    $tahunmerek[] = (float) $data['tahun'];
+                                    $totalmerek[] = (float) $data['total'];
                                 }
                             } else {
                                 $tahunmerek[] = date('Y');
@@ -118,8 +118,8 @@
                         <div>
                             <?php if ($grafikHakcipta) {
                                 foreach ($grafikHakcipta as $data) {
-                                    $tahunhakcipta[] = (float) $data->tahun;
-                                    $totalhakcipta[] = (float) $data->total;
+                                    $tahunhakcipta[] = (float) $data['tahun'];
+                                    $totalhakcipta[] = (float) $data['total'];
                                 }
                             } else {
                                 $tahunhakcipta[] = date('Y');
@@ -138,8 +138,8 @@
                             <?php
                             if ($grafikDesain) {
                                 foreach ($grafikDesain as $data) {
-                                    $tahundesain[] = (float) $data->tahun;
-                                    $totaldesain[] = (float) $data->total;
+                                    $tahundesain[] = (float) $data['tahun'];
+                                    $totaldesain[] = (float) $data['total'];
                                 }
                             } else {
                                 $tahundesain[] = date('Y');
