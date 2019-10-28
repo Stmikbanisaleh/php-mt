@@ -362,28 +362,30 @@ class Desain extends CI_Controller
 
 	public function monitoring_verifikator()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('GOLONGAN' => 3))->result_array();
+		$return_desain = $this->lapan_api_library->call('desain/getdesain', ['token' => $this->session->userdata('token')]);
+		$return_draft = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
+		$return_diajukan = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		$return_disetujui = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		$return_ditolak = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		$return_ditangguhkan = $this->lapan_api_library->call('desain/getdesainstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_pendesain = $this->lapan_api_library->call('desain/getpendesain', ['token' => $this->session->userdata('token')]);
+		$return_nonpendesain = $this->lapan_api_library->call('desain/getnonpendesain', ['token' => $this->session->userdata('token')]);
 
-		$this->load->model('Desain_model', 'desain');
-		$data['getDesain'] = $this->db->get('msdesainindustri')->result_array();
-		$data['getDiajukan'] = $this->desain->getDesainDiajukan();
-		$data['getDisetujui'] = $this->desain->getDesainDisetujui();
-		$data['getDitolak'] = $this->desain->getDesainDitolak();
-		$data['getDitangguhkan'] = $this->desain->getDesainDitangguhkan();
-		$data['getPendesain'] = $this->desain->getPendesain();
-		$data['getPendesainNon'] = $this->desain->getPendesainNon();
+		$data['getDraft'] = $return_draft['data'][0];
+		$data['getDiajukan'] = $return_diajukan['data'][0];
+		$data['getDisetujui'] = $return_disetujui['data'][0];
+		$data['getDitolak'] = $return_ditolak['data'][0];
+		$data['getDitangguhkan'] = $return_ditangguhkan['data'][0];
+		$data['getPendesain'] = $return_pendesain['data'][0];
+		$data['getPendesainNon'] = $return_nonpendesain['data'][0];
 
-		if ($roleId == 18) {
-			$this->load->view('templates/header', $data);
+		if ($this->session->userdata('role_id') == 18) {
+			$this->load->view('templates/header');
 			$this->load->view('templates/side_menu');
 			$this->load->view('403.html');
 			$this->load->view('templates/footer');
 		} else {
-			$this->load->view('templates/header', $data);
+			$this->load->view('templates/header');
 			$this->load->view('templates/side_menu');
 			$this->load->view('desain/monitoring_ver', $data);
 			$this->load->view('templates/footer');

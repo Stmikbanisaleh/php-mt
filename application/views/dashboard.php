@@ -79,8 +79,8 @@
                         <div>
                             <?php if ($grafikPaten) {
                                 foreach ($grafikPaten as $data) {
-                                    $tahunpaten[] = (float) $data->tahun;
-                                    $totalpaten[] = (float) $data->total;
+                                    $tahunpaten[] = (float) $data['tahun'];
+                                    $totalpaten[] = (float) $data['total'];
                                 }
                             } else {
                                 $tahunpaten[] = date('Y');

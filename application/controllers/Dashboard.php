@@ -30,14 +30,13 @@ class Dashboard extends CI_Controller
 		$data['grafikPaten'] = $this->lapan_api_library->call('patens/getpatenbyyear', ['token' => $this->session->userdata('token')]);
 		$data['grafikPaten'] = $data['grafikPaten']['data'][0];
 
+
 		$data['grafikMerek'] = $this->lapan_api_library->call('mereks/getmerekbyyear', ['token' => $this->session->userdata('token')]);
 		$data['grafikMerek'] = $data['grafikMerek']['data'][0];
 
 		$data['grafikHakcipta'] = $this->dashboard->JumlahHakciptaPertahun();
 		$data['grafikDesain'] = $this->dashboard->JumlahDesainPertahun();
 
-		// print_r(json_encode($data['grafikPaten']));exit;
-		// $data['jumlahPaten'] = $this->dashboard->JumlahPaten();
 
 		$data['jumlahPaten'] = $data['jumlahPaten']['data']['count'];
 		$data['jumlahMerek'] = $data['jumlahMerek']['data']['count'];
@@ -47,7 +46,7 @@ class Dashboard extends CI_Controller
 
 		// $data['grafikPaten'] = $this->dashboard->JumlahPatenPertahun();
 
-		// print_r(json_encode($data['grafikMerek']));exit;		
+		// print_r(json_encode($data['grafikPaten']));exit;		
 		$data['grafikMerek'] = $this->dashboard->JumlahMerekPertahun();
 		$data['grafikHakcipta'] = $this->dashboard->JumlahHakciptaPertahun();
 		$data['grafikDesain'] = $this->dashboard->JumlahDesainPertahun();

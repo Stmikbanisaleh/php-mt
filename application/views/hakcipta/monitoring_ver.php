@@ -49,32 +49,32 @@
                                         <?php foreach ($getDiajukan as $h1) : ?>
                                     <tr>
                                         <td><?= $i; ?></td>
-                                        <td><?= $h1['JUDUL']; ?></td> 
-                                        <td><?= $h1['NAMA_REV']; ?></td> 
+                                        <td><?= $h1['judul']; ?></td> 
+                                        <td><?= $h1['nama_rev']; ?></td> 
                                         <td>
                                              <!-- Pencipta Pegawai -->
                                             <?php foreach ($getPencipta as $cip) { ?>
-                                            <?php if ($cip['ID_HAKCIPTA'] == $h1['ID']) { ?>
-                                            <?= $cip['NAMA']; ?>;<br>
+                                            <?php if ($cip['id_hakcipta'] == $h1['id']) { ?>
+                                            <?= $cip['nama']; ?>;<br>
                                             <?php } ?>
                                             <?php } ?>
 
                                             <!-- Pencipta Non Pegawai -->
                                             <?php foreach ($getPenciptaNon as $cipnon) { ?>
-                                            <?php if ($cipnon['ID_HAKCIPTA'] == $h1['ID']) { ?>
-                                            <?= $cipnon['NAMA']; ?>;<br>
+                                            <?php if ($cipnon['id_hakcipta'] == $h1['id']) { ?>
+                                            <?= $cipnon['nama']; ?>;<br>
                                             <?php } ?>
                                             <?php } ?>
                                         </td>
                                         <td></td>
                                         <td></td>
-                                        <td><?= date('d-m-Y', strtotime($h1['TGL_INPUT']))?></td>
+                                        <td><?= date('d-m-Y', strtotime($h1['createdAt']))?></td>
                                         <td>
                                             <?php 
                                                 $role_id = $this->session->userdata('role_id'); 
                                                 if ($role_id == 15 || $role_id == 17 ) {
                                             ?>
-                                                <a href="<?= base_url()?>hakcipta/verifikasi/<?=$h1['ID'];?>" class="text-info" ><i class="fa fa-check-square-o"> Verifikasi</i></a>
+                                                <a href="<?= base_url()?>hakcipta/verifikasi/<?=$h1['id'];?>" class="text-info" ><i class="fa fa-check-square-o"> Verifikasi</i></a>
                                                 <?php } ?>
                                         </td>
                                         
@@ -110,26 +110,26 @@
                                     <?php foreach ($getDisetujui as $h2) : ?>
                                 <tr>
                                     <td><?= $i; ?></td>
-                                    <td><?= $h2['JUDUL']; ?></td> 
-                                    <td><?= $h2['NAMA_REV']; ?></td> 
+                                    <td><?= $h2['judul']; ?></td> 
+                                    <td><?= $h2['nama_rev']; ?></td> 
                                     <td>
                                         <!-- Pencipta Pegawai -->
                                         <?php foreach ($getPencipta as $cip) { ?>
-                                        <?php if ($cip['ID_HAKCIPTA'] == $h2['ID']) { ?>
-                                        <?= $cip['NAMA']; ?>;<br>
+                                        <?php if ($cip['id_hakcipta'] == $h2['id']) { ?>
+                                        <?= $cip['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
 
                                         <!-- Pencipta Non Pegawai -->
                                         <?php foreach ($getPenciptaNon as $cipnon) { ?>
-                                        <?php if ($cipnon['ID_HAKCIPTA'] == $h2['ID']) { ?>
-                                        <?= $cipnon['NAMA']; ?>;<br>
+                                        <?php if ($cipnon['id_hakcipta'] == $h2['id']) { ?>
+                                        <?= $cipnon['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
                                     </td>
                                     <td></td>
                                     <td></td>
-                                    <td><?= date('d-m-Y', strtotime($h2['TGL_INPUT']))?></td>
+                                    <td><?= date('d-m-Y', strtotime($h2['createdAt']))?></td>
                                     <td></td>
                                     
                                 </tr>
@@ -162,26 +162,26 @@
                                         <?php foreach ($getDitolak as $h3) : ?>
                                     <tr>
                                         <td><?= $i; ?></td>
-                                        <td><?= $h3['JUDUL']; ?></td> 
-                                        <td><?= $h3['NAMA_REV']; ?></td> 
+                                        <td><?= $h3['judul']; ?></td> 
+                                        <td><?= $h3['nama_rev']; ?></td> 
                                         <td>
                                             <!-- Pencipta Pegawai -->
                                             <?php foreach ($getPencipta as $cip) { ?>
-                                            <?php if ($cip['ID_HAKCIPTA'] == $h3['ID']) { ?>
-                                            <?= $cip['NAMA']; ?>;<br>
+                                            <?php if ($cip['id_hakcipta'] == $h3['id']) { ?>
+                                            <?= $cip['nama']; ?>;<br>
                                             <?php } ?>
                                             <?php } ?>
 
                                             <!-- Pencipta Non Pegawai -->
                                             <?php foreach ($getPenciptaNon as $cipnon) { ?>
-                                            <?php if ($cipnon['ID_HAKCIPTA'] == $h3['ID']) { ?>
-                                            <?= $cipnon['NAMA']; ?>;<br>
+                                            <?php if ($cipnon['id_hakcipta'] == $h3['id']) { ?>
+                                            <?= $cipnon['nama']; ?>;<br>
                                             <?php } ?>
                                             <?php } ?>
                                         </td>
                                         <td></td>
                                         <td></td>
-                                        <td><?= date('d-m-Y', strtotime($h3['TGL_INPUT']))?></td>
+                                        <td><?= date('d-m-Y', strtotime($h3['createdAt']))?></td>
                                         <td></td>
                                         
                                     </tr>
@@ -213,26 +213,26 @@
                                     <?php foreach ($getDitangguhkan as $h4) : ?>
                                 <tr>
                                     <td><?= $i; ?></td>
-                                    <td><?= $h4['JUDUL']; ?></td> 
-                                    <td><?= $h4['NAMA_REV']; ?></td> 
+                                    <td><?= $h4['judul']; ?></td> 
+                                    <td><?= $h4['nama_rev']; ?></td> 
                                     <td>
                                         <!-- Pencipta Pegawai -->
                                         <?php foreach ($getPencipta as $cip) { ?>
-                                        <?php if ($cip['ID_HAKCIPTA'] == $h4['ID']) { ?>
-                                        <?= $cip['NAMA']; ?>;<br>
+                                        <?php if ($cip['id_hakcipta'] == $h4['id']) { ?>
+                                        <?= $cip['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
 
                                         <!-- Pencipta Non Pegawai -->
                                         <?php foreach ($getPenciptaNon as $cipnon) { ?>
-                                        <?php if ($cipnon['ID_HAKCIPTA'] == $h4['ID']) { ?>
-                                        <?= $cipnon['NAMA']; ?>;<br>
+                                        <?php if ($cipnon['id_hakcipta'] == $h4['id']) { ?>
+                                        <?= $cipnon['nama']; ?>;<br>
                                         <?php } ?>
                                         <?php } ?>
                                     </td>
                                     <td></td>
                                     <td></td>
-                                    <td><?= date('d-m-Y', strtotime($h4['TGL_INPUT']))?></td>
+                                    <td><?= date('d-m-Y', strtotime($h4['createdAt']))?></td>
                                     <td></td>
                                     
                                 </tr>

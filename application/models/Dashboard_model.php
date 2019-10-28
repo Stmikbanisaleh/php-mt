@@ -33,14 +33,14 @@ class Dashboard_model extends CI_Model
     {
         $query = $this->db->query("SELECT * FROM (SELECT YEAR(TGL_INPUT) as tahun,count(*) as total 
         FROM mspaten GROUP BY YEAR(TGL_INPUT) DESC LIMIT 5)as paten ORDER BY tahun ASC;");
-        // return $query;
+        // return $query->result();
 
-        if ($query->num_rows() > 0) {
-            foreach ($query->result() as $data) {
-                $hasil[] = $data;
-            }
-            return $hasil;
-        }
+        // if ($query->num_rows() > 0) {
+        //     foreach ($query->result() as $data) {
+        //         $hasil[] = $data;
+        //     }
+        //     return $hasil;
+        // }
     }
 
     function JumlahMerekPertahun()
