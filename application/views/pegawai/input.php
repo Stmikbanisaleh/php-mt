@@ -11,7 +11,7 @@
                 <div class="row row-lg">
                     <div class="col-xl-6">
                         <form method="post" action="<?= base_url('pegawai/save_pegawai');  ?>">
-                            <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" style="display: none">
+                            <!-- <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" style="display: none"> -->
                             <?= $this->session->flashdata('message'); ?>
                             KODE KEPEGAWAIAN
                             <input type="text" class="form-control" name="kode_kepegawaian" id="kode_kepegawaian" placeholder="Kode Kepegawaian">
