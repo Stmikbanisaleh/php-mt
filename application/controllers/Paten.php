@@ -43,45 +43,39 @@ class Paten extends CI_Controller
 
 	public function edit($id)
 	{
-		$return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
-		$return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
-		$return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
-		$return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 
-		// print_r(json_encode($return_ditangguhkan));exit;
 		$return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
-		$return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
-		$return_paten = $this->lapan_api_library->call('patens/getpaten', ['token' => $this->session->userdata('token')]);
+		$return_patenbyid = $this->lapan_api_library->call('patens/getpatenbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
 
-		$data['getDiajukan'] = $return_diajukan['data'][0];
-		$data['getDisetujui'] = $return_disetujui['data'][0];
-		$data['getDitolak'] = $return_ditolak['data'][0];
-		$data['getDitangguhkan'] = $return_ditangguhkan['data'][0];
-		// print_r(json_encode($data['getDitangguhkan']));exit;
-		$data['getInventor'] = $return_inventor['data'][0];
-		$data['getInventorNon'] = $return_noninventor['data'][0];
-		$data['paten'] = $return_paten['data']['rows'];
-		///=======================================================================================================
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
+		$return_role = $this->lapan_api_library->call('paten/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
+
+		// print_r(json_encode($return_pegawai));exit;
 		$data['patenid'] = $id;
+		$data['paten'] = $return_patenbyid['data']['rows'][0];
+		$data['role'] = $return_role['data']['rows'];
+		$data['unitkerja'] = $return_unitkerja['data']['rows'];
+		$data['jenispaten'] = $return_jenispaten['data']['rows'];
+		$data['pegawai'] = $return_pegawai['data']['rows'];
+		// print_r($data['pegawai']);exit;
+		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
-		$data['paten'] = $this->db->get_where('mspaten', array('ID' => $id))->row_array();
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		$data['draft'] = $return_patendraftdetail['data'][0][0];
+		// print_r($return_inventor);exit;
+		$data['inventor'] = $return_inventor['data'][0];
+		// print_r(json_encode($data['inventor']));exit;
+	
+		// print_r(json_encode($data['pegawai']));exit;
 
-
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['jenispaten'] = $this->db->get_where('msrev', array('golongan' => 7))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
-
-		$this->load->model('Paten_model', 'paten');
-		$data['draft'] = $this->paten->getPatenDraftDetail($id);
-		$data['inventor'] = $this->paten->getInventorById($id);
-		$code = $data['draft']['IPMAN_CODE'];
-
-		$data['dokumen'] = $this->paten->getDokumen($code);
+		$code = $data['draft']['ipman_code'];
+		// // print_r($code);exit;
+		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
+		// // print_r($return_dokumenbyipmancode);exit;
+		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
 
 
 
