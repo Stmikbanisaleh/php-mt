@@ -67,6 +67,7 @@ class Pegawai extends CI_Controller
                 ];
 
                 $this->lapan_api_library->call('pegawai/addpegawai', $data);
+
                 $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
                 Pegawai Baru telah ditambahkan! </div>');
                 redirect('pegawai/index');
@@ -84,7 +85,8 @@ class Pegawai extends CI_Controller
     {
         if ($this->session->userdata('token')) {
             $data = [
-                'token' => $this->session->userdata('token')
+                'token' => $this->session->userdata('token'),
+                'id' => $id
             ];
         } else {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
@@ -92,8 +94,7 @@ class Pegawai extends CI_Controller
             redirect('pegawai/index');
         }
         $data = $this->lapan_api_library->call('pegawai/getpegawai',$data);
-        print_r(json_encode($data));
-        exit;
+        $data['peg'] = $data['data'];
         if ($this->session->userdata('role_id') == 15) {
             $this->load->view('templates/header');
             $this->load->view('templates/side_menu');
@@ -113,25 +114,28 @@ class Pegawai extends CI_Controller
 
         $this->form_validation->set_rules('nik', 'NIK', 'required|is_unique[msnonpegawai.NIK]|numeric');
         $this->form_validation->set_rules('nama', 'nama', 'required');
+        $data = [
+                'token' => $this->session->userdata('token'),
+                'id' => $this->input->post('id')
+            ];
+        $data = $this->lapan_api_library->call('pegawai/getpegawai',$data);
+        $data['peg'] = $data['data'];
 
         if ($this->form_validation->run($this) == false) {
-            $data['user'] = $this->db->get_where('msuser', ['email' =>
-            $this->session->userdata('email')])->row_array();
-            $roleId = $data['user']['role_id'];
-            $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-            $this->load->view('templates/header', $data);
+            $this->load->view('templates/header');
             $this->load->view('templates/side_menu');
-            $this->load->view('pegawai/input_inventor', $data);
+            $this->load->view('pegawai/edit', $data);
             $this->load->view('templates/footer');
         } else {
             $data = [
-                'KODE_KEPEGAWAIAN' => htmlspecialchars($this->input->post('kode_kepegawaian', true)),
-                'NIK' => htmlspecialchars($this->input->post('nik', true)),
-                'NAMA' => htmlspecialchars($this->input->post('nama', true))
-            ];
-            $this->db->where('ID', $this->input->post('id'));
-            $this->db->update('mspegawai', $data);
+                    'kode_kepegawaian' => htmlspecialchars($this->input->post('kode_kepegawaian', true)),
+                    'nik' => htmlspecialchars($this->input->post('nik', true)),
+                    'nama' => htmlspecialchars($this->input->post('nama', true)),
+                    'token' => $this->session->userdata('token'),
+                    'id' => $this->input->post('id')
+                ];
+            $this->lapan_api_library->call('pegawai/updatepegawai', $data);
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Pegawai Baru telah ditambahkan! </div>');
             redirect('pegawai/index');
@@ -140,8 +144,11 @@ class Pegawai extends CI_Controller
 
     public function hapus_pegawai($id)
     {
-
-        $this->db->query('DELETE FROM mspegawai WHERE ID=' . $id);
+        $data = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $this->lapan_api_library->call('pegawai/deletepegawai/?', $data);
         redirect('pegawai/index');
     }
 }

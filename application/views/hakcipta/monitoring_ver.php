@@ -152,6 +152,7 @@
                                             <th>Judul</th>
                                             <th>Unit Kerja</th>
                                             <th>Nama Pendesain</th>
+                                            <th>Nomor Pendaftaran</th>
                                             <th>Keterangan</th>
                                             <th>Tanggal Ajuan</th>
                                             <th>Aksi</th>
@@ -203,6 +204,7 @@
                                         <th>Judul</th>
                                         <th>Unit Kerja</th>
                                         <th>Nama Pendesain</th>
+                                        <th>Nomor Pendaftaran</th>
                                         <th>Keterangan</th>
                                         <th>Tanggal Ajuan</th>
                                         <th>Aksi</th>
