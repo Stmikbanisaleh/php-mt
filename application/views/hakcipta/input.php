@@ -69,7 +69,7 @@
                                 <select id="object" class="form-control my-10" name="object" data-fv-notempty="true">
                                     <option value="">Pilih Objek</option>
                                     <?php foreach ($object as $ob) : ?>
-                                        <option value="<?= $ob['ID']; ?>"><?= $ob['nama_rev'] ?></option>
+                                        <option value="<?= $ob['id']; ?>"><?= $ob['nama_rev'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <div class="progress my-10">
@@ -118,7 +118,7 @@
                                             ?>
                                             <h5>Jenis Dokumen (<?= $dok['jenis_dokumen']; ?>) </h5>
                                             <input type="file" name="dokumen<?= $i; ?>" id="dokumen<?= $i; ?>" data-plugin="dropify" data-height="75">
-                                            <input type="hidden" name="jenis_dokumen<?= $i ?>" id="dokumen<?= $i; ?>" value="<?= $dok['ID'] ?>">
+                                            <input type="hidden" name="jenis_dokumen<?= $i ?>" id="dokumen<?= $i; ?>" value="<?= $dok['id'] ?>">
                                         <?php $i++;
                                         } ?>
                                     </div>

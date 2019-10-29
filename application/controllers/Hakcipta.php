@@ -54,15 +54,23 @@ class Hakcipta extends CI_Controller
 
 	public function edit($id)
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
+
+		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
+
+		$return_pendesain = $this->lapan_api_library->call('mereks/getpendesainbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_merekdraftbyid = $this->lapan_api_library->call('mereks/getmerekdraftdetail', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$return_object = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 4]);
+
+
 		$data['hakciptaid'] = $id;
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['object'] = $this->db->get_where('msrev', array('golongan' => 4))->result_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
+
+		$data['object'] = $return_object['data']['rows'];
+		$data['unitkerja'] = $return_unitkerja['data']['rows'];
+		$data['pegawai'] = $return_pegawai['data']['rows'];
+		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
 		$this->load->model('Hakcipta_model', 'hakcipta');
 		$data['draft'] = $this->hakcipta->gethakciptaDraftDetail($id);

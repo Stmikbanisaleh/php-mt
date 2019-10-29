@@ -28,6 +28,7 @@ class Paten extends CI_Controller
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
 		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
 		$return_dokpaten = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
+		// print_r(json_encode($return_dokpaten));exit;
 		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
 		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 		// print_r($return_dokpaten);exit;
@@ -52,14 +53,14 @@ class Paten extends CI_Controller
 		$return_patenbyid = $this->lapan_api_library->call('patens/getpatenbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
 
-		$return_role = $this->lapan_api_library->call('paten/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+		// $return_role = $this->lapan_api_library->call('patens/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
 		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
 
 		// print_r(json_encode($return_pegawai));exit;
 		$data['patenid'] = $id;
 		$data['paten'] = $return_patenbyid['data']['rows'][0];
-		$data['role'] = $return_role['data']['rows'];
+		// $data['role'] = $return_role['data']['rows'];
 		$data['unitkerja'] = $return_unitkerja['data']['rows'];
 		$data['jenispaten'] = $return_jenispaten['data']['rows'];
 		$data['pegawai'] = $return_pegawai['data']['rows'];
@@ -720,6 +721,8 @@ class Paten extends CI_Controller
         $data['diajukan'] = $this->lapan_api_library->call('patens/getpatendiajukandetail', $data_diajukan);
         $data['diajukan'] = $data['diajukan']['data'][0][0];
 
+
+
         $data_inventor = [
                     'token' => $this->session->userdata('token'),
                     'id' => $id
@@ -735,6 +738,8 @@ class Paten extends CI_Controller
                 ];
         $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
         $data['dokumen'] = $data['dokumen']['data'][0];
+
+
 
         // print_r(json_encode($data['dokumen']));exit;
 
@@ -761,25 +766,49 @@ class Paten extends CI_Controller
 
 	public function save_verifikasi()
 	{
-		print_r(json_encode($this->input->post()));exit;
+		
 
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
+		// $user = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
 
-		$userid =  $user['id'];
+		$userid =  $this->session->userdata('user_id');
+// print_r(json_encode($userid));exit;
 		$date = date('Y-m-d h:i:s');
 
 		$this->load->model('Paten_model', 'paten');
 		$ipman = $this->input->post('ipman_code');
-		$dokpatenver = $this->paten->getDokumenVer($ipman);
 
-		$dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+		$data_dokpatenver = [
+                    'token' => $this->session->userdata('token'),
+                    'nomor_pendaftar' => $ipman,
+                    'role' => 2
+                ];
+        $dokpatenver = $this->lapan_api_library->call('patens/getdokumenver', $data_dokpatenver);
+        $dokpatenver = $dokpatenver['data'];
 
-		$config1['file_name']          	= $dokuver[0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		// $dokpatenver = $this->paten->getDokumenVer($ipman);
+
+		$data_dokuver = [
+                    'token' => $this->session->userdata('token'),
+                    'id_role' => 2
+                ];
+        $dokuver = $this->lapan_api_library->call('jenisdokumen/getnewdokver', $data_dokuver);
+        $dokuver = $dokuver['data']['rows'];
+
+        // print_r(json_encode($ipman));exit;
+		
+
+
+		// $dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+
+		// print_r(json_encode($dokuver));exit;
+
+		$config1['file_name']          	= $dokuver[0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config1['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config1);
+		// exit;
 
 		if ($dokpatenver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
@@ -787,13 +816,13 @@ class Paten extends CI_Controller
 				$filename1 = $this->upload->data('file_name');
 				$size1 = $this->upload->data('file_size');
 				$type1 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[0]['ID'];
+				$jenisdok = $dokuver[0]['id'];
 				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename1 = $dokpatenver[0]['NAME'];
-				$size1 = $dokpatenver[0]['SIZE'];
-				$type1 = $dokpatenver[0]['TYPE'];
-				$jenisdok = $dokpatenver[0]['ID'];
+				$filename1 = $dokpatenver[0]['name'];
+				$size1 = $dokpatenver[0]['size'];
+				$type1 = $dokpatenver[0]['type'];
+				$jenisdok = $dokpatenver[0]['id'];
 				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -802,20 +831,20 @@ class Paten extends CI_Controller
 				$filename1 = $this->upload->data('file_name');
 				$size1 = $this->upload->data('file_size');
 				$type1 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[0]['ID'];
+				$jenisdok = $dokuver[0]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename1 = $dokuver[0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[0]['ID'];
+				$filename1 = $dokuver[0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver[0]['id'];
 				$dokumen1 = array($filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 
 
-		$config2['file_name']          	= $dokuver[1]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config2['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		$config2['file_name']          	= $dokuver[1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config2['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config2['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config2);
@@ -827,13 +856,13 @@ class Paten extends CI_Controller
 				$filename2 = $this->upload->data('file_name');
 				$size2 = $this->upload->data('file_size');
 				$type2 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[1]['ID'];
+				$jenisdok = $dokuver[1]['id'];
 				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename2 = $dokpatenver[1]['NAME'];
-				$size2 = $dokpatenver[1]['SIZE'];
-				$type2 = $dokpatenver[1]['TYPE'];
-				$jenisdok = $dokpatenver[1]['ID'];
+				$filename2 = $dokpatenver[1]['name'];
+				$size2 = $dokpatenver[1]['size'];
+				$type2 = $dokpatenver[1]['type'];
+				$jenisdok = $dokpatenver[1]['id'];
 				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -842,20 +871,22 @@ class Paten extends CI_Controller
 				$filename2 = $this->upload->data('file_name');
 				$size2 = $this->upload->data('file_size');
 				$type2 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[1]['ID'];
+				$jenisdok = $dokuver[1]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename2 = $dokuver[1]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[1]['ID'];
+				$filename2 = $dokuver[1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver[1]['id'];
 				$dokumen2 = array($filename2, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 
-		$config3['file_name']          	= $dokuver[2]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config3['file_name']          	= $dokuver[2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config3['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config3['allowed_types']        = 'doc|docx|pdf';
+
+		// print_r(json_encode($dokpatenver));exit;
 
 		$this->upload->initialize($config3);
 		// script uplaod dokumen ketiga
@@ -865,13 +896,13 @@ class Paten extends CI_Controller
 				$filename3 = $this->upload->data('file_name');
 				$size3 = $this->upload->data('file_size');
 				$type3 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[2]['ID'];
+				$jenisdok = $dokuver[2]['id'];
 				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokpatenver[2]['NAME'];
-				$size3 = $dokpatenver[2]['SIZE'];
-				$type3 = $dokpatenver[2]['TYPE'];
-				$jenisdok = $dokpatenver[2]['ID'];
+				$filename3 = $dokpatenver[2]['name'];
+				$size3 = $dokpatenver[2]['size'];
+				$type3 = $dokpatenver[2]['type'];
+				$jenisdok = $dokpatenver[2]['id'];
 				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -880,18 +911,18 @@ class Paten extends CI_Controller
 				$filename3 = $this->upload->data('file_name');
 				$size3 = $this->upload->data('file_size');
 				$type3 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[2]['ID'];
+				$jenisdok = $dokuver[2]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokuver[2]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[2]['ID'];
+				$filename3 = $dokuver[2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver[2]['id'];
 				$dokumen3 = array($filename3, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
-		$config4['file_name']          	= $dokuver[3]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config4['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		$config4['file_name']          	= $dokuver[3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config4['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config4['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config4);
@@ -905,10 +936,10 @@ class Paten extends CI_Controller
 				$jenisdok = $dokuver[3]['ID'];
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokpatenver[3]['NAME'];
-				$size4 = $dokpatenver[3]['SIZE'];
-				$type4 = $dokpatenver[3]['TYPE'];
-				$jenisdok = $dokpatenver[3]['ID'];
+				$filename4 = $dokpatenver[3]['name'];
+				$size4 = $dokpatenver[3]['size'];
+				$type4 = $dokpatenver[3]['type'];
+				$jenisdok = $dokpatenver[3]['id'];
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -917,18 +948,18 @@ class Paten extends CI_Controller
 				$filename4 = $this->upload->data('file_name');
 				$size4 = $this->upload->data('file_size');
 				$type4 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[3]['ID'];
+				$jenisdok = $dokuver[3]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokuver[3]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[3]['ID'];
+				$filename4 = $dokuver[3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver[3]['id'];
 				$dokumen4 = array($filename4, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
-		$config5['file_name']          	= $dokuver[4]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config5['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		$config5['file_name']          	= $dokuver[4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config5['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config5['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config5);
@@ -939,13 +970,13 @@ class Paten extends CI_Controller
 				$filename5 = $this->upload->data('file_name');
 				$size5 = $this->upload->data('file_size');
 				$type5 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[4]['ID'];
+				$jenisdok = $dokuver[4]['id'];
 				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokpatenver[4]['NAME'];
-				$size5 = $dokpatenver[4]['SIZE'];
-				$type5 = $dokpatenver[4]['TYPE'];
-				$jenisdok = $dokpatenver[4]['ID'];
+				$filename5 = $dokpatenver[4]['name'];
+				$size5 = $dokpatenver[4]['size'];
+				$type5 = $dokpatenver[4]['type'];
+				$jenisdok = $dokpatenver[4]['id'];
 				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -954,17 +985,19 @@ class Paten extends CI_Controller
 				$filename5 = $this->upload->data('file_name');
 				$size5 = $this->upload->data('file_size');
 				$type5 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[4]['ID'];
+				$jenisdok = $dokuver[4]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokuver[4]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[4]['ID'];
+				$filename5 = $dokuver[4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver[4]['id'];
 				$dokumen5 = array($filename5, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 		$dokumen = array($dokumen1, $dokumen2, $dokumen3, $dokumen4, $dokumen5);
+
+		print_r(json_encode($dokumen));exit;
 
 		$data = [
 			'NOMOR_PERMOHONAN' => $this->input->post('no_permohonan'),

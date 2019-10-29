@@ -24,10 +24,6 @@ class Merek extends CI_Controller
 
 	public function input()
 	{
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-		// $roleId = $data['user']['role_id'];
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
 		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
 		$return_dokmerek = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 2]);
@@ -58,22 +54,31 @@ class Merek extends CI_Controller
 
 	public function edit($id)
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $roleId = $data['user']['role_id'];
 		$data['merekid'] = $id;
+		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
+		$return_pendesain = $this->lapan_api_library->call('mereks/getpendesainbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_merekdraftbyid = $this->lapan_api_library->call('mereks/getmerekdraftdetail', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
 
-		$this->load->model('Merek_model', 'merek');
-		$data['draft'] = $this->merek->getMerekDraftDetail($id);
-		$data['pendesain'] = $this->merek->getPendesainById($id);
-		$code = $data['draft']['IPMAN_CODE'];
+		// $return_role = $this->lapan_api_library->call('patens/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$data['unitkerja'] = $return_unitkerja['data']['rows'];
+		$data['pegawai'] = $return_pegawai['data']['rows'];
+		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
-		$data['dokumen'] = $this->merek->getDokumen($code);
+		$data['draft'] = $return_merekdraftbyid['data'][0][0];
+		$data['pendesain'] = $return_pendesain['data'][0];
+
+		$code = $data['draft']['ipman_code'];
+		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
+
+		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');
