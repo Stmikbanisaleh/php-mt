@@ -24,17 +24,31 @@ class Merek extends CI_Controller
 
 	public function input()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['dokmerek'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2, 'ID_ROLE' => 1))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $roleId = $data['user']['role_id'];
+		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
+		$return_dokmerek = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 2]);
+		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 
-		$this->load->model('Merek_model', 'merek');
-		$data['ipmancode'] = $this->merek->getIpmancode();
+		$data['unitkerja'] = $return_unitkerja['data']['rows'];
+		$data['dokmerek'] = $return_dokmerek['data']['rows'];
+		$data['pegawai'] = $return_pegawai['data']['rows'];
+		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
+
+		// $this->load->model('Merek_model', 'merek');
+		$getcode = $this->lapan_api_library->call('mereks/getipmancode', ['token' => $this->session->userdata('token')]);
+				$pb = $getcode['data']['rows'];
+				$kode = $getcode['data']['rows'][0]['kode'];
+				$nourut = sprintf('%04d', $pb[0]['no_urut']);
+				$ipm = $pb[0]['kode'] . '_' . $nourut;
+				$ipmancode = $ipm;
+
+		$data['ipmancode'] = $ipmancode;
+		// print_r($ipmancode);exit;
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
@@ -69,17 +83,12 @@ class Merek extends CI_Controller
 
 	public function save()
 	{
-
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		
-
 		$data = [
 			'token' => $this->session->userdata('token'),
 			'id_haki' => 2,
 			'id_role' => 1,
 		];
-		$dokmerek = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data);
+		$dokmerek = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data);
 
 		$post = $this->input->post();
 
@@ -597,14 +606,14 @@ class Merek extends CI_Controller
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 2
                 ];
-        $data['dokmerek'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokmerek);
+        $data['dokmerek'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokmerek);
         $data['dokmerek'] = $data['dokmerek']['data']['rows'];
 
         $data_newdokver = [
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 2
                 ];
-        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_newdokver);
         $data['newdokver'] = $data['newdokver']['data']['rows'];
 
         $data_diajukan = [

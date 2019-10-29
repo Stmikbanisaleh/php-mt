@@ -58,7 +58,7 @@
                                 <select id="unit_kerja" class="form-control my-10" name="unit_kerja" onchange="this.className" data-fv-notempty="true">
                                     <option value="">Pilih Unit Kerja</option>
                                     <?php foreach ($unitkerja as $uk) : ?>
-                                        <option value="<?= $uk['ID']; ?>"><?= $uk['NAMA_REV'] ?></option>
+                                        <option value="<?= $uk['id']; ?>"><?= $uk['nama_rev'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <div class="progress my-10">
@@ -79,7 +79,7 @@
                                             <select name="pendesain[1][nik]" id="nik_1" class="selectfield form-control">
                                                 <option value="">Pilih Pendesain Utama</option>
                                                 <?php foreach ($pegawai as $peg) { ?>
-                                                    <option value="<?= $peg['NIK'] ?>"><?= $peg['KODE_KEPEGAWAIAN']; ?> - <?= $peg['NAMA']; ?></option>
+                                                    <option value="<?= $peg['nik'] ?>"><?= $peg['kode_kepegawaian']; ?> - <?= $peg['nama']; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </td>
@@ -105,9 +105,9 @@
                                         $i = 1;
                                         foreach ($dokmerek as $dok) {
                                             ?>
-                                            <h5>Jenis Dokumen (<?= $dok['JENIS_DOKUMEN']; ?>)</h5>
+                                            <h5>Jenis Dokumen (<?= $dok['jenis_dokumen']; ?>)</h5>
                                             <input type="file" name="dokumen<?= $i; ?>" id="dokumen<?= $i; ?>" data-plugin="dropify" data-height="75">
-                                            <input type="hidden" name="jenis_dokumen<?= $i ?>" id="dokumen<?= $i; ?>" value="<?= $dok['ID'] ?>">
+                                            <input type="hidden" name="jenis_dokumen<?= $i ?>" id="dokumen<?= $i; ?>" value="<?= $dok['id'] ?>">
                                         <?php $i++;
                                         } ?>
                                     </div>
@@ -154,7 +154,7 @@
                     var nextRow = row + 1;
                     var markup = "<tr><td><select name='pencipta[" + nextRow + "][nik]' id='kode_" + nextRow + "' class='selectfield form-control'><option value=''>Kode Kepegawaian</option>";
                     <?php foreach ($pegawai as $pg) : ?>
-                        markup += "<option value='<?php echo $pg['KODE_KEPEGAWAIAN'] ?>'><?php echo $pg['KODE_KEPEGAWAIAN'] . ' - ' . $pg['NAMA']; ?></option>";
+                        markup += "<option value='<?php echo $pg['kode_kepegawaian'] ?>'><?php echo $pg['kode_kepegawaian'] . ' - ' . $pg['nama']; ?></option>";
                     <?php endforeach; ?>
                     markup += "</select></td>";
                     markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
@@ -171,7 +171,7 @@
             var nextRow = row + 1;
             var markup = "<tr><td><select name='pendesain[" + nextRow + "][nik]' id='nik_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Pendesain</option>";
             <?php foreach ($pegawai as $pg) : ?>
-                markup += "<option value='<?php echo $pg['NIK'] ?>'><?php echo $pg['NIK'] . ' - ' . $pg['NAMA']; ?></option>";
+                markup += "<option value='<?php echo $pg['nik'] ?>'><?php echo $pg['nik'] . ' - ' . $pg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
@@ -189,7 +189,7 @@
             var nextRow = row + 1;
             var markup = "<tr id='tr_" + nextRow + "'><td><select name='pendesain[" + nextRow + "][nik]' id='nik_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Pendesain Non Pegawai</option>";
             <?php foreach ($nonpegawai as $npg) : ?>
-                markup += "<option value='<?php echo $npg['NIK'] ?>'><?= $npg['NAMA']; ?></option>";
+                markup += "<option value='<?php echo $npg['nik'] ?>'><?= $npg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\

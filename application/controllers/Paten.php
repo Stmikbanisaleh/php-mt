@@ -25,15 +25,17 @@ class Paten extends CI_Controller
 
 	public function input()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['jenispaten'] = $this->db->get_where('msrev', array('golongan' => 7))->result_array();
-		$data['dokpaten'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 1, 'ID_ROLE' => 1))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
+		$return_dokpaten = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
+		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
+		// print_r($return_dokpaten);exit;
+		$data['unitkerja'] = $return_unitkerja['data']['rows'];
+		$data['jenispaten'] = $return_jenispaten['data']['rows'];
+		$data['dokpaten'] = $return_dokpaten['data']['rows'];
+		$data['pegawai'] = $return_pegawai['data']['rows'];
+		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
@@ -87,7 +89,7 @@ class Paten extends CI_Controller
 
 	public function save()
 	{
-		$dokpaten = $this->lapan_api_library->call('dokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
+		$dokpaten = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
 		$jenispaten = $this->input->post('jenis_paten');
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');

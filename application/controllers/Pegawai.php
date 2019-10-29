@@ -112,7 +112,7 @@ class Pegawai extends CI_Controller
     {
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('nik', 'NIK', 'required|is_unique[msnonpegawai.NIK]|numeric');
+        $this->form_validation->set_rules('nik', 'NIK', 'required|numeric');
         $this->form_validation->set_rules('nama', 'nama', 'required');
         $data = [
                 'token' => $this->session->userdata('token'),

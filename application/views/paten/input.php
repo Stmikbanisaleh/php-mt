@@ -59,7 +59,7 @@
                                 <select id="jenis_paten" class="form-control my-10" name="jenis_paten" value="<?= set_value('jenis_paten'); ?>">
                                     <option value="">Pilih Jenis Paten</option>
                                     <?php foreach ($jenispaten as $jp) : ?>
-                                        <option value="<?= $jp['ID']; ?>"><?= $jp['NAMA_REV'] ?></option>
+                                        <option value="<?= $jp['id']; ?>"><?= $jp['nama_rev'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 Judul
@@ -78,7 +78,7 @@
                                 <select id="unit_kerja" class="form-control my-10" name="unit_kerja">
                                     <option value="">Pilih Unit Kerja</option>
                                     <?php foreach ($unitkerja as $uk) : ?>
-                                        <option value="<?= $uk['ID']; ?>"><?= $uk['NAMA_REV'] ?></option>
+                                        <option value="<?= $uk['id']; ?>"><?= $uk['nama_rev'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <div class="progress my-10">
@@ -99,7 +99,7 @@
                                             <select id="nik_1" class="selectfield form-control " name="inventor[1][nik]">
                                                 <option value="">Pilih Inventor Utama</option>
                                                 <?php foreach ($pegawai as $peg) { ?>
-                                                    <option value="<?= $peg['NIK'] ?>"><?= $peg['KODE_KEPEGAWAIAN']; ?> - <?= $peg['NAMA']; ?></option>
+                                                    <option value="<?= $peg['nik'] ?>"><?= $peg['kode_kepegawaian']; ?> - <?= $peg['nama']; ?></option>
                                                 <?php } ?>
                                             </select>
                                         </td>
@@ -126,9 +126,9 @@
                                         $i = 1;
                                         foreach ($dokpaten as $dok) {
                                             ?>
-                                            <h5>Jenis Dokumen (<?= $dok['JENIS_DOKUMEN']; ?>) </h5>
+                                            <h5>Jenis Dokumen (<?= $dok['jenis_dokumen']; ?>) </h5>
                                             <input type="file" name="dokumen<?= $i; ?>" id="dokumen<?= $i; ?>" data-plugin="dropify" data-height="75">
-                                            <input type="hidden" name="jenis_dokumen<?= $i ?>" id="dokumen<?= $i; ?>" value="<?= $dok['ID'] ?>">
+                                            <input type="hidden" name="jenis_dokumen<?= $i ?>" id="dokumen<?= $i; ?>" value="<?= $dok['id'] ?>">
                                         <?php $i++;
                                         } ?>
 
@@ -228,7 +228,7 @@
                     var nextRow = row + 1;
                     var markup = "<tr><td><select name='inventor[" + nextRow + "][nik]' id='nik_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Inventor</option>";
                     <?php foreach ($pegawai as $pg) : ?>
-                        markup += "<option value='<?php echo $pg['NIK'] ?>'><?php echo $pg['NIK'] . ' - ' . $pg['NAMA']; ?></option>";
+                        markup += "<option value='<?php echo $pg['nik'] ?>'><?php echo $pg['nik'] . ' - ' . $pg['nama']; ?></option>";
                     <?php endforeach; ?>
                     markup += "</select></td>";
                     markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
@@ -247,7 +247,7 @@
             var nextRow = row + 1;
             var markup = "<tr><td><select name='inventor[" + nextRow + "][nik]' id='nik_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Inventor</option>";
             <?php foreach ($pegawai as $pg) : ?>
-                markup += "<option value='<?php echo $pg['NIK'] ?>'><?php echo $pg['NIK'] . ' - ' . $pg['NAMA']; ?></option>";
+                markup += "<option value='<?php echo $pg['nik'] ?>'><?php echo $pg['nik'] . ' - ' . $pg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
@@ -265,7 +265,7 @@
             var nextRow = row + 1;
             var markup = "<tr id='tr_" + nextRow + "'><td><select name='inventor[" + nextRow + "][nik]' id='nik_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Inventor Non Pegawai</option>";
             <?php foreach ($nonpegawai as $npg) : ?>
-                markup += "<option value='<?php echo $npg['NIK'] ?>'><?= $npg['NAMA']; ?></option>";
+                markup += "<option value='<?php echo $npg['nik'] ?>'><?= $npg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
