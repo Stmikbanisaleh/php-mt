@@ -734,6 +734,8 @@ class Paten extends CI_Controller
         $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
         $data['dokumen'] = $data['dokumen']['data'][0];
 
+        // print_r(json_encode($data['dokumen']));exit;
+
         $data_dokver = [
                     'token' => $this->session->userdata('token'),
                     'nomor_pendaftar' => $code,
@@ -757,7 +759,7 @@ class Paten extends CI_Controller
 
 	public function save_verifikasi()
 	{
-
+		print_r(json_encode($this->input->post()));exit;
 
 		$user = $this->db->get_where('msuser', ['email' =>
 		$this->session->userdata('email')])->row_array();
