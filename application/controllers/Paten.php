@@ -87,7 +87,7 @@ class Paten extends CI_Controller
 
 	public function save()
 	{
-		$dokpaten = $this->lapan_api_library->call('dokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
+		$dokpaten = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
 		$jenispaten = $this->input->post('jenis_paten');
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
@@ -701,14 +701,14 @@ class Paten extends CI_Controller
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 1
                 ];
-        $data['dokpaten'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokpaten);
+        $data['dokpaten'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokpaten);
         $data['dokpaten'] = $data['dokpaten']['data']['rows'];
 
         $data_newdokver = [
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 2
                 ];
-        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_newdokver);
         $data['newdokver'] = $data['newdokver']['data']['rows'];
 
         $data_diajukan = [
