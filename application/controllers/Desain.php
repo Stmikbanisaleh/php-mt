@@ -557,35 +557,92 @@ class Desain extends CI_Controller
 
 	public function verifikasi($id)
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
+		$data_rev = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 3
+                ];
+        $data['unitkerja'] = $this->lapan_api_library->call('rev', $data_rev);
+        $data['unitkerja'] = $data['unitkerja']['data']['rows'];
 
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
-		$data['tindaklanjut'] = $this->db->get_where('msrev', array('golongan' => 12))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
-		$data['dokdesain'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 4))->result_array();
-		$data['newdokver'] = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+        $data_status = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 6
+                ];
+        $data['status'] = $this->lapan_api_library->call('rev/', $data_status);
+        $data['status'] = $data['status']['data']['rows'];
 
-		$this->load->model('Desain_model', 'desain');
-		$data['diajukan'] = $this->desain->getDesainDiajukanDetail($id);
-		$data['pendesain'] = $this->desain->getPendesainById($id);
+        $data_tindaklanjut = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 12
+                ];
+        $data['tindaklanjut'] = $this->lapan_api_library->call('rev/', $data_tindaklanjut);
+        $data['tindaklanjut'] = $data['tindaklanjut']['data']['rows'];
 
-		$code = $data['diajukan']['IPMAN_CODE'];
-		$data['dokumen'] = $this->desain->getDokumen($code);
-		$data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
+        $data['pegawai'] = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+        $data['pegawai'] = $data['pegawai']['data']['rows'];
 
+        $data['nonpegawai'] = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
+        $data['nonpegawai'] = $data['nonpegawai']['data']['rows'];
 
-		if ($roleId == 18) {
-			$this->load->view('templates/header', $data);
+        $data_paten = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['paten'] = $this->lapan_api_library->call('patens/getpatenbyid', $data_paten);
+        $data['paten'] = $data['paten']['data']['rows'];
+
+        $data_dokpaten = [
+                    'token' => $this->session->userdata('token'),
+                    'id_haki' => 1
+                ];
+        $data['dokpaten'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokpaten);
+        $data['dokpaten'] = $data['dokpaten']['data']['rows'];
+
+        $data_newdokver = [
+                    'token' => $this->session->userdata('token'),
+                    'id_haki' => 2
+                ];
+        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $data['newdokver']['data']['rows'];
+
+        $data_diajukan = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['diajukan'] = $this->lapan_api_library->call('desain/getdesaindiajukandetail', $data_diajukan);
+        $data['diajukan'] = $data['diajukan']['data'][0][0];
+
+        $data_pendesain = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['pendesain'] = $this->lapan_api_library->call('desain/getpendesainbyid', $data_pendesain);
+        $data['pendesain'] = $data['pendesain']['data'][0];
+
+        $code = $data['diajukan']['ipman_code'];
+        $data_dokumen = [
+                    'token' => $this->session->userdata('token'),
+                    'code' => $code
+                ];
+        $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
+        $data['dokumen'] = $data['dokumen']['data'][0];
+
+        $data_dokver = [
+                    'token' => $this->session->userdata('token'),
+                    'id_role' => 2
+                ];
+        $data['dokver'] = $this->lapan_api_library->call('dokumen/getnewdokver', $data_dokver);
+        $data['dokver'] = $data['dokver']['data']['rows'];
+
+        // print_r(json_encode($data['dokver']));exit;
+
+		if ($this->session->userdata('role_id') == 18) {
+			$this->load->view('templates/header');
 			$this->load->view('templates/side_menu');
 			$this->load->view('403.html');
 			$this->load->view('templates/footer');
 		} else {
-			$this->load->view('templates/header', $data);
+			$this->load->view('templates/header');
 			$this->load->view('templates/side_menu');
 			$this->load->view('desain/verifikasi', $data);
 			$this->load->view('templates/footer');
