@@ -703,14 +703,14 @@ class Paten extends CI_Controller
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 1
                 ];
-        $data['dokpaten'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokpaten);
+        $data['dokpaten'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokpaten);
         $data['dokpaten'] = $data['dokpaten']['data']['rows'];
 
         $data_newdokver = [
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 2
                 ];
-        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_newdokver);
         $data['newdokver'] = $data['newdokver']['data']['rows'];
 
         $data_diajukan = [
@@ -736,6 +736,8 @@ class Paten extends CI_Controller
         $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
         $data['dokumen'] = $data['dokumen']['data'][0];
 
+        // print_r(json_encode($data['dokumen']));exit;
+
         $data_dokver = [
                     'token' => $this->session->userdata('token'),
                     'nomor_pendaftar' => $code,
@@ -759,7 +761,7 @@ class Paten extends CI_Controller
 
 	public function save_verifikasi()
 	{
-
+		print_r(json_encode($this->input->post()));exit;
 
 		$user = $this->db->get_where('msuser', ['email' =>
 		$this->session->userdata('email')])->row_array();
