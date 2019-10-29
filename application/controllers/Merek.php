@@ -586,6 +586,62 @@ class Merek extends CI_Controller
         $data['nonpegawai'] = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
         $data['nonpegawai'] = $data['nonpegawai']['data']['rows'];
 
+        $data_merek = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['merek'] = $this->lapan_api_library->call('mereks/getmerekbyid', $data_merek);
+        $data['merek'] = $data['merek']['data']['rows'];
+
+        $data_dokmerek = [
+                    'token' => $this->session->userdata('token'),
+                    'id_haki' => 2
+                ];
+        $data['dokmerek'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokmerek);
+        $data['dokmerek'] = $data['dokmerek']['data']['rows'];
+
+        $data_newdokver = [
+                    'token' => $this->session->userdata('token'),
+                    'id_haki' => 2
+                ];
+        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $data['newdokver']['data']['rows'];
+
+        $data_diajukan = [
+                    'token' => $this->session->userdata('token'),
+                    'status' => 20,
+                    'id' => $id
+                ];
+        $data['diajukan'] = $this->lapan_api_library->call('mereks/getmerekdiajukandetail', $data_diajukan);
+        $data['diajukan'] = $data['diajukan']['data'][0][0];
+
+        $data_pendesain = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['pendesain'] = $this->lapan_api_library->call('mereks/getpendesainbyid', $data_pendesain);
+        $data['pendesain'] = $data['pendesain']['data'][0];
+
+        $code = $data['diajukan']['ipman_code'];
+        $data_dokumen = [
+                    'token' => $this->session->userdata('token'),
+                    'code' => $code
+                ];
+        $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
+        $data['dokumen'] = $data['dokumen']['data'][0];
+
+        $data_dokver = [
+                    'token' => $this->session->userdata('token'),
+                    'nomor_pendaftar' => $code,
+                    'role' => 2
+                ];
+        $data['dokver'] = $this->lapan_api_library->call('patens/getdokumenver', $data_dokver);
+        $data['dokver'] = $data['dokver']['data'][0];
+
+        // print_r(json_encode($data['pendesain']));exit;
+
+        
+
 		// $data['user'] = $this->db->get_where('msuser', ['email' =>
 		// $this->session->userdata('email')])->row_array();
 
@@ -595,17 +651,17 @@ class Merek extends CI_Controller
 		// $data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
 		// $data['pegawai'] = $this->db->get('mspegawai')->result_array();
 		// $data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
-		$data['merek'] = $this->db->get_where('msmerek', array('ID' => $id))->row_array();
-		$data['dokmerek'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2))->result_array();
-		$data['newdokver'] = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+		// $data['merek'] = $this->db->get_where('msmerek', array('ID' => $id))->row_array();
+		// $data['dokmerek'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2))->result_array();
+		// $data['newdokver'] = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
 
-		$this->load->model('Merek_model', 'merek');
-		$data['diajukan'] = $this->merek->getMerekDiajukanDetail($id);
-		$data['pendesain'] = $this->merek->getPendesainById($id);
+		// $this->load->model('Merek_model', 'merek');
+		// $data['diajukan'] = $this->merek->getMerekDiajukanDetail($id);
+		// $data['pendesain'] = $this->merek->getPendesainById($id);
 
-		$code = $data['diajukan']['IPMAN_CODE'];
-		$data['dokumen'] = $this->merek->getDokumen($code);
-		$data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
+		// $code = $data['diajukan']['IPMAN_CODE'];
+		// $data['dokumen'] = $this->merek->getDokumen($code);
+		// $data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
 
 		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);

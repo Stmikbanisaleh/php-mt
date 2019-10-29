@@ -205,8 +205,8 @@
                           <tr>
                             <td>
                               <?php 
-                                if(!empty( $newdokver[4]['jenis_dokumen'])){
-                                  echo $newdokver[4]['jenis_dokumen'];
+                                if(!empty( $newdokver[0]['jenis_dokumen'])){
+                                  echo $newdokver[0]['jenis_dokumen'];
                                 }
                               ?>  
                             </td>
