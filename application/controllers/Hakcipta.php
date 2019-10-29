@@ -572,35 +572,108 @@ class Hakcipta extends CI_Controller
 
 	public function verifikasi($id)
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
+		$data_rev = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 3
+                ];
+        $data['unitkerja'] = $this->lapan_api_library->call('rev', $data_rev);
+        $data['unitkerja'] = $data['unitkerja']['data']['rows'];
 
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
-		$data['tindaklanjut'] = $this->db->get_where('msrev', array('golongan' => 12))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
-		$data['dokhakcipta'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 3))->result_array();
-		$data['newdokver'] = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+        $data_status = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 6
+                ];
+        $data['status'] = $this->lapan_api_library->call('rev/', $data_status);
+        $data['status'] = $data['status']['data']['rows'];
 
-		$this->load->model('hakcipta_model', 'hakcipta');
-		$data['diajukan'] = $this->hakcipta->getHakciptaDiajukanDetail($id);
-		$data['pencipta'] = $this->hakcipta->getPenciptaById($id);
+        $data_tindaklanjut = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 12
+                ];
+        $data['tindaklanjut'] = $this->lapan_api_library->call('rev/', $data_tindaklanjut);
+        $data['tindaklanjut'] = $data['tindaklanjut']['data']['rows'];
 
-		$code = $data['diajukan']['IPMAN_CODE'];
-		$data['dokumen'] = $this->hakcipta->getDokumen($code);
-		$data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
+        $data['pegawai'] = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+        $data['pegawai'] = $data['pegawai']['data']['rows'];
+
+        $data['nonpegawai'] = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
+        $data['nonpegawai'] = $data['nonpegawai']['data']['rows'];
+
+        $data_paten = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['paten'] = $this->lapan_api_library->call('patens/getpatenbyid', $data_paten);
+        $data['paten'] = $data['paten']['data']['rows'];
+
+        $data_dokpaten = [
+                    'token' => $this->session->userdata('token'),
+                    'id_haki' => 1
+                ];
+        $data['dokpaten'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokpaten);
+        $data['dokpaten'] = $data['dokpaten']['data']['rows'];
+
+        $data_newdokver = [
+                    'token' => $this->session->userdata('token'),
+                    'id_haki' => 2
+                ];
+        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $data['newdokver']['data']['rows'];
+
+        $data_diajukan = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['diajukan'] = $this->lapan_api_library->call('hakciptas/gethakciptadraftdetail', $data_diajukan);
+        $data['diajukan'] = $data['diajukan']['data'][0][0];
+        
+
+        $data_pencipta = [
+                    'token' => $this->session->userdata('token'),
+                    'id' => $id
+                ];
+        $data['pencipta'] = $this->lapan_api_library->call('hakciptas/getpenciptabyid', $data_pencipta);
+        $data['pencipta'] = $data['pencipta']['data'][0];
+        // print_r(json_encode($data['pencipta']));exit;
+
+        $code = $data['diajukan']['ipman_code'];
+        $data_dokumen = [
+                    'token' => $this->session->userdata('token'),
+                    'code' => $code
+                ];
+        $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
+        $data['dokumen'] = $data['dokumen']['data'][0];
 
 
-		if ($roleId == 18) {
-			$this->load->view('templates/header', $data);
+
+        $data_dokver = [
+                    'token' => $this->session->userdata('token'),
+                    'nomor_pendaftar' => $code,
+                    'role' => 2
+                ];
+        $data['dokver'] = $this->lapan_api_library->call('patens/getdokumenver', $data_dokver);
+        $data['dokver'] = $data['dokver']['data'][0];
+
+        // exit;
+
+		// $this->load->model('hakcipta_model', 'hakcipta');
+		// $data['diajukan'] = $this->hakcipta->getHakciptaDiajukanDetail($id);
+		// $data['pencipta'] = $this->hakcipta->getPenciptaById($id);
+
+		// $code = $data['diajukan']['ipman_code'];
+
+		// $code = $data['diajukan']['IPMAN_CODE'];
+		// $data['dokumen'] = $this->hakcipta->getDokumen($code);
+		// $data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
+
+
+		if ($this->session->userdata('role_id') == 18) {
+			$this->load->view('templates/header');
 			$this->load->view('templates/side_menu');
 			$this->load->view('403.html');
 			$this->load->view('templates/footer');
 		} else {
-			$this->load->view('templates/header', $data);
+			$this->load->view('templates/header');
 			$this->load->view('templates/side_menu');
 			$this->load->view('hakcipta/verifikasi', $data);
 			$this->load->view('templates/footer');

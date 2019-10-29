@@ -663,19 +663,11 @@ class Paten extends CI_Controller
 
 	public function verifikasi($id)
 	{
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-
-		// $roleId = $data['user']['role_id'];
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-		// $return_nonpendesain = $this->lapan_api_library->call('desain/getallnonpendesain', ['token' => $this->session->userdata('token')]);
-
 		$data_rev = [
                     'token' => $this->session->userdata('token'),
                     'golongan' => 3
                 ];
-        $data['unitkerja'] = $this->lapan_api_library->call('rev/', $data_rev);
+        $data['unitkerja'] = $this->lapan_api_library->call('rev', $data_rev);
         $data['unitkerja'] = $data['unitkerja']['data']['rows'];
 
         $data_status = [
@@ -749,32 +741,6 @@ class Paten extends CI_Controller
                 ];
         $data['dokver'] = $this->lapan_api_library->call('patens/getdokumenver', $data_dokver);
         $data['dokver'] = $data['dokver']['data'][0];
-
-        // print_r(json_encode($data['newdokver']));exit;
-
-        // print_r(json_encode($data['diajukan']));exit;
-
-
-		
-		// $data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		
-		// $data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
-		// $data['tindaklanjut'] = $this->db->get_where('msrev', array('golongan' => 12))->result_array();
-		// $data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		// $data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
-		// $data['paten'] = $this->db->get_where('mspaten', array('ID' => $id))->row_array();
-		// $data['dokpaten'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 1))->result_array();
-		// $data['newdokver'] = $this->db->geat_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
-
-		// $this->load->model('Paten_model', 'paten');
-		// $data['diajukan'] = $this->paten->getPatenDiajukanDetail($id);
-
-		// print_r(json_encode($data['diajukan']));exit;
-		// $data['inventor'] = $this->paten->getInventorById($id);
-
-		// $code = $data['diajukan']['IPMAN_CODE'];
-		// $data['dokumen'] = $this->paten->getDokumen($code);
-		// $data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
 
 		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);

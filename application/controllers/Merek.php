@@ -566,15 +566,35 @@ class Merek extends CI_Controller
 
 	public function verifikasi($id)
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
+		$data_rev = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 3
+                ];
+        $data['unitkerja'] = $this->lapan_api_library->call('rev', $data_rev);
+        $data['unitkerja'] = $data['unitkerja']['data']['rows'];
 
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		$data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
-		$data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		$data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
+        $data_status = [
+                    'token' => $this->session->userdata('token'),
+                    'golongan' => 6
+                ];
+        $data['status'] = $this->lapan_api_library->call('rev/', $data_status);
+        $data['status'] = $data['status']['data']['rows'];
+
+        $data['pegawai'] = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+        $data['pegawai'] = $data['pegawai']['data']['rows'];
+
+        $data['nonpegawai'] = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
+        $data['nonpegawai'] = $data['nonpegawai']['data']['rows'];
+
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+
+		// $roleId = $data['user']['role_id'];
+		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		// $data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
+		// $data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
+		// $data['pegawai'] = $this->db->get('mspegawai')->result_array();
+		// $data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
 		$data['merek'] = $this->db->get_where('msmerek', array('ID' => $id))->row_array();
 		$data['dokmerek'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2))->result_array();
 		$data['newdokver'] = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
@@ -587,7 +607,7 @@ class Merek extends CI_Controller
 		$data['dokumen'] = $this->merek->getDokumen($code);
 		$data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
 
-		if ($roleId == 18) {
+		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
 			$this->load->view('403.html');

@@ -41,13 +41,13 @@
                 <form id="regForm" enctype="multipart/form-data" method="post" action="<?= base_url('hakcipta/save_verifikasi') ?>">
                   <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" style="display: none">
                   <div class="tab">
-                    <input type="hidden" name="id" value="<?= $diajukan['ID'] ?>">
+                    <input type="hidden" name="id" value="<?= $diajukan['id'] ?>">
                     Ip-Man Code
-                    <input name="ipman_code" class="form-control" value="<?= $diajukan['IPMAN_CODE']; ?>" id="" readonly>
+                    <input name="ipman_code" class="form-control" value="<?= $diajukan['ipman_code']; ?>" id="" readonly>
                     Judul
-                    <textarea class="form-control" name="judul" id="judul" readonly><?= $diajukan['JUDUL'] ?> </textarea>
+                    <textarea class="form-control" name="judul" id="judul" readonly><?= $diajukan['judul'] ?> </textarea>
                     Unit Kerja
-                    <input class="form-control" value="<?= $diajukan['NAMA_REV']; ?>" name="unit_kerja" id="unit_kerja" readonly>
+                    <input class="form-control" value="<?= $diajukan['unit_kerja']; ?>" name="unit_kerja" id="unit_kerja" readonly>
                     <div class="progress my-10">
                       <div class="progress-bar progress-bar-striped active" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width: 20%" role="progressbar">
                       </div>
@@ -58,19 +58,19 @@
                       <h5>Pencipta</h5>
                       <?php foreach ($pencipta as $cip) { ?>
                         <?php foreach ($pegawai as $p) {
-                            if ($cip['NIK'] == $p['NIK']) {
+                            if ($cip['nik'] == $p['nik']) {
                               ?>
                             <tr>
-                              <td><?= $p['NAMA'] ?></td>
+                              <td><?= $p['nama'] ?></td>
                             </tr>
                         <?php }
                           } ?>
 
                         <?php foreach ($nonpegawai as $np) {
-                            if ($cip['NIK'] == $np['NIK']) {
+                            if ($cip['nik'] == $np['nik']) {
                               ?>
                             <tr>
-                              <td><?= $np['NAMA'] ?></td>
+                              <td><?= $np['nama'] ?></td>
                             </tr>
                         <?php }
                           } ?>
@@ -84,7 +84,7 @@
                   <div class="tab">
                     Tanggal Sertifikasi
                     <?php
-                    $sertifikasi =  $diajukan['SERTIFIKASI'];
+                    $sertifikasi =  $diajukan['sertifikasi'];
                     if ($sertifikasi != "" && $sertifikasi != '1970-01-01') {
                       $tgl_sertifikasi = date("d-m-Y", strtotime($sertifikasi));
                     } else {
@@ -94,11 +94,11 @@
                     <input type="text" name="tgl_sertifikasi" id="tgl_sertifikasi" value="<?= $tgl_sertifikasi; ?>" class="datepicker form-control">
 
                     Pemeriksa Hak Cipta
-                    <input class="form-control" name="pemeriksa_hakcipta" value="<?= $diajukan['PEMERIKSA_HAKCIPTA']; ?>" id="pemeriksa_hakcipta">
+                    <input class="form-control" name="pemeriksa_hakcipta" value="<?= $diajukan['pemeriksa_hakcipta']; ?>" id="pemeriksa_hakcipta">
                     Kontak Pemeriksa
-                    <input class="form-control" name="kontak_pemeriksa" value="<?= $diajukan['KONTAK_PEMERIKSA']; ?>" id="kontak_pemeriksa">
+                    <input class="form-control" name="kontak_pemeriksa" value="<?= $diajukan['kontak_pemeriksa']; ?>" id="kontak_pemeriksa">
                     Email Pemeriksa
-                    <input class="form-control" name="email_pemeriksa" value="<?= $diajukan['EMAIL_PEMERIKSA']; ?>" id="email_pemeriksa">
+                    <input class="form-control" name="email_pemeriksa" value="<?= $diajukan['email_pemeriksa']; ?>" id="email_pemeriksa">
                     <div class="progress my-10">
                       <div class="progress-bar progress-bar-striped active" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width: 32%" role="progressbar">
                       </div>
@@ -120,10 +120,10 @@
                             ?>
                             <tr>
                               <td><?= $i; ?></td>
-                              <td><?= $dok['JENIS_DOKUMEN'] ?></td>
+                              <td><?= $dok['jenis_dokumen'] ?></td>
                               <td>
-                                <?php if ($dokumen[$d]['SIZE'] > 0) { ?>
-                                  <a class="btn btn-xs btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_hakcipta/') . $dokumen[$d]['NAME'] ?>"><i class="fa fa-download"></i> Lihat Dokumen</a>
+                                <?php if ($dokumen[$d]['size'] > 0) { ?>
+                                  <a class="btn btn-xs btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_hakcipta/') . $dokumen[$d]['name'] ?>"><i class="fa fa-download"></i> Lihat Dokumen</a>
                                 <?php } else { ?>
                                   <span class="badge badge-lg badge-warning"> Dokumen Belum Lengkap!</span>
                                 <?php } ?>
@@ -145,10 +145,10 @@
                             <?php if ($dokver) { ?>
                               <td>Dokumen 1</td>
                               <td>
-                                <?php if ($dokver[0]['SIZE'] > 0) { ?>
-                                  <?php $dokumen1 = $dokver[0]['NAME'] ?>
+                                <?php if ($dokver[0]['size'] > 0) { ?>
+                                  <?php $dokumen1 = $dokver[0]['name'] ?>
                                   <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen1 ?>"><i class="fa fa-download"></i></a>
-                                  <input type="hidden" name="currentfile1" value="<?= $dokver[0]['NAME']; ?>">
+                                  <input type="hidden" name="currentfile1" value="<?= $dokver[0]['name']; ?>">
                                 <?php } else { ?>
                                   <input type="file" name="dokumen1" id="dokumen1" data-plugin="dropify" data-height="60">
                                 <?php } ?>
@@ -157,8 +157,8 @@
                           <tr>
                             <td>Dokumen 2</td>
                             <td>
-                              <?php if ($dokver[1]['SIZE'] > 0) { ?>
-                                <?php $dokumen2 = $dokver[1]['NAME'] ?>
+                              <?php if ($dokver[1]['size'] > 0) { ?>
+                                <?php $dokumen2 = $dokver[1]['name'] ?>
                                 <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen2 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen2" id="2" data-plugin="dropify" data-height="60">
@@ -168,8 +168,8 @@
                           <tr>
                             <td>Dokumen 3</td>
                             <td>
-                              <?php if ($dokver[2]['SIZE'] > 0) { ?>
-                                <?php $dokumen3 = $dokver[2]['NAME'] ?>
+                              <?php if ($dokver[2]['size'] > 0) { ?>
+                                <?php $dokumen3 = $dokver[2]['name'] ?>
                                 <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen3 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen3" id="dokumen3" data-plugin="dropify" data-height="60">
@@ -179,8 +179,8 @@
                           <tr>
                             <td>Dokumen 4</td>
                             <td>
-                              <?php if ($dokver[3]['SIZE'] > 0) { ?>
-                                <?php $dokumen4 = $dokver[3]['NAME'] ?>
+                              <?php if ($dokver[3]['size'] > 0) { ?>
+                                <?php $dokumen4 = $dokver[3]['name'] ?>
                                 <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen4 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen4" id="dokumen4" data-plugin="dropify" data-height="60">
@@ -190,8 +190,8 @@
                           <tr>
                             <td>Dokumen 5</td>
                             <td>
-                              <?php if ($dokver[4]['SIZE'] > 0) { ?>
-                                <?php $dokumen5 = $dokver[4]['NAME'] ?>
+                              <?php if ($dokver[4]['size'] > 0) { ?>
+                                <?php $dokumen5 = $dokver[4]['name'] ?>
                                 <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen5 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen5" id="dokumen5" data-plugin="dropify" data-height="60">
@@ -203,23 +203,53 @@
                         <?php } else { ?>
 
                           <tr>
-                            <td><?= $newdokver[0]['JENIS_DOKUMEN']; ?></td>
+                            <td>
+                              <?php 
+                                if(!empty( $newdokver[4]['jenis_dokumen'])){
+                                  echo $newdokver[4]['jenis_dokumen'];
+                                }
+                              ?>  
+                            </td>
                             <td><input type="file" name="dokumen1" id="dokumen1" data-plugin="dropify" data-height="60"></td>
                           </tr>
                           <tr>
-                            <td><?= $newdokver[1]['JENIS_DOKUMEN']; ?></td>
+                            <td>
+                              <?php 
+                                if(!empty( $newdokver[1]['jenis_dokumen'])){
+                                  echo $newdokver[1]['jenis_dokumen'];
+                                }
+                              ?>
+                            </td>
                             <td><input type="file" name="dokumen2" id="dokumen2" data-plugin="dropify" data-height="60"></td>
                           </tr>
                           <tr>
-                            <td><?= $newdokver[2]['JENIS_DOKUMEN']; ?></td>
+                            <td>
+                              <?php 
+                                if(!empty( $newdokver[2]['jenis_dokumen'])){
+                                  echo $newdokver[2]['jenis_dokumen'];
+                                }
+                              ?>
+                            </td>
                             <td><input type="file" name="dokumen3" id="dokumen3" data-plugin="dropify" data-height="60"></td>
                           </tr>
                           <tr>
-                            <td><?= $newdokver[3]['JENIS_DOKUMEN']; ?></td>
+                            <td>
+                              <?php 
+                                if(!empty( $newdokver[3]['jenis_dokumen'])){
+                                  echo $newdokver[3]['jenis_dokumen'];
+                                }
+                              ?>   
+                            </td>
                             <td><input type="file" name="dokumen4" id="dokumen4" data-plugin="dropify" data-height="60"></td>
                           </tr>
                           <tr>
-                            <td><?= $newdokver[4]['JENIS_DOKUMEN']; ?></td>
+                            <td>
+                              <?php 
+                                if(!empty( $newdokver[4]['jenis_dokumen'])){
+                                  echo $newdokver[4]['jenis_dokumen'];
+                                }
+                              ?>
+                            </td>
                             <td><input type="file" name="dokumen5" id="dokumen5" data-plugin="dropify" data-height="60"></td>
                           </tr>
                         <?php } ?>
@@ -233,10 +263,10 @@
                   </div>
                   <div class="tab">
                     Nomor Pencatatan
-                    <input type="text" name="no_pencatatan" value="<?= $diajukan['NOMOR_PENCATAT'] ?>" id="no_pencatatan" class="form-control">
+                    <input type="text" name="no_pencatatan" value="<?= $diajukan['nomor_pencatat'] ?>" id="no_pencatatan" class="form-control">
 
                     <?php
-                    $permohonan =  $diajukan['TGL_PERMOHONAN'];
+                    $permohonan =  $diajukan['tgl_permohonan'];
                     if ($permohonan != "" && $permohonan != '1970-01-01') {
                       $tgl_perm = date("d-m-Y", strtotime($permohonan));
                     } else {
@@ -246,10 +276,10 @@
                     Tanggal Permohonan
                     <input type="text" name="tgl_permohonan" value="<?= $tgl_perm ?>" id="thn_permohonan" class="datepicker form-control">
                     No Hak Cipta
-                    <input type="text" name="no_hakcipta" value="<?= $diajukan['NOMOR_HAKCIPTA'] ?>" id="no_hakcipta" class="form-control">
+                    <input type="text" name="no_hakcipta" value="<?= $diajukan['nomor_hakcipta'] ?>" id="no_hakcipta" class="form-control">
 
                     <?php
-                    $publish =  $diajukan['TGL_PUBLISH'];
+                    $publish =  $diajukan['tgl_publish'];
                     if ($publish != "" && $publish != '1970-01-01') {
                       $tgl_pub = date("d-m-Y", strtotime($publish));
                     } else {
@@ -262,10 +292,10 @@
                     Status
                     <select id="status" class="form-control my-10 stat" name="status" data-fv-notempty="true">
                       <?php foreach ($status as $st) {
-                        if ($diajukan['STATUS'] == $st['ID']) {
-                          echo '<option selected value="' . $st['ID'] . '">' . $st['NAMA_REV'] . '</option>';
+                        if ($diajukan['status'] == $st['id']) {
+                          echo '<option selected value="' . $st['id'] . '">' . $st['nama_rev'] . '</option>';
                         } else {
-                          echo '<option value="' . $st['ID'] . '">' . $st['NAMA_REV'] . '</option>';
+                          echo '<option value="' . $st['ID'] . '">' . $st['nama_rev'] . '</option>';
                         }
                       }
                       ?>
@@ -277,7 +307,7 @@
                   </div>
                   <div class="tab">
                     Keterangan
-                    <textarea input type="text" name="keterangan" id="keterangan" class="form-control"><?= $diajukan['KETERANGAN']; ?></textarea>
+                    <textarea input type="text" name="keterangan" id="keterangan" class="form-control"><?= $diajukan['keterangan']; ?></textarea>
                     <div class="progress my-10">
                       <div class="progress-bar progress-bar-striped active" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width: 100%" role="progressbar">
                       </div>
