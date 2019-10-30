@@ -140,7 +140,7 @@ class Hakcipta extends CI_Controller
 				$file_tmp = $_FILES['dokumen'.$i]['tmp_name'];
 				if(!empty($_FILES['dokumen'.$i]['tmp_name']) 
 				     && file_exists($_FILES['dokumen'.$i]['tmp_name'])) {
-				    $data_getcontent = addslashes(file_get_contents($_FILES['dokumen'.$i]['tmp_name']));
+				    $data_getcontent = file_get_contents($_FILES['dokumen'.$i]['tmp_name']);
 				}
 				$dokumen_base64 = base64_encode($data_getcontent);
 
