@@ -946,7 +946,7 @@ class Merek extends CI_Controller
 				$data5 = file_get_contents($file_tmp5);
 				$dokumen5base64 = base64_encode($data5);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen5 = array($$dokumen5base64 ,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$dokumen5 = array($dokumen5base64 ,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename5 = $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][4]['id'];

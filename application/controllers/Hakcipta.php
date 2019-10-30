@@ -629,14 +629,14 @@ class Hakcipta extends CI_Controller
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 1
                 ];
-        $data['dokpaten'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_dokpaten);
+        $data['dokpaten'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokpaten);
         $data['dokpaten'] = $data['dokpaten']['data']['rows'];
 
         $data_newdokver = [
                     'token' => $this->session->userdata('token'),
                     'id_haki' => 2
                 ];
-        $data['newdokver'] = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data_newdokver);
+        $data['newdokver'] = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_newdokver);
         $data['newdokver'] = $data['newdokver']['data']['rows'];
 
         $data_diajukan = [
@@ -701,58 +701,69 @@ class Hakcipta extends CI_Controller
 
 	public function save_verifikasi()
 	{
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
 
-		$userid =  $user['id'];
+		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 
-		$this->load->model('Hakcipta_model', 'hakcipta');
 		$ipman = $this->input->post('ipman_code');
-		$dokhakciptaver = $this->hakcipta->getDokumenVer($ipman);
+		$data_dokumen = [
+			'token' => $this->session->userdata('token'),
+			'code' => $ipman
+		];
 
-		$dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+		$data_dokumen2 = [
+			'token' => $this->session->userdata('token'),
+			'id_role' => 2
+		];
 
-		$config1['file_name']          	= $dokuver[0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
-		$config1['allowed_types']        = 'doc|docx|pdf';
+		$dokhakciptaver = $this->lapan_api_library->call('hakciptas/getdokumenver', $data_dokumen);
+		$dokuver = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokumen2);
+
+		$config1['file_name']          	= $dokuver['data']['rows'][0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		// $config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		// $config1['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config1);
 
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
-				$this->upload->do_upload('dokumen1');
-				$filename1 = $this->upload->data('file_name');
-				$size1 = $this->upload->data('file_size');
-				$type1 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[0]['ID'];
-				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$filename1 = $_FILES['dokumen1']['name'];
+				$size1 = $_FILES['dokumen1']['size'];
+				$type1 = $_FILES['dokumen1']['type'];
+				$file_tmp = $_FILES['dokumen1']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen1base64 = base64_encode($data);
+				$jenisdok = $dokuver['data']['rows'][0]['id'];
+				$dokumen1 = array($dokumen1base64,$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename1 = $dokhakciptaver[0]['NAME'];
-				$size1 = $dokhakciptaver[0]['SIZE'];
-				$type1 = $dokhakciptaver[0]['TYPE'];
-				$jenisdok = $dokhakciptaver[0]['ID'];
-				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$filename1 = $dokhakciptaver['data'][0][0]['name'];
+				$size1 = $dokhakciptaver['data'][0][0]['size'];
+				$type1 = $dokhakciptaver['data'][0][0]['type'];
+				$jenisdok = $dokhakciptaver['data'][0][0]['id'];
+				$dokumen1 = array('',$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen1']['name'])) {
-				$this->upload->do_upload('dokumen1');
-				$filename1 = $this->upload->data('file_name');
-				$size1 = $this->upload->data('file_size');
-				$type1 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[0]['ID'];
+				// $this->upload->do_upload('dokumen1');
+				$filename1 = $_FILES['dokumen1']['name'];
+				$size1 = $_FILES['dokumen1']['size'];
+				$type1 =  $_FILES['dokumen1']['type'];
+				$jenisdok = $dokuver['data']['rows'][0]['id'];
+				$file_tmp = $_FILES['dokumen1']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen1base64 = base64_encode($data);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$dokumen1 = array($dokumen1base64,$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename1 = $dokuver[0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[0]['ID'];
-				$dokumen1 = array($filename1, '', '', '2', $jenisdok, $date, $userid);
+				$filename1 = $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][0]['id'];
+				$dokumen1 = array('',$filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 
 
-		$config2['file_name']          	= $dokuver[1]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config2['file_name']          	= $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config2['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config2['allowed_types']        = 'doc|docx|pdf';
 
@@ -761,194 +772,236 @@ class Hakcipta extends CI_Controller
 		// script upload dokumen kedua
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen2']['name'])) {
-				$this->upload->do_upload('dokumen2');
-				$filename2 = $this->upload->data('file_name');
-				$size2 = $this->upload->data('file_size');
-				$type2 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[1]['ID'];
-				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				// $this->upload->do_upload('dokumen2');
+				$filename2 = $_FILES['dokumen2']['name'];
+				$size2 = $_FILES['dokumen2']['size'];
+				$type2 =  $_FILES['dokumen2']['type'];
+				$jenisdok = $dokuver['data']['rows'][1]['id'];
+				$file_tmp = $_FILES['dokumen2']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen2base64 = base64_encode($data);
+				$dokumen2 = array($dokumen2base64, $filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename2 = $dokhakciptaver[1]['NAME'];
-				$size2 = $dokhakciptaver[1]['SIZE'];
-				$type2 = $dokhakciptaver[1]['TYPE'];
-				$jenisdok = $dokhakciptaver[1]['ID'];
-				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$filename2 = $dokhakciptaver['data'][0][1]['name'];
+				$size2 = $dokhakciptaver['data'][0][1]['size'];
+				$type2 = $dokhakciptaver['data'][0][1]['type'];
+				$jenisdok = $dokhakciptaver['data'][0][1]['id'];
+				$dokumen2 = array('',$filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen2']['name'])) {
-				$this->upload->do_upload('dokumen2');
-				$filename2 = $this->upload->data('file_name');
-				$size2 = $this->upload->data('file_size');
-				$type2 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[1]['ID'];
+				// $this->upload->do_upload('dokumen2');s
+				$filename2 = $_FILES['dokumen2']['name'];
+				$size2 = $_FILES['dokumen2']['size'];
+				$type2 = $_FILES['dokumen2']['type'];
+				$jenisdok = $dokuver['data']['rows'][1]['id'];
+				$file_tmp = $_FILES['dokumen2']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen2base64 = base64_encode($data);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$dokumen2 = array($dokumen2base64, $filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename2 = $dokuver[1]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[1]['ID'];
-				$dokumen2 = array($filename2, '', '', '2', $jenisdok, $date, $userid);
+				$filename2 = $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][1]['id'];
+				$dokumen2 = array('',$filename2, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 
-		$config3['file_name']          	= $dokuver[2]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config3['upload_path']          = './assets/dokumen/dokumen_verifikator/';
-		$config3['allowed_types']        = 'doc|docx|pdf';
+		$config3['file_name']          	= $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config3['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		// $config3['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config3);
 		// script uplaod dokumen ketiga
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen3']['name'])) {
-				$this->upload->do_upload('dokumen3');
-				$filename3 = $this->upload->data('file_name');
-				$size3 = $this->upload->data('file_size');
-				$type3 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[2]['ID'];
-				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				// $this->upload->do_upload('dokumen3');
+				$filename3 = $_FILES['dokumen3']['name'];
+				$size3 = $_FILES['dokumen3']['size'];
+				$type3 = $_FILES['dokumen3']['type'];
+				$jenisdok = $dokuver['data']['rows'][2]['id'];
+				$file_tmp = $_FILES['dokumen3']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen2base64 = base64_encode($data);
+				$dokumen3 = array($dokumen2base64, $filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokhakciptaver[2]['NAME'];
-				$size3 = $dokhakciptaver[2]['SIZE'];
-				$type3 = $dokhakciptaver[2]['TYPE'];
-				$jenisdok = $dokhakciptaver[2]['ID'];
-				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$filename3 = $dokhakciptaver['data'][0][2]['name'];
+				$size3 = $dokhakciptaver['data'][0][2]['size'];
+				$type3 = $dokhakciptaver['data'][0][2]['type'];
+				$jenisdok = $dokhakciptaver['data'][0][2]['id'];
+				$dokumen3 = array('',$filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen3']['name'])) {
-				$this->upload->do_upload('dokumen3');
-				$filename3 = $this->upload->data('file_name');
-				$size3 = $this->upload->data('file_size');
-				$type3 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[2]['ID'];
+				// $this->upload->do_upload('dokumen3');
+				$filename3 = $_FILES['dokumen3']['name'];
+				$size3 = $_FILES['dokumen3']['size'];
+				$type3 = $_FILES['dokumen3']['type'];
+				$jenisdok = $dokuver['data']['rows'][2]['id'];
+				$file_tmp = $_FILES['dokumen3']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen3base64 = base64_encode($data);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$dokumen3 = array($dokumen3base64, $filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokuver[2]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[2]['ID'];
-				$dokumen3 = array($filename3, '', '', '2', $jenisdok, $date, $userid);
+				$filename3 = $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][2]['id'];
+				$dokumen3 = array('',$filename3, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
-		$config4['file_name']          	= $dokuver[3]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config4['upload_path']          = './assets/dokumen/dokumen_verifikator/';
-		$config4['allowed_types']        = 'doc|docx|pdf';
+		$config4['file_name']          	= $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config4['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		// $config4['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config4);
 		// script uplaod dokumen keempat
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen4']['name'])) {
-				$this->upload->do_upload('dokumen4');
-				$filename4 = $this->upload->data('file_name');
-				$size4 = $this->upload->data('file_size');
-				$type4 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[3]['ID'];
-				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				// $this->upload->do_upload('dokumen4');
+				$filename4 = $_FILES['dokumen4']['name'];
+				$size4 = $_FILES['dokumen4']['size'];
+				$type4 = $_FILES['dokumen4']['type'];
+				$jenisdok =$dokuver['data']['rows'][3]['id'];
+				$file_tmp = $_FILES['dokumen4']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen4base64 = base64_encode($data);
+
+				$dokumen4 = array($dokumen4base64, $filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokhakciptaver[3]['NAME'];
-				$size4 = $dokhakciptaver[3]['SIZE'];
-				$type4 = $dokhakciptaver[3]['TYPE'];
-				$jenisdok = $dokhakciptaver[3]['ID'];
+				$filename4 = $dokhakciptaver['data'][0][3]['name'];
+				$size4 = $dokhakciptaver['data'][0][3]['size'];
+				$type4 = $dokhakciptaver['data'][0][3]['type'];
+				$jenisdok = $dokhakciptaver['data'][0][3]['id'];
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen4']['name'])) {
-				$this->upload->do_upload('dokumen4');
-				$filename4 = $this->upload->data('file_name');
-				$size4 = $this->upload->data('file_size');
-				$type4 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[3]['ID'];
+				// $this->upload->do_upload('dokumen4');
+				$filename4 = $_FILES['dokumen4']['name'];
+				$size4 = $_FILES['dokumen4']['size'];
+				$type4 = $_FILES['dokumen4']['type'];
+				$jenisdok = $dokuver['data']['rows'][3]['id'];
+				$file_tmp = $_FILES['dokumen4']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen4base64 = base64_encode($data);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				$dokumen4 = array($dokumen4base64, $filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokuver[3]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[3]['ID'];
-				$dokumen4 = array($filename4, '', '', '2', $jenisdok, $date, $userid);
+				$filename4 = $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][3]['id'];
+				$dokumen4 = array('',$filename4, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
-		$config5['file_name']          	= $dokuver[4]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-		$config5['upload_path']          = './assets/dokumen/dokumen_verifikator/';
-		$config5['allowed_types']        = 'doc|docx|pdf';
+		$config5['file_name']          	= $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+		// $config5['upload_path']          = './assets/dokumen/dokumen_verifikator/';
+		// $config5['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config5);
 		// script uplaod dokumen kelima
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen5']['name'])) {
-				$this->upload->do_upload('dokumen5');
-				$filename5 = $this->upload->data('file_name');
-				$size5 = $this->upload->data('file_size');
-				$type5 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[4]['ID'];
-				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				// $this->upload->do_upload('dokumen5');
+				$filename5 = $_FILES['dokumen5']['name'];
+				$size5 = $_FILES['dokumen5']['size'];
+				$type5 = $_FILES['dokumen5']['type'];
+				$jenisdok = $dokuver['data']['rows'][4]['id'];
+				$file_tmp = $_FILES['dokumen5']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen5base64 = base64_encode($data);
+				$dokumen5 = array($dokumen5base64, $filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokhakciptaver[4]['NAME'];
-				$size5 = $dokhakciptaver[4]['SIZE'];
-				$type5 = $dokhakciptaver[4]['TYPE'];
-				$jenisdok = $dokhakciptaver[4]['ID'];
-				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$filename5 = $dokhakciptaver['data'][0][4]['name'];
+				$size5 = $dokhakciptaver['data'][0][4]['size'];
+				$type5 = $dokhakciptaver['data'][0][4]['type'];
+				$jenisdok = $dokhakciptaver['data'][0][4]['id'];
+				$dokumen5 = array('',$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen5']['name'])) {
-				$this->upload->do_upload('dokumen5');
-				$filename5 = $this->upload->data('file_name');
-				$size5 = $this->upload->data('file_size');
-				$type5 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[4]['ID'];
+				// $this->upload->do_upload('dokumen5');
+				$filename5 = $_FILES['dokumen5']['name'];
+				$size5 =  $_FILES['dokumen5']['size'];
+				$type5 =  $_FILES['dokumen5']['type'];
+				$jenisdok = $dokuver['data']['rows'][4]['id'];
+				$file_tmp = $_FILES['dokumen5']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen5base64 = base64_encode($data);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$dokumen5 = array($dokumen5base64, $filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokuver[4]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[4]['ID'];
-				$dokumen5 = array($filename5, '', '', '2', $jenisdok, $date, $userid);
+				$filename5 = $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][4]['id'];
+				$dokumen5 = array('',$filename5, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 		$dokumen = array($dokumen1, $dokumen2, $dokumen3, $dokumen4, $dokumen5);
 
 		$data = [
-			'PEMERIKSA_HAKCIPTA' => htmlspecialchars($this->input->post('pemeriksa_hakcipta', true)),
-			'KONTAK_PEMERIKSA' => htmlspecialchars($this->input->post('kontak_pemeriksa', true)),
-			'EMAIL_PEMERIKSA' => htmlspecialchars($this->input->post('email_pemeriksa', true)),
-			'SERTIFIKASI' => date('Y-m-d', strtotime($this->input->post('tgl_sertifikasi'))),
-			'NOMOR_PENCATAT' => htmlspecialchars($this->input->post('no_pencatatan', true)),
-			'NOMOR_HAKCIPTA' => htmlspecialchars($this->input->post('no_hakcipta', true)),
-			'TGL_PERMOHONAN' => date('Y-m-d', strtotime($this->input->post('tgl_permohonan'))),
-			'TGL_PUBLISH' => date('Y-m-d', strtotime($this->input->post('tgl_publikasi'))),
-			'LOKASI' => $this->input->post('lokasi'),
-			'STATUS' => $this->input->post('status'),
-			'KETERANGAN' => $this->input->post('keterangan'),
+			'pemeriksa_hakcipta' => htmlspecialchars($this->input->post('pemeriksa_hakcipta', true)),
+			'kontak_pemeriksa' => htmlspecialchars($this->input->post('kontak_pemeriksa', true)),
+			'email_pemeriksa' => htmlspecialchars($this->input->post('email_pemeriksa', true)),
+			'sertifikasi' => date('Y-m-d', strtotime($this->input->post('tgl_sertifikasi'))),
+			'nomor_pencatat' => htmlspecialchars($this->input->post('no_pencatatan', true)),
+			'nomor_hakcipta' => htmlspecialchars($this->input->post('no_hakcipta', true)),
+			'tgl_permohonan' => date('Y-m-d', strtotime($this->input->post('tgl_permohonan'))),
+			'tgl_publish' => date('Y-m-d', strtotime($this->input->post('tgl_publikasi'))),
+			'lokasi' => $this->input->post('lokasi'),
+			'status' => $this->input->post('status'),
+			'keterangan' => $this->input->post('keterangan'),
+			'id' => $this->input->post('id'),
+			'token' => $this->session->userdata('token')
 		];
-		if ($this->db->update('mshakcipta', $data)) {
+
+		$updatehakcipta = $this->lapan_api_library->call('hakciptas/updateverifikasihakciptasave', $data);
+
+		if ($updatehakcipta['status'] == 200) {
 			if ($dokhakciptaver) {
-				$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'ROLE' => 2));
+				$delete = [
+					'code' => $this->input->post('ipman_code'),
+					'role' => 2,
+					'token' => $this->session->userdata('token')
+				];
+
+				$deletedokumen = $this->lapan_api_library->call('dokumen/deletedokumenbynomorpendaftar', $delete);
 
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-						$md['NAME'] = $dok[0];
-						$md['SIZE'] = $dok[1];
-						$md['TYPE'] = $dok[2];
-						$md['ROLE'] = 2;
-						$md['JENIS_DOKUMEN'] = $dok[4];
-						$md['TGL_INPUT'] = $dok[5];
-						$md['KODE_INPUT'] = $dok[6];
+						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+						$md['dokumen'] = $dok[0];
+						$md['name'] = $dok[1];
+						$md['size'] = $dok[2];
+						$md['type'] = $dok[3];
+						$md['role'] = 2;
+						$md['jenis_dokumen'] = $dok[4];
+						$md['tgl_input'] = $dok[5];
+						$md['kode_input'] = $dok[6];
 
-						$this->db->insert('msdokumen', $md);
+						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
+
+						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			} else {
 
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-						$md['NAME'] = $dok[0];
-						$md['SIZE'] = $dok[1];
-						$md['TYPE'] = $dok[2];
-						$md['ROLE'] = 2;
-						$md['JENIS_DOKUMEN'] = $dok[4];
-						$md['TGL_INPUT'] = $dok[5];
-						$md['KODE_INPUT'] = $dok[6];
+						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+						$md['dokumen'] = $dok[0];
+						$md['nama'] = $dok[1];
+						$md['size'] = $dok[2];
+						$md['type'] = $dok[3];
+						$md['role'] = 2;
+						$md['jenis_dokumen'] = $dok[4];
+						$md['tgl_input'] = $dok[5];
+						$md['kode_input'] = $dok[6];
 
-						$this->db->insert('msdokumen', $md);
+						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
+
+						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			}

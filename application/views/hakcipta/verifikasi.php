@@ -123,7 +123,7 @@
                               <td><?= $dok['jenis_dokumen'] ?></td>
                               <td>
                                 <?php if ($dokumen[$d]['size'] > 0) { ?>
-                                  <a class="btn btn-xs btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_hakcipta/') . $dokumen[$d]['name'] ?>"><i class="fa fa-download"></i> Lihat Dokumen</a>
+                                  <a class="btn btn-xs btn-info" target="_blank" href="<?= URL_API_DOWNLOAD. $dokumen[$d]['name'] ?>"><i class="fa fa-download"></i> Lihat Dokumen</a>
                                 <?php } else { ?>
                                   <span class="badge badge-lg badge-warning"> Dokumen Belum Lengkap!</span>
                                 <?php } ?>
@@ -147,7 +147,7 @@
                               <td>
                                 <?php if ($dokver[0]['size'] > 0) { ?>
                                   <?php $dokumen1 = $dokver[0]['name'] ?>
-                                  <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen1 ?>"><i class="fa fa-download"></i></a>
+                                  <a class="btn btn-info" target="_blank" href="<?= URL_API_DOWNLOAD . $dokumen1 ?>"><i class="fa fa-download"></i></a>
                                   <input type="hidden" name="currentfile1" value="<?= $dokver[0]['name']; ?>">
                                 <?php } else { ?>
                                   <input type="file" name="dokumen1" id="dokumen1" data-plugin="dropify" data-height="60">
@@ -159,7 +159,7 @@
                             <td>
                               <?php if ($dokver[1]['size'] > 0) { ?>
                                 <?php $dokumen2 = $dokver[1]['name'] ?>
-                                <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen2 ?>"><i class="fa fa-download"></i></a>
+                                <a class="btn btn-info" target="_blank" href="<?= URL_API_DOWNLOAD. $dokumen2 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen2" id="2" data-plugin="dropify" data-height="60">
                               <?php } ?>
@@ -170,7 +170,7 @@
                             <td>
                               <?php if ($dokver[2]['size'] > 0) { ?>
                                 <?php $dokumen3 = $dokver[2]['name'] ?>
-                                <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen3 ?>"><i class="fa fa-download"></i></a>
+                                <a class="btn btn-info" target="_blank" href="<?= URL_API_DOWNLOAD. $dokumen3 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen3" id="dokumen3" data-plugin="dropify" data-height="60">
                               <?php } ?>
@@ -181,7 +181,7 @@
                             <td>
                               <?php if ($dokver[3]['size'] > 0) { ?>
                                 <?php $dokumen4 = $dokver[3]['name'] ?>
-                                <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen4 ?>"><i class="fa fa-download"></i></a>
+                                <a class="btn btn-info" target="_blank" href="<?= URL_API_DOWNLOAD . $dokumen4 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen4" id="dokumen4" data-plugin="dropify" data-height="60">
                               <?php } ?>
@@ -192,7 +192,7 @@
                             <td>
                               <?php if ($dokver[4]['size'] > 0) { ?>
                                 <?php $dokumen5 = $dokver[4]['name'] ?>
-                                <a class="btn btn-info" target="_blank" href="<?= base_url('./assets/dokumen/dokumen_verifikator/') . $dokumen5 ?>"><i class="fa fa-download"></i></a>
+                                <a class="btn btn-info" target="_blank" href="<?= URL_API_DOWNLOAD . $dokumen5 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen5" id="dokumen5" data-plugin="dropify" data-height="60">
                               <?php } ?>
