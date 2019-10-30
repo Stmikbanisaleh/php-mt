@@ -23,21 +23,31 @@ class Pembayaran extends CI_Controller
 
 	public function input()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$data['jenispembayaran'] = $this->db->get_where('msrev', array('GOLONGAN' => 13))->result_array();
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $roleId = $data['user']['role_id'];
+		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$return_jenispembayaran = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 4]);
+		$return_dokhakcipta = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 3]);
+		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
+		
+		$data['jenispembayaran'] = $return_jenispembayaran['data']['rows'];
 
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $roleId = $data['user']['role_id'];
+		$return_role = $this->lapan_api_library->call('rev/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $this->session->userdata('role_id')]);
+		$return_pembayaran = $this->lapan_api_library->call('pembayaran/getpembayaran', ['token' => $this->session->userdata('token')]);
 
-		$this->load->model('Pembayaran_model', 'bayar');
-		$data['pembayaran'] = $this->bayar->getPembayaran();
+		// print_r($return_pembayaran);exit;
+		// $data['role'] = $return_role['data']['rows'][0];
 
-		if ($roleId == 15 or $roleId == 17) {
+		// $this->load->model('Pembayaran_model', 'bayar');
+		$data['pembayaran'] = $return_pembayaran['data'][0];
+
+		if ($this->session->userdata('role_id') == 15 or $this->session->userdata('role_id')== 17) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
 			$this->load->view('pembayaran/input', $data);
@@ -68,15 +78,18 @@ class Pembayaran extends CI_Controller
 		}
 
 		$data = [
-			'NOMOR_PENDAFTAR' => htmlspecialchars($this->input->post('no_paten', true)),
-			'TGL_INPUT' => date('Y-m-d h:i:s'),
-			'JENIS_PEMBAYARAN' => htmlspecialchars($this->input->post('jenis_pembayaran', true)),
-			'BUKTI_PEMBAYARAN' => $filename,
-			'PEMBAYARAN' => htmlspecialchars($this->input->post('dibayar', true))
+			'nomor_pendaftar' => htmlspecialchars($this->input->post('no_paten', true)),
+			'tgl_input' => date('Y-m-d h:i:s'),
+			'jenis_pembayaran' => htmlspecialchars($this->input->post('jenis_pembayaran', true)),
+			'bukti_pembayaran' => $filename,
+			'pembayaran' => htmlspecialchars($this->input->post('dibayar', true)),
+			'token' => $this->session->userdata('token'),
 		];
 
-		$this->db->insert('trpembayaran', $data);
-		$this->db->insert('trpembayaran_backup', $data);
+		$insert = $this->lapan_api_library->call('pembayaran/addpembayaran',$data);
+
+		// $this->db->insert('trpembayaran', $data);
+		// $this->db->insert('trpembayaran_backup', $data);
 
 		$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Pembayaran telah ditambahkan!</div>');
@@ -99,15 +112,11 @@ class Pembayaran extends CI_Controller
 
 	public function monitoring()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		$return_pembayaran = $this->lapan_api_library->call('pembayaran/getpembayaran', ['token' => $this->session->userdata('token')]);
+		$data['pembayaran'] = $return_pembayaran['data'][0];
 
-		$this->load->model('Pembayaran_model', 'bayar');
-		$data['pembayaran'] = $this->bayar->getPembayaran();
-
-		if ($roleId == 15 or $roleId == 17) {
+		// print_r($data);exit;
+		if ($this->session->userdata('role_id') == 15 or $this->session->userdata('role_id') == 17) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
 			$this->load->view('pembayaran/monitoring', $data);
@@ -124,11 +133,17 @@ class Pembayaran extends CI_Controller
 	{
 		$nopaten = $this->input->post('no_paten');
 		if ($id != '') {
-			$no_paten = $id;
+			$nopaten = $id;
 		}
-
-		$this->load->model('Pembayaran_model', 'bayar');
-		$detail = $this->bayar->getDetail($nopaten);
+		$data = [
+			'nomor_paten' => $nopaten,
+			'token' => $this->session->userdata('token')
+		];
+		$detail = $this->lapan_api_library->call('pembayaran/getdetail',$data);
+		// print_r(json_encode($detail['data'][0][0]));exit;
+		$detail = $detail['data'][0][0];
+		// $this->load->model('Pembayaran_model', 'bayar');
+		// $detail = $this->bayar->getDetail($nopaten);
 
 		$results = array('header' => $detail);
 

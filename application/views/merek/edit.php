@@ -90,7 +90,7 @@
                                                             if ($pend['nik'] == $p['nik']) {
                                                                 echo '<option selected value="' . $p['nik'] . '">' . $p['nik'] . ' - '  . $p['nama'] . '</option>';
                                                             } else {
-                                                                echo '<option value="' . $p['NIK'] . '">'  . $p['nik'] . ' - ' . $p['nama'] . '</option>';
+                                                                echo '<option value="' . $p['nik'] . '">'  . $p['nik'] . ' - ' . $p['nama'] . '</option>';
                                                             }
                                                         } ?>
                                                     <?php foreach ($nonpegawai as $np) {
@@ -138,7 +138,7 @@
                                                     <div class="row">
                                                         <div class="col-sm-5">
                                                             <h5 class="text-center">Dokumen Terunggah</h5>
-                                                            <a class="btn btn-default" target="_blank" href="<?= base_url('assets/dokumen/dokumen_merek/') . $dok['name'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
+                                                            <a class="btn btn-default" target="_blank" href="<?= URL_API_DOWNLOAD . $dok['name'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
                                                         </div>
                                                         <div class="col-sm-7">
                                                             <h5 class="text-center">Ganti Dokumen</h5>

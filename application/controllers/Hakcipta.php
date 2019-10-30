@@ -719,7 +719,7 @@ class Hakcipta extends CI_Controller
 		$dokhakciptaver = $this->lapan_api_library->call('hakciptas/getdokumenver', $data_dokumen);
 		$dokuver = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokumen2);
 
-		$config1['file_name']          	= $dokuver['data']['rows'][0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config1['file_name']          	= $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		// $config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		// $config1['allowed_types']        = 'doc|docx|pdf';
 
@@ -957,7 +957,7 @@ class Hakcipta extends CI_Controller
 		];
 
 		$updatehakcipta = $this->lapan_api_library->call('hakciptas/updateverifikasihakciptasave', $data);
-
+		// print_r($data);exit;
 		if ($updatehakcipta['status'] == 200) {
 			if ($dokhakciptaver) {
 				$delete = [
@@ -976,12 +976,13 @@ class Hakcipta extends CI_Controller
 						$md['size'] = $dok[2];
 						$md['type'] = $dok[3];
 						$md['role'] = 2;
+						$md['token'] = $this->session->userdata('token');
 						$md['jenis_dokumen'] = $dok[4];
 						$md['tgl_input'] = $dok[5];
 						$md['kode_input'] = $dok[6];
 
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
-
+						// print_r($insertdokumen);exit;
 						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
@@ -1033,14 +1034,14 @@ class Hakcipta extends CI_Controller
 
 	public function input_pencipta()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
+		// $data['user'] = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $roleId = $data['user']['role_id'];
+		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
 
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
-		$this->load->view('hakcipta/input_pencipta', $data);
+		$this->load->view('hakcipta/input_pencipta');
 		$this->load->view('templates/footer');
 	}
 
@@ -1048,29 +1049,14 @@ class Hakcipta extends CI_Controller
 	{
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('nik', 'NIK', 'required|is_unique[msnonpegawai.NIK]|numeric');
-		$this->form_validation->set_rules('nama', 'nama', 'required');
-
-		if ($this->form_validation->run($this) == false) {
-			$data['user'] = $this->db->get_where('msuser', ['email' =>
-			$this->session->userdata('email')])->row_array();
-			$roleId = $data['user']['role_id'];
-			$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-			$this->load->view('templates/header', $data);
-			$this->load->view('templates/side_menu');
-			$this->load->view('hakcipta/input_pencipta', $data);
-			$this->load->view('templates/footer');
-		} else {
-			$data = [
-				'NIK' => htmlspecialchars($this->input->post('nik', true)),
-				'NAMA' => htmlspecialchars($this->input->post('nama', true))
-			];
-
-			$this->db->insert('msnonpegawai', $data);
+		$data = [
+			'nik' => htmlspecialchars($this->input->post('nik', true)),
+			'nama' => htmlspecialchars($this->input->post('nama', true)),
+			'token' => $this->session->userdata('token'),
+		];
+		$insertpendesain = $this->lapan_api_library->call('nonpegawai/insertpendesain', $data);
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Pencipta baru telah ditambahkan! <a type="button" href="input" class="my-5 btn btn-success btn-sm">Tambah Hak Cipta</a></div>');
 			redirect('hakcipta/input_pencipta');
 		}
-	}
 }

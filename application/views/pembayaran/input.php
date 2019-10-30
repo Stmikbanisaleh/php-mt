@@ -59,7 +59,7 @@
                           <select class="form-control" name="jenis_pembayaran" id="jenis_pembayaran">
                             <option value="">Pilih Jenis Pembayaran</option>
                             <?php foreach ($jenispembayaran as $jp) { ?>
-                              <option value="<?= $jp['NAMA_REV']; ?>"><?= $jp['NAMA_REV']; ?></option>
+                              <option value="<?= $jp['nama_rev']; ?>"><?= $jp['nama_rev']; ?></option>
                             <?php } ?>
                           </select>
                         </td>
@@ -116,12 +116,12 @@
           dataType: 'json',
           type: 'post',
           contentType: 'application/x-www-form-urlencoded',
-          data: 'no_paten=' + this_val,
+          data: 'nomor_paten=' + this_val,
           success: function(data) {
             $.each(data.header, function(v) {
-              $('#unit_kerja').val(v.NAMA_REV);
-              $('#judul').val(v.JUDUL);
-              $('#tahun').val(v.TAHUN_GRANTED);
+              $('#unit_kerja').val(v.nama_rev);
+              $('#judul').val(v.judul);
+              $('#tahun').val(v.tahun_granted);
             });
           },
           error: function() {
