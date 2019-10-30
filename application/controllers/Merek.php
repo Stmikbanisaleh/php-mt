@@ -734,31 +734,39 @@ class Merek extends CI_Controller
 			if (!empty($_FILES['dokumen1']['name'])) {
 				$this->upload->do_upload('dokumen1');
 				$filename1 = $this->upload->data('file_name');
-				$size1 = $this->upload->data('file_size');
-				$type1 = $this->upload->data('file_ext');
+				$filename1 = $_FILES['dokumen1']['name'];
+				$size1 = $_FILES['dokumen1']['size'];
+				$type1 = $_FILES['dokumen1']['type'];
+				$file_tmp = $_FILES['dokumen1']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen1base64 = base64_encode($data);
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
-				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$dokumen1 = array($dokumen1base64, $filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
 				// print_r($dokmerekver);exit;
 				$filename1 = $dokmerekver['data'][0][0]['name'];
 				$size1 = $dokmerekver['data'][0][0]['size'];
 				$type1 = $dokmerekver['data'][0][0]['type'];
 				$jenisdok = $dokmerekver['data'][0][0]['id'];
-				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$dokumen1 = array('', $filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen1']['name'])) {
-				$this->upload->do_upload('dokumen1');
-				$filename1 = $this->upload->data('file_name');
-				$size1 = $this->upload->data('file_size');
-				$type1 = $this->upload->data('file_ext');
+				// $this->upload->do_upload('dokumen1');
+				$filename1 = $_FILES['dokumen1']['name'];
+				$size1 = $_FILES['dokumen1']['size'];
+				$type1 = $_FILES['dokumen1']['type'];
+				$file_tmp = $_FILES['dokumen1']['tmp_name'];
+				$data = file_get_contents($file_tmp);
+				$dokumen1base64 = base64_encode($data);
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
+
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$dokumen1 = array($dokumen1base64,$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename1 = $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
-				$dokumen1 = array($filename1, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen1 = array('',$filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -769,39 +777,45 @@ class Merek extends CI_Controller
 		$config2['allowed_types']        = 'doc|docx|pdf';
 		$config2['overwrite']        = TRUE;
 
-
+		// print_r($dokumen1);exit;
 		$this->upload->initialize($config2);
 
 		// script upload dokumen kedua
 		if ($dokmerekver) {
 			if (!empty($_FILES['dokumen2']['name'])) {
 				$this->upload->do_upload('dokumen2');
-				$filename2 = $this->upload->data('file_name');
-				$size2 = $this->upload->data('file_size');
-				$type2 = $this->upload->data('file_ext');
+				$filename2 = $_FILES['dokumen2']['name'];
+				$size2 = $_FILES['dokumen2']['size'];
+				$type2 = $_FILES['dokumen2']['type'];
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
-				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$file_tmp2 = $_FILES['dokumen2']['tmp_name'];
+				$data2 = file_get_contents($file_tmp2);
+				$dokumen2base64 = base64_encode($data2);
+				$dokumen2 = array($dokumen2base64, $filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
 				// print_r($dokmerekver['data'][0][1]['name']);exit;
 				$filename2 = $dokmerekver['data'][0][1]['name'];
 				$size2 = $dokmerekver['data'][0][1]['size'];
 				$type2 = $dokmerekver['data'][0][1]['type'];
 				$jenisdok = $dokmerekver['data'][0][1]['id'];
-				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$dokumen2 = array('',$filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen2']['name'])) {
 				$this->upload->do_upload('dokumen2');
-				$filename2 = $this->upload->data('file_name');
-				$size2 = $this->upload->data('file_size');
-				$type2 = $this->upload->data('file_ext');
+				$filename2 = $_FILES['dokumen2']['name'];
+				$size2 = $_FILES['dokumen2']['size'];
+				$type2 = $_FILES['dokumen2']['type'];
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
+				$file_tmp2 = $_FILES['dokumen2']['tmp_name'];
+				$data2 = file_get_contents($file_tmp2);
+				$dokumen2base64 = base64_encode($data2);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$dokumen2 = array($dokumen2base64, $filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename2 = $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
-				$dokumen2 = array($filename2, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen2 = array('',$filename2, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -815,32 +829,39 @@ class Merek extends CI_Controller
 		// script uplaod dokumen ketiga
 		if ($dokmerekver) {
 			if (!empty($_FILES['dokumen3']['name'])) {
-				$this->upload->do_upload('dokumen3');
-				$filename3 = $this->upload->data('file_name');
-				$size3 = $this->upload->data('file_size');
-				$type3 = $this->upload->data('file_ext');
+				// $this->upload->do_upload('dokumen3');
+				$filename3 = $_FILES['dokumen3']['name'];
+				$size3 = $_FILES['dokumen3']['size'];
+				$type3 = $_FILES['dokumen3']['type'];
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
-				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$file_tmp3 = $_FILES['dokumen3']['tmp_name'];
+				$data3 = file_get_contents($file_tmp3);
+				$dokumen3base64 = base64_encode($data3);
+
+				$dokumen3 = array($dokumen3base64, $filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename3 = $dokmerekver['data'][0][2]['name'];
 				$size3 = $dokmerekver['data'][0][2]['size'];
 				$type3 = $dokmerekver['data'][0][2]['type'];
 				$jenisdok = $dokmerekver['data'][0][2]['id'];
-				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$dokumen3 = array('',$filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen3']['name'])) {
 				$this->upload->do_upload('dokumen3');
-				$filename3 = $this->upload->data('file_name');
-				$size3 = $this->upload->data('file_size');
-				$type3 = $this->upload->data('file_ext');
+				$filename3 = $_FILES['dokumen3']['name'];
+				$size3 = $_FILES['dokumen3']['size'];
+				$type3 = $_FILES['dokumen3']['type'];
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
+				$file_tmp3 = $_FILES['dokumen3']['tmp_name'];
+				$data3 = file_get_contents($file_tmp3);
+				$dokumen3base64 = base64_encode($data3);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$dokumen3 = array($dokumen3base64, $filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename3 = $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
-				$dokumen3 = array($filename3, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen3 = array('',$filename3, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -855,30 +876,36 @@ class Merek extends CI_Controller
 			if (!empty($_FILES['dokumen4']['name'])) {
 				$this->upload->do_upload('dokumen4');
 				$filename4 = $this->upload->data('file_name');
-				$size4 = $this->upload->data('file_size');
-				$type4 = $this->upload->data('file_ext');
+				$size4 = $_FILES['dokumen4']['size'];
+				$type4 = $_FILES['dokumen4']['type'];
 				$jenisdok = $dokuver['data']['rows'][3]['id'];
-				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				$file_tmp4 = $_FILES['dokumen4']['tmp_name'];
+				$data4 = file_get_contents($file_tmp4);
+				$dokumen4base64 = base64_encode($data4);
+				$dokumen4 = array($dokumen4base64,$filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename4 = $dokmerekver['data'][0][3]['name'];
 				$size4 = $dokmerekver['data'][0][3]['size'];
 				$type4 = $dokmerekver['data'][0][3]['type'];
 				$jenisdok = $dokmerekver['data'][0][3]['id'];
-				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				$dokumen4 = array('',$filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen4']['name'])) {
-				$this->upload->do_upload('dokumen4');
-				$filename4 = $this->upload->data('file_name');
-				$size4 = $this->upload->data('file_size');
-				$type4 = $this->upload->data('file_ext');
+				$filename4 = $_FILES['dokumen4']['name'];
+				$size4 = $_FILES['dokumen4']['size'];
+				$type4 = $_FILES['dokumen4']['type'];
 				$jenisdok = $dokuver['data']['rows'][3]['id'];
+				$file_tmp4 = $_FILES['dokumen4']['tmp_name'];
+				$data4 = file_get_contents($file_tmp4);
+				$dokumen4base64 = base64_encode($data4);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				$dokumen4 = array($dokumen4base64, $filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename4 = $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][3]['id'];
-				$dokumen4 = array($filename4, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen4 = array('',$filename4, '', '', '2', $jenisdok, $date, $userid);
+				
 			}
 		}
 
@@ -892,35 +919,41 @@ class Merek extends CI_Controller
 		if ($dokmerekver) {
 			if (!empty($_FILES['dokumen5']['name'])) {
 				$this->upload->do_upload('dokumen5');
-				$filename5 = $this->upload->data('file_name');
-				$size5 = $this->upload->data('file_size');
-				$type5 = $this->upload->data('file_ext');
+				$filename5 = $_FILES['dokumen5']['name'];
+				$size5 = $_FILES['dokumen5']['size'];
+				$type5 = $_FILES['dokumen5']['type'];
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
-				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$file_tmp5 = $_FILES['dokumen5']['tmp_name'];
+				$data5 = file_get_contents($file_tmp5);
+				$dokumen5base64 = base64_encode($data5);
+				$dokumen5 = array($dokumen5base64,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename5 = $dokmerekver['data'][0][4]['name'];
 				$size5 = $dokmerekver['data'][0][4]['size'];
 				$type5 = $dokmerekver['data'][0][4]['type'];
 				$jenisdok = $dokmerekver['data'][0][4]['id'];
-				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$dokumen5 = array('',$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen5']['name'])) {
-				$this->upload->do_upload('dokumen5');
-				$filename5 = $this->upload->data('file_name');
-				$size5 = $this->upload->data('file_size');
-				$type5 = $this->upload->data('file_ext');
+				$filename5 = $_FILES['dokumen5']['name'];
+				$size5 = $_FILES['dokumen5']['size'];
+				$type5 = $_FILES['dokumen5']['type'];
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
+				$file_tmp5 = $_FILES['dokumen5']['tmp_name'];
+				$data5 = file_get_contents($file_tmp5);
+				$dokumen5base64 = base64_encode($data5);
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
-				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$dokumen5 = array($$dokumen5base64 ,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename5 = $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
-				$dokumen5 = array($filename5, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen5 = array('',$filename5, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 		$dokumen = array($dokumen1, $dokumen2, $dokumen3, $dokumen4, $dokumen5);
+		// print_r($dokumen1);exit;
 		//var_dump($dokumen);
 		//die;
 
@@ -945,26 +978,32 @@ class Merek extends CI_Controller
 			if ($dokmerekver) {
 				$delete = [
 					'code' => $this->input->post('ipman_code'),
-					'role' => 2
+					'role' => 2,
+					'token' => $this->session->userdata('token')
 				];
 
 				$deletedokumen = $this->lapan_api_library->call('dokumen/deletedokumenbynomorpendaftar', $delete);
-
+				// print_r($deletedokumen);exit;
 				// $this->db->delete('msdokumen', array('nomor_pendaftar' => $this->input->post('ipman_code'), 'role' => 2));
 				// print_r(json_encode($dokumen));exit;
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
 						// print_r($dok);exit;
 						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
-						$md['name'] = $dok[0];
-						$md['size'] = $dok[1];
-						$md['type'] = $dok[2];
+						$md['dokumen'] = $dok[0];
+						$md['name'] = $dok[1];
+						$md['size'] = $dok[2];
+						$md['type'] = $dok[3];
 						$md['role'] = 2;
 						$md['jenis_dokumen'] = $dok[4];
 						$md['tgl_input'] = $dok[5];
 						$md['kode_input'] = $dok[6];
+						$md['downloadable'] = 1;
+						$md['token'] = $this->session->userdata('token');
 
+						// print_r($md);exit;
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
+						// print_r($insertdokumen);exit;
 
 						// $this->db->insert('msdokumen', $md);
 					}
@@ -974,9 +1013,10 @@ class Merek extends CI_Controller
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
 						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
-						$md['name'] = $dok[0];
-						$md['size'] = $dok[1];
-						$md['type'] = $dok[2];
+						$md['gambar'] = $dok[0];
+						$md['name'] = $dok[1];
+						$md['size'] = $dok[2];
+						$md['type'] = $dok[3];
 						$md['role'] = 2;
 						$md['jenis_dokumen'] = $dok[4];
 						$md['tgl_input'] = $dok[5];
@@ -1001,11 +1041,6 @@ class Merek extends CI_Controller
 			'pernah_diajukan' => 1
 		];
 		$return = $this->lapan_api_library->call('mereks/ajukan', $data);
-
-		// $this->db->set('STATUS', 20);
-		// $this->db->set('PERNAH_DIAJUKAN', 1);
-		// $this->db->where('ID', $id);
-		// $this->db->update('msmerek');
 		redirect('merek/monitoring');
 	}
 
@@ -1021,44 +1056,22 @@ class Merek extends CI_Controller
 
 	public function input_pendesain()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
-		$this->load->view('merek/input_pendesain', $data);
+		$this->load->view('merek/input_pendesain');
 		$this->load->view('templates/footer');
 	}
 
 	public function save_pendesain()
 	{
-		$this->load->library('form_validation');
-
-		$this->form_validation->set_rules('nik', 'NIK', 'required|is_unique[msnonpegawai.NIK]|numeric');
-		$this->form_validation->set_rules('nama', 'nama', 'required');
-
-		if ($this->form_validation->run($this) == false) {
-			$data['user'] = $this->db->get_where('msuser', ['email' =>
-			$this->session->userdata('email')])->row_array();
-			$roleId = $data['user']['role_id'];
-			$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-			$this->load->view('templates/header', $data);
-			$this->load->view('templates/side_menu');
-			$this->load->view('merek/input_pendesain', $data);
-			$this->load->view('templates/footer');
-		} else {
 			$data = [
-				'NIK' => htmlspecialchars($this->input->post('nik', true)),
-				'NAMA' => htmlspecialchars($this->input->post('nama', true))
+				'nik' => htmlspecialchars($this->input->post('nik', true)),
+				'nama' => htmlspecialchars($this->input->post('nama', true)),
+				'token' => $this->session->userdata('token'),
 			];
-
-			$this->db->insert('msnonpegawai', $data);
+			$insertpendesain = $this->lapan_api_library->call('nonpegawai/insertpendesain', $data);
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Pendesain baru telah ditambahkan! <a type="button" href="input" class="my-5 btn btn-success btn-sm">Tambah Merek</a></div>');
 			redirect('merek/input_pendesain');
-		}
 	}
 }
