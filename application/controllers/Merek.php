@@ -763,7 +763,6 @@ class Merek extends CI_Controller
 		if ($dokmerekver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
 				$this->upload->do_upload('dokumen1');
-				$filename1 = $this->upload->data('file_name');
 				$filename1 = $_FILES['dokumen1']['name'];
 				$size1 = $_FILES['dokumen1']['size'];
 				$type1 = $_FILES['dokumen1']['type'];
