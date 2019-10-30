@@ -37,7 +37,12 @@ class Hakcipta extends CI_Controller
 		$data['pegawai'] = $return_pegawai['data']['rows'];
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
-		$getcode = $this->lapan_api_library->call('hakciptas/getipmancode', ['token' => $this->session->userdata('token')]);
+		$data_getcode = array(
+				'token' => $this->session->userdata('token'),
+				'kode' => 'HC',
+			);
+		$getcode = $this->lapan_api_library->call('lib/getcode', $data_getcode);
+
 		$pb = $getcode['data']['rows'];
 		$kode = $getcode['data']['rows'][0]['kode'];
 		$nourut = sprintf('%04d', $pb[0]['no_urut']);
@@ -124,7 +129,7 @@ class Hakcipta extends CI_Controller
 				'token' => $this->session->userdata('token'),
 				'kode' => 'HC',
 			);
-			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
+			// $update = $this->lapan_api_library->call('lib/updatenourut', $data);
 
 			$i = 1;
 			$dokmerek = $dokmerek['data']['rows'];
@@ -139,23 +144,28 @@ class Hakcipta extends CI_Controller
 				}
 				$dokumen_base64 = base64_encode($data_getcontent);
 
-
 				$this->upload->initialize($config);
 
 				// script uplaod dokumen pertama
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
-					$filename = $_FILES['dokumen' . $i]['name'];
+
 					$size = $_FILES['dokumen' . $i]['size'];
 					$type = $_FILES['dokumen' . $i]['type'];
+					$filename = $_FILES['dokumen' . $i]['name'];
 					$jenisdok = $dh['id'];
+					$downloadable = $dh['downloadable'];
+
+					$ext = explode('.', $filename);
+					$type = end($ext);
 				} else {
 					$filename = $ipmancode . '_' . $dh['penamaan_file'];
 					$size = '';
 					$type = '';
 					$jenisdok = $dh['id'];
+					$downloadable = 0;
 				}
 
-				$dokumen = array($file_tmp, $type, 1, $jenisdok, $date, $userid, $filename, $size);
+				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 
 				$md['token'] = $this->session->userdata('token');
 				$md['nomor_pendaftar'] = $ipmancode;
@@ -165,10 +175,9 @@ class Hakcipta extends CI_Controller
 				$md['jenis_dokumen'] = $dokumen[3];
 				$md['tgl_input'] = $dokumen[4];
 				$md['kode_input'] = $dokumen[5];
-				$md['downloadable'] = 1;
+				$md['downloadable'] = $downloadable;
 				$md['name'] = $dokumen[6];
-				$md['size'] = $dokumen[7];	
-
+				$md['size'] = $dokumen[7];
 				
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				
@@ -177,21 +186,14 @@ class Hakcipta extends CI_Controller
 
 			$kp = array();
 
-			// print_r(json_encode($post['pencipta'] ));exit;
-
 			foreach ($post['pencipta'] as $kopeg) {
-				// print_r($insert);
 				$kp['token'] = $this->session->userdata('token');
 				$kp['id_hakcipta'] = $insert['id'];
 				$kp['nik'] = $kopeg['nik'];
 
 				$insert = $this->lapan_api_library->call('hakciptas/adddhakcipta', $kp);
-				// print_r($kopeg['nik']."<br>");
 			}
-
-			// print_r(json_encode($kp));exit;
-			// exit;
-
+			
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Hak Cipta telah ditambahkan!</div>');
 			redirect('hakcipta/monitoring');

@@ -36,12 +36,17 @@ class Merek extends CI_Controller
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
 		// $this->load->model('Merek_model', 'merek');
-		$getcode = $this->lapan_api_library->call('mereks/getipmancode', ['token' => $this->session->userdata('token')]);
-				$pb = $getcode['data']['rows'];
-				$kode = $getcode['data']['rows'][0]['kode'];
-				$nourut = sprintf('%04d', $pb[0]['no_urut']);
-				$ipm = $pb[0]['kode'] . '_' . $nourut;
-				$ipmancode = $ipm;
+		$data_getcode = array(
+				'token' => $this->session->userdata('token'),
+				'kode' => 'MR',
+			);
+		$getcode = $this->lapan_api_library->call('lib/getcode', $data_getcode);
+
+		$pb = $getcode['data']['rows'];
+		$kode = $getcode['data']['rows'][0]['kode'];
+		$nourut = sprintf('%04d', $pb[0]['no_urut']);
+		$ipm = $pb[0]['kode'] . '_' . $nourut;
+		$ipmancode = $ipm;
 
 		$data['ipmancode'] = $ipmancode;
 		// print_r($ipmancode);exit;
@@ -114,7 +119,6 @@ class Merek extends CI_Controller
 		];
 
 		$insert = $this->lapan_api_library->call('mereks/addmerek', $data);
-		
 
 		if ($insert) {
 			$dataId = $insert['id'];
@@ -124,8 +128,6 @@ class Merek extends CI_Controller
 				'kode' => 'MR',
 			);
 			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
-			
-
 
 			$i = 1;
 			$dokmerek = $dokmerek['data']['rows'];
@@ -142,17 +144,21 @@ class Merek extends CI_Controller
 				$dokumen_base64 = base64_encode($data_getcontent);
 
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
-					$filename = $_FILES['dokumen' . $i]['name'];
 					$size = $_FILES['dokumen' . $i]['size'];
 					$type = $_FILES['dokumen' . $i]['type'];
+					$filename = $_FILES['dokumen' . $i]['name'];
 					$jenisdok = $dm['id'];
+					$downloadable = $dm['downloadable'];
+
+					$ext = explode('.', $filename);
+					$type = end($ext);
 				} else {
 					$filename = $ipmancode . '_' . $dm['penamaan_file'];
 					$size = '';
 					$type = '';
 					$jenisdok = $dm['id'];
+					$downloadable = 0;
 				}
-
 				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 
 				$md['token'] = $this->session->userdata('token');
@@ -163,7 +169,7 @@ class Merek extends CI_Controller
 				$md['jenis_dokumen'] = $dokumen[3];
 				$md['tgl_input'] = $dokumen[4];
 				$md['kode_input'] = $dokumen[5];
-				$md['downloadable'] = 1;
+				$md['downloadable'] = $downloadable;
 				$md['name'] = $dokumen[6];
 				$md['size'] = $dokumen[7];				
 
@@ -178,11 +184,7 @@ class Merek extends CI_Controller
 				$kp['nik'] = $kopeg['nik'];
 
 				$insert = $this->lapan_api_library->call('mereks/adddmerek', $kp);
-
-
 			}
-
-			
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
 			Merek telah ditambahkan!</div>');
 			redirect('merek/monitoring');

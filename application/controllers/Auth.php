@@ -195,14 +195,14 @@ class Auth extends CI_Controller
 			if ($user_token) {
 				$this->db->set('is_active', 3);
 				$this->db->where('email', $email);
-				$this->db->update('msuser');
+				$this->db->tokenupdate('msuser');
 
 				$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Aktivasi berhasil,silahkan Login</div>');
 				redirect('auth');
 			} else {
 				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-            Aktivasi gagal,token salah</div>');
+            Aktivasi gagal, salah</div>');
 				redirect('auth');
 			}
 		} else {

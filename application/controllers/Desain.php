@@ -33,7 +33,12 @@ class Desain extends CI_Controller
 		$data['pegawai'] = $return_pegawai['data']['rows'];
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
         // $this->load->model('Desain_model', 'desain');
-        $getcode = $this->lapan_api_library->call('desain/getipmancode', ['token' => $this->session->userdata('token')]);
+        $data_getcode = array(
+				'token' => $this->session->userdata('token'),
+				'kode' => 'DI',
+			);
+		$getcode = $this->lapan_api_library->call('lib/getcode', $data_getcode);
+
         $pb = $getcode['data']['rows'];
         $kode = $getcode['data']['rows'][0]['kode'];
         $nourut = sprintf('%04d', $pb[0]['no_urut']);
@@ -78,7 +83,8 @@ class Desain extends CI_Controller
 			'id_haki' => 4,
 			'id_role' => 1,
 		];
-		$dokdesain = $this->lapan_api_library->call('dokumen/getjenisdokumen', $data);
+		$dokdesain = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data);
+
 		$post = $this->input->post();
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
@@ -94,7 +100,6 @@ class Desain extends CI_Controller
 			'tgl_input' => date('Y-m-d h:i:s'),
 		];
 		$insert = $this->lapan_api_library->call('desain/adddesainindustri', $data);
-		
 		if ($insert) {
 			$dataId = $insert['id'];
 			$data = array(
@@ -118,15 +123,21 @@ class Desain extends CI_Controller
 				// script uplaod dokumen pertama
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					$this->upload->do_upload('dokumen' . $i);
-					$filename = $_FILES['dokumen' . $i]['name'];
+
 					$size = $_FILES['dokumen' . $i]['size'];
 					$type = $_FILES['dokumen' . $i]['type'];
+					$filename = $_FILES['dokumen' . $i]['name'];
 					$jenisdok = $dd['id'];
+					$downloadable = $dd['downloadable'];
+
+					$ext = explode('.', $filename);
+					$type = end($ext);
 				} else {
 					$filename =  $ipmancode . '_' . $dd['penamaan_file'];
 					$size = '';
 					$type = '';
 					$jenisdok = $dd['id'];
+					$downloadable = 0;
 				}
 				$dokumen = array($dokumen_base64, $type, 1, $jenisdok, $date, $userid, $filename, $size);
 				$md['token'] = $this->session->userdata('token');
@@ -137,26 +148,28 @@ class Desain extends CI_Controller
 				$md['jenis_dokumen'] = $dokumen[3];
 				$md['tgl_input'] = $dokumen[4];
 				$md['kode_input'] = $dokumen[5];
-				$md['downloadable'] = 1;
+				$md['downloadable'] = $downloadable;
 				$md['name'] = $dokumen[6];
 				$md['size'] = $dokumen[7];	
+
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				$i++;
 			}
+
 			$kp = array();
 			foreach ($post['pendesain'] as $kopeg) {
 				$kp['token'] = $this->session->userdata('token');
 				$kp['id_desain_industri'] = $insert['id'];
 				$kp['nik'] = $kopeg['nik'];
 				$insert = $this->lapan_api_library->call('desain/addddesainindustri', $kp);
-				print_r(json_encode($insert));
 			}
-			// exit;
+
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
 							Desain Industri telah ditambahkan!</div>');
 			redirect('desain/monitoring');
 		}
 	}
+	
 	public function update()
 	{
 		$user = $this->db->get_where('msuser', ['email' =>

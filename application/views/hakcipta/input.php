@@ -200,7 +200,7 @@
             var nextRow = row + 1;
             var markup = "<tr id='tr_" + nextRow + "'><td><select name='pencipta[" + nextRow + "][nik]' id='nik_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Pencipta Non Pegawai</option>";
             <?php foreach ($nonpegawai as $npg) : ?>
-                markup += "<option value='<?php echo $npg['nama'] ?>'><?= $npg['nama']; ?></option>";
+                markup += "<option value='<?php echo $npg['nik'] ?>'><?= $npg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
