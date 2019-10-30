@@ -702,38 +702,58 @@ class Merek extends CI_Controller
 
 	public function save_verifikasi()
 	{
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
+		// $user = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+		// $return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
+		// $return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
+		// $return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
+		// $return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
+		// $return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
+		// $return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
+		// $return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
 
-		$userid =  $user['id'];
+		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 
-		$this->load->model('Merek_model', 'merek');
+		// $this->load->model('Merek_model', 'merek');
 		$ipman = $this->input->post('ipman_code');
-		$dokmerekver = $this->merek->getDokumenVer($ipman);
+		$data_dokumen = [
+			'token' => $this->session->userdata('token'),
+			'code' => $ipman
+		];
+		$data_dokumen2 = [
+			'token' => $this->session->userdata('token'),
+			'id_role' => 2
+		];
 
-		$dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
+		// print_r($ipman);exit;
+		$dokmerekver = $this->lapan_api_library->call('mereks/getdokumenver', $data_dokumen);
+		// print_r($data_dokumen);exit;
+		$dokuver = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokumen2);
+		// print_r($dokmerekver['data'][0][0]);exit;
+		// $dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
 
-		$config1['file_name']          	= $dokuver[0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config1['file_name']          	= $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config1['allowed_types']        = 'doc|docx|pdf';
 		$config1['overwrite']        = TRUE;
 
 		$this->upload->initialize($config1);
-
+		// print_r(json_encode($dokmerekver));exit;
 		if ($dokmerekver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
 				$this->upload->do_upload('dokumen1');
 				$filename1 = $this->upload->data('file_name');
 				$size1 = $this->upload->data('file_size');
 				$type1 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[0]['ID'];
+				$jenisdok = $dokuver['data']['rows'][0]['id'];
 				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename1 = $dokmerekver[0]['NAME'];
-				$size1 = $dokmerekver[0]['SIZE'];
-				$type1 = $dokmerekver[0]['TYPE'];
-				$jenisdok = $dokmerekver[0]['ID'];
+				// print_r($dokmerekver);exit;
+				$filename1 = $dokmerekver['data'][0][0]['name'];
+				$size1 = $dokmerekver['data'][0][0]['size'];
+				$type1 = $dokmerekver['data'][0][0]['type'];
+				$jenisdok = $dokmerekver['data'][0][0]['id'];
 				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -742,19 +762,19 @@ class Merek extends CI_Controller
 				$filename1 = $this->upload->data('file_name');
 				$size1 = $this->upload->data('file_size');
 				$type1 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[0]['ID'];
+				$jenisdok = $dokuver['data']['rows'][0]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen1 = array($filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename1 = $dokuver[0]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[0]['ID'];
+				$filename1 = $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][0]['id'];
 				$dokumen1 = array($filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 
 
-		$config2['file_name']          	= $dokuver[1]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config2['file_name']          	= $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config2['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config2['allowed_types']        = 'doc|docx|pdf';
 		$config2['overwrite']        = TRUE;
@@ -769,13 +789,14 @@ class Merek extends CI_Controller
 				$filename2 = $this->upload->data('file_name');
 				$size2 = $this->upload->data('file_size');
 				$type2 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[1]['ID'];
+				$jenisdok = $dokuver['data']['rows'][1]['id'];
 				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename2 = $dokmerekver[1]['NAME'];
-				$size2 = $dokmerekver[1]['SIZE'];
-				$type2 = $dokmerekver[1]['TYPE'];
-				$jenisdok = $dokmerekver[1]['ID'];
+				// print_r($dokmerekver['data'][0][1]['name']);exit;
+				$filename2 = $dokmerekver['data'][0][1]['name'];
+				$size2 = $dokmerekver['data'][0][1]['size'];
+				$type2 = $dokmerekver['data'][0][1]['type'];
+				$jenisdok = $dokmerekver['data'][0][1]['id'];
 				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -784,18 +805,18 @@ class Merek extends CI_Controller
 				$filename2 = $this->upload->data('file_name');
 				$size2 = $this->upload->data('file_size');
 				$type2 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[1]['ID'];
+				$jenisdok = $dokuver['data']['rows'][1]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen2 = array($filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename2 = $dokuver[1]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[1]['ID'];
+				$filename2 = $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][1]['id'];
 				$dokumen2 = array($filename2, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 
-		$config3['file_name']          	= $dokuver[2]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config3['file_name']          	= $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config3['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config3['allowed_types']        = 'doc|docx|pdf';
 		$config3['overwrite']        = TRUE;
@@ -808,13 +829,13 @@ class Merek extends CI_Controller
 				$filename3 = $this->upload->data('file_name');
 				$size3 = $this->upload->data('file_size');
 				$type3 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[2]['ID'];
+				$jenisdok = $dokuver['data']['rows'][2]['id'];
 				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokmerekver[2]['NAME'];
-				$size3 = $dokmerekver[2]['SIZE'];
-				$type3 = $dokmerekver[2]['TYPE'];
-				$jenisdok = $dokmerekver[2]['ID'];
+				$filename3 = $dokmerekver['data'][0][2]['name'];
+				$size3 = $dokmerekver['data'][0][2]['size'];
+				$type3 = $dokmerekver['data'][0][2]['type'];
+				$jenisdok = $dokmerekver['data'][0][2]['id'];
 				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -823,17 +844,17 @@ class Merek extends CI_Controller
 				$filename3 = $this->upload->data('file_name');
 				$size3 = $this->upload->data('file_size');
 				$type3 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[2]['ID'];
+				$jenisdok = $dokuver['data']['rows'][2]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen3 = array($filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokuver[2]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[2]['ID'];
+				$filename3 = $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][2]['id'];
 				$dokumen3 = array($filename3, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
-		$config4['file_name']          	= $dokuver[3]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config4['file_name']          	= $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config4['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config4['allowed_types']        = 'doc|docx|pdf';
 		$config4['overwrite']        = TRUE;
@@ -846,13 +867,13 @@ class Merek extends CI_Controller
 				$filename4 = $this->upload->data('file_name');
 				$size4 = $this->upload->data('file_size');
 				$type4 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[3]['ID'];
+				$jenisdok = $dokuver['data']['rows'][3]['id'];
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokmerekver[3]['NAME'];
-				$size4 = $dokmerekver[3]['SIZE'];
-				$type4 = $dokmerekver[3]['TYPE'];
-				$jenisdok = $dokmerekver[3]['ID'];
+				$filename4 = $dokmerekver['data'][0][3]['name'];
+				$size4 = $dokmerekver['data'][0][3]['size'];
+				$type4 = $dokmerekver['data'][0][3]['type'];
+				$jenisdok = $dokmerekver['data'][0][3]['id'];
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -861,17 +882,17 @@ class Merek extends CI_Controller
 				$filename4 = $this->upload->data('file_name');
 				$size4 = $this->upload->data('file_size');
 				$type4 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[3]['ID'];
+				$jenisdok = $dokuver['data']['rows'][3]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokuver[3]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[3]['ID'];
+				$filename4 = $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][3]['id'];
 				$dokumen4 = array($filename4, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
-		$config5['file_name']          	= $dokuver[4]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
+		$config5['file_name']          	= $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config5['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config5['allowed_types']        = 'doc|docx|pdf';
 		$config5['overwrite']        = TRUE;
@@ -884,13 +905,13 @@ class Merek extends CI_Controller
 				$filename5 = $this->upload->data('file_name');
 				$size5 = $this->upload->data('file_size');
 				$type5 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[4]['ID'];
+				$jenisdok = $dokuver['data']['rows'][4]['id'];
 				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokmerekver[4]['NAME'];
-				$size5 = $dokmerekver[4]['SIZE'];
-				$type5 = $dokmerekver[4]['TYPE'];
-				$jenisdok = $dokmerekver[4]['ID'];
+				$filename5 = $dokmerekver['data'][0][4]['name'];
+				$size5 = $dokmerekver['data'][0][4]['size'];
+				$type5 = $dokmerekver['data'][0][4]['type'];
+				$jenisdok = $dokmerekver['data'][0][4]['id'];
 				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			}
 		} else {
@@ -899,12 +920,12 @@ class Merek extends CI_Controller
 				$filename5 = $this->upload->data('file_name');
 				$size5 = $this->upload->data('file_size');
 				$type5 = $this->upload->data('file_ext');
-				$jenisdok = $dokuver[4]['ID'];
+				$jenisdok = $dokuver['data']['rows'][4]['id'];
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen5 = array($filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokuver[4]['PENAMAAN_FILE'] . '_' . $this->input->post('ipman_code');
-				$jenisdok = $dokuver[4]['ID'];
+				$filename5 = $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
+				$jenisdok = $dokuver['data']['rows'][4]['id'];
 				$dokumen5 = array($filename5, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
@@ -914,49 +935,66 @@ class Merek extends CI_Controller
 		//die;
 
 		$data = [
-			'PEMERIKSA_MEREK' => htmlspecialchars($this->input->post('pemeriksa_merek', true)),
-			'KONTAK_PEMERIKSA' => htmlspecialchars($this->input->post('kontak_pemeriksa', true)),
-			'EMAIL_PEMERIKSA' => htmlspecialchars($this->input->post('email_pemeriksa', true)),
-			'SERTIFIKASI' => date('Y-m-d', strtotime($this->input->post('tgl_sertifikasi'))),
-			'TAHUN_PENDAFTARAN' => htmlspecialchars($this->input->post('thn_pendaftaran', true)),
-			'TAHUN_GRANTED' => htmlspecialchars($this->input->post('thn_granted', true)),
-			'NOMOR_PENDAFTAR' => htmlspecialchars($this->input->post('no_pendaftaran', true)),
-			'STATUS' => $this->input->post('status'),
-			'KETERANGAN' => $this->input->post('keterangan'),
+			'pemeriksa_merek' => htmlspecialchars($this->input->post('pemeriksa_merek', true)),
+			'kontak_pemeriksa' => htmlspecialchars($this->input->post('kontak_pemeriksa', true)),
+			'email_pemeriksa' => htmlspecialchars($this->input->post('email_pemeriksa', true)),
+			'sertifikasi' => date('Y-m-d', strtotime($this->input->post('tgl_sertifikasi'))),
+			'tahun_pendaftaran' => htmlspecialchars($this->input->post('thn_pendaftaran', true)),
+			'tahun_granted' => htmlspecialchars($this->input->post('thn_granted', true)),
+			'nomor_pendaftar' => htmlspecialchars($this->input->post('no_pendaftaran', true)),
+			'status' => $this->input->post('status'),
+			'keterangan' => $this->input->post('keterangan'),
+			'id' =>  $this->input->post('id'),
+			'token' => $this->session->userdata('token')
 		];
-		$this->db->where('id', $this->input->post('id'));
-		if ($this->db->update('msmerek', $data)) {
+		// print_r($data);exit;
+		// $this->db->where('id', $this->input->post('id'));
+		$updateverifikasi = $this->lapan_api_library->call('mereks/updateverifikasisave', $data);
+		// print_r($updateverifikasi['status']);exit;
+		if ($updateverifikasi['status'] == 200) {
 			if ($dokmerekver) {
-				$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'ROLE' => 2));
+				$delete = [
+					'code' => $this->input->post('ipman_code'),
+					'role' => 2
+				];
 
+				$deletedokumen = $this->lapan_api_library->call('dokumen/deletedokumenbynomorpendaftar', $delete);
+
+				// $this->db->delete('msdokumen', array('nomor_pendaftar' => $this->input->post('ipman_code'), 'role' => 2));
+				// print_r(json_encode($dokumen));exit;
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-						$md['NAME'] = $dok[0];
-						$md['SIZE'] = $dok[1];
-						$md['TYPE'] = $dok[2];
-						$md['ROLE'] = 2;
-						$md['JENIS_DOKUMEN'] = $dok[4];
-						$md['TGL_INPUT'] = $dok[5];
-						$md['KODE_INPUT'] = $dok[6];
+						// print_r($dok);exit;
+						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+						$md['name'] = $dok[0];
+						$md['size'] = $dok[1];
+						$md['type'] = $dok[2];
+						$md['role'] = 2;
+						$md['jenis_dokumen'] = $dok[4];
+						$md['tgl_input'] = $dok[5];
+						$md['kode_input'] = $dok[6];
 
-						$this->db->insert('msdokumen', $md);
+						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
+
+						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			} else {
 
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-						$md['NAME'] = $dok[0];
-						$md['SIZE'] = $dok[1];
-						$md['TYPE'] = $dok[2];
-						$md['ROLE'] = 2;
-						$md['JENIS_DOKUMEN'] = $dok[4];
-						$md['TGL_INPUT'] = $dok[5];
-						$md['KODE_INPUT'] = $dok[6];
+						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+						$md['name'] = $dok[0];
+						$md['size'] = $dok[1];
+						$md['type'] = $dok[2];
+						$md['role'] = 2;
+						$md['jenis_dokumen'] = $dok[4];
+						$md['tgl_input'] = $dok[5];
+						$md['kode_input'] = $dok[6];
 
-						$this->db->insert('msdokumen', $md);
+						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
+
+						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			}

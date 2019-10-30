@@ -71,11 +71,11 @@
                     Jumlah Klaim
                     <input class="form-control" name="jumlah_klaim" value="<?= $diajukan['jumlah_klaim']; ?>" id="jumlah_klaim">
                     Pemeriksa Merek
-                    <input class="form-control" value="<?= $diajukan['pemeriksa_merek']; ?>" id="pemeriksa_merek">
+                    <input class="form-control" value="<?= $diajukan['pemeriksa_merek']; ?>" name="pemeriksa_merek" id="pemeriksa_merek">
                     Kontak Pemeriksa
-                    <input class="form-control" value="<?= $diajukan['kontak_pemeriksa']; ?>" id="kontak_pemeriksa">
+                    <input class="form-control" value="<?= $diajukan['kontak_pemeriksa']; ?>"  name ="kontak_pemeriksa" id="kontak_pemeriksa">
                     Email Pemeriksa
-                    <input class="form-control" value="<?= $diajukan['email_pemeriksa']; ?>" id="email_pemeriksa">
+                    <input class="form-control" value="<?= $diajukan['email_pemeriksa']; ?>" name = "email_pemeriksa" id="email_pemeriksa">
                     <div class="progress my-10">
                       <div class="progress-bar progress-bar-striped active" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width: 32%" role="progressbar">
                       </div>

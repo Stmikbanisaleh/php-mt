@@ -119,7 +119,7 @@
                                                         <?php $i = 1; ?>
                                                         <?php foreach ($getDisetujui as $p2) : ?>
                                                         <?php
-                                                            $waktuinput  = date_create($p2['TGL_INPUT']);
+                                                            $waktuinput  = date_create($p2['createdAt']);
                                                             $waktusekarang = date_create();
                                                             $diff  = date_diff($waktuinput, $waktusekarang);
 
@@ -147,8 +147,8 @@
                                                                 <?php } ?>
                                                             </td>
                                                             <td></td>
-                                                            <td><?= $p2['KETERANGAN']; ?></td>
-                                                            <td><?= date('d-m-Y', strtotime($p2['TGL_INPUT'])) ?></td>
+                                                            <td><?= $p2['keterangan']; ?></td>
+                                                            <td><?= date('d-m-Y', strtotime($p2['createdAt'])) ?></td>
                                                             <td><?= $diff->m; ?></td>
                                                             <td></td>
 
@@ -182,7 +182,7 @@
                                                         <?php $i = 1; ?>
                                                         <?php foreach ($getDitolak as $p3) : ?>
                                                         <?php
-                                                            $waktuinput  = date_create($p3['TGL_INPUT']);
+                                                            $waktuinput  = date_create($p3['createdAt']);
                                                             $waktusekarang = date_create();
                                                             $diff  = date_diff($waktuinput, $waktusekarang);
 
