@@ -135,14 +135,14 @@
                                                                 <!-- Inventor Pegawai -->
                                                                 <?php foreach ($getInventor as $inv) { ?>
                                                                 <?php if ($inv['id_paten'] == $p2['id']) { ?>
-                                                                <?= $inv['nama']; ?>;<br>
+                                                                <?= $inv['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
 
                                                                 <!-- Inventor Non Pegawai -->
                                                                 <?php foreach ($getInventorNon as $invnon) { ?>
                                                                 <?php if ($invnon['id_paten'] == $p2['id']) { ?>
-                                                                <?= $invnon['nama']; ?>;<br>
+                                                                <?= $invnon['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
                                                             </td>
@@ -198,14 +198,14 @@
                                                                 <!-- Inventor Pegawai -->
                                                                 <?php foreach ($getInventor as $inv) { ?>
                                                                 <?php if ($inv['id_paten'] == $p3['id']) { ?>
-                                                                <?= $inv['nama']; ?>;<br>
+                                                                <?= $inv['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
 
                                                                 <!-- Inventor Non Pegawai -->
                                                                 <?php foreach ($getInventorNon as $invnon) { ?>
                                                                 <?php if ($invnon['id_paten'] == $p3['id']) { ?>
-                                                                <?= $invnon['nama']; ?>;<br>
+                                                                <?= $invnon['NAMA']; ?>;<br>
                                                                 <?php } ?>
                                                                 <?php } ?>
                                                             </td>
