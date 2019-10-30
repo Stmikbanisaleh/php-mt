@@ -73,7 +73,7 @@
                                         <div class="col-sm-5">
                                             <p class="text-center">File Abstrak</h>
                                                 <?php if ($paten['abstrak']) { ?>
-                                                    <a class="btn btn-default" target="_blank" href="<?= base_url('assets/dokumen/dokumen_paten/') . $paten['abstrak'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
+                                                    <a class="btn btn-default" target="_blank" href="<?= URL_API_DOWNLOAD . $paten['abstrak'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
                                                 <?php } else { ?>
                                                     <a class="btn btn-warning disabled" target="#"><i class="fa fa-exclamation"></i> File tidak ditemukan</a>
                                                 <?php } ?>
@@ -93,7 +93,7 @@
                                         <div class="col-sm-5">
                                             <p class="text-center">Gambar</p>
                                             <?php if ($paten['gambar']) { ?>
-                                                <img src="<?= base_url() ?>/assets/dokumen/dokumen_paten/<?= $paten['gambar']; ?>" width="100" height="100">
+                                                <img src="<?= URL_API_DOWNLOAD . $paten['gambar']; ?>" width="100" height="100">
                                             <?php } else { ?>
                                                 <img src="<?= base_url() ?>/assets/dokumen/dokumen_paten/imgdefault.jpg" width="100" height="100">
                                             <?php } ?>
@@ -192,7 +192,7 @@
                                                     <div class="row">
                                                         <div class="col-sm-5">
                                                             <h5 class="text-center">Dokumen Terunggah</h5>
-                                                            <a class="btn btn-default" target="_blank" href="<?= base_url('assets/dokumen/dokumen_paten/') . $dok['name'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
+                                                            <a class="btn btn-default" target="_blank" href="<?= URL_API_DOWNLOAD . $dok['name'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
                                                         </div>
                                                         <div class="col-sm-7">
                                                             <h5 class="text-center">Ganti Dokumen</h5>
