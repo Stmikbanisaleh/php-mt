@@ -778,13 +778,7 @@ class Paten extends CI_Controller
 
 	public function save_verifikasi()
 	{
-		
-
-		// $user = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-
 		$userid =  $this->session->userdata('user_id');
-// print_r(json_encode($userid));exit;
 		$date = date('Y-m-d h:i:s');
 
 		$this->load->model('Paten_model', 'paten');
@@ -798,10 +792,6 @@ class Paten extends CI_Controller
         $dokpatenver = $this->lapan_api_library->call('patens/getdokumenver', $data_dokpatenver);
         $dokpatenver = $dokpatenver['data'][0];
 
-        // print_r(json_encode($dokpatenver));exit;
-
-		// $dokpatenver = $this->paten->getDokumenVer($ipman);
-
 		$data_dokuver = [
                     'token' => $this->session->userdata('token'),
                     'id_role' => 2
@@ -809,20 +799,11 @@ class Paten extends CI_Controller
         $dokuver = $this->lapan_api_library->call('jenisdokumen/getnewdokver', $data_dokuver);
         $dokuver = $dokuver;
 
-        // print_r(json_encode($ipman));exit;
-		
-
-
-		// $dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
-
-		// print_r(json_encode($dokpatenver));exit;
-
 		$config1['file_name']          	= $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		// $config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
 		$config1['allowed_types']        = 'doc|docx|pdf';
 
 		$this->upload->initialize($config1);
-		// exit;
 
 		if ($dokpatenver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
@@ -860,8 +841,6 @@ class Paten extends CI_Controller
 				$dokumen1 = array($filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
-
-
 
 		$config2['file_name']          	= $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		// $config2['upload_path']          = './assets/dokumen/dokumen_verifikator/';
@@ -1063,16 +1042,8 @@ class Paten extends CI_Controller
 			'id' => $this->input->post('id'),
 		];
 
-		// print_r(json_encode($this->input->post('id')));exit;
-
-		// print_r(json_encode($data));exit;
-
 		$updateverifikasi = $this->lapan_api_library->call('patens/updateverifikasipatensave', $data);
 
-		// print_r(json_encode($updateverifikasi));exit;
-
-
-		// $this->db->where('id', $this->input->post('id'));
 		if ($updateverifikasi['status'] == 200) {
 			if ($dokpatenver) {
 				$delete = [
@@ -1083,19 +1054,8 @@ class Paten extends CI_Controller
 
 				$deletedokumen = $this->lapan_api_library->call('dokumen/deletedokumenbynomorpendaftar', $delete);
 
-				// $this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'ROLE' => 2));
-
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						// $md['nomor_pendaftar'] = $this->input->post('ipman_code');
-						// $md['name'] = $dok[0];
-						// $md['size'] = $dok[1];
-						// $md['TYPE'] = $dok[2];
-						// $md['role'] = 2;
-						// $md['jenis_dokumen'] = $dok[4];
-						// $md['tgl_input'] = $dok[5];
-						// $md['kode_input'] = $dok[6];
-
 						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
 						$md['dokumen'] = $dok[0];
 						$md['name'] = $dok[1];
@@ -1109,34 +1069,12 @@ class Paten extends CI_Controller
 						$md['token'] = $this->session->userdata('token');
 
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
-
-				// 		$md['token'] = $this->session->userdata('token');
-				// $md['nomor_pendaftar'] = $ipmancode;
-				// $md['dokumen'] = $dokumen[0];
-				// $md['type'] = $dokumen[1];
-				// $md['role'] = $dokumen[2];
-				// $md['jenis_dokumen'] = $dokumen[3];
-				// $md['tgl_input'] = $dokumen[4];
-				// $md['kode_input'] = $dokumen[5];
-				// $md['downloadable'] = 1;
-				// $md['name'] = $dokumen[6];
-				// $md['size'] = $dokumen[7];
-
-						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			} else {
 
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						// $md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-						// $md['NAME'] = $dok[0];
-						// $md['SIZE'] = $dok[1];
-						// $md['TYPE'] = $dok[2];
-						// $md['ROLE'] = 2;
-						// $md['JENIS_DOKUMEN'] = $dok[4];
-						// $md['TGL_INPUT'] = $dok[5];
-						// $md['KODE_INPUT'] = $dok[6];
 
 						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
 						$md['gambar'] = $dok[0];
@@ -1150,7 +1088,6 @@ class Paten extends CI_Controller
 
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
 
-						// $this->db->insert('msdokumen', $md);
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
 					}
 				endforeach;
