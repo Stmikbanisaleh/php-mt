@@ -144,7 +144,6 @@ class Hakcipta extends CI_Controller
 				}
 				$dokumen_base64 = base64_encode($data_getcontent);
 
-
 				$this->upload->initialize($config);
 
 				// script uplaod dokumen pertama
@@ -187,21 +186,14 @@ class Hakcipta extends CI_Controller
 
 			$kp = array();
 
-			// print_r(json_encode($post['pencipta'] ));exit;
-
 			foreach ($post['pencipta'] as $kopeg) {
-				// print_r($insert);
 				$kp['token'] = $this->session->userdata('token');
 				$kp['id_hakcipta'] = $insert['id'];
 				$kp['nik'] = $kopeg['nik'];
 
 				$insert = $this->lapan_api_library->call('hakciptas/adddhakcipta', $kp);
-				// print_r($kopeg['nik']."<br>");
 			}
-
-			// print_r(json_encode($kp));exit;
-			// exit;
-
+			
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Hak Cipta telah ditambahkan!</div>');
 			redirect('hakcipta/monitoring');

@@ -113,13 +113,11 @@ class Paten extends CI_Controller
 		}
 		$post = $this->input->post();
 
-		// $configab['file_name']          =  $ipmancode . '_abstrak';
 		$configab['file_name'] =  $ipmancode . '_abstrak';
 		$name = $_FILES["abstrak"]["name"];
 		$ext = explode('.', $name);
 		$ext = end($ext);
 
-		// print_r(json_encode($ext));exit;
 		$upload_abstrak = $this->upload->initialize($configab);
 		if (!empty($_FILES['abstrak']['tmp_name'])) {
 			$name_abstrak = $configab['file_name'].".".$ext;
@@ -130,8 +128,7 @@ class Paten extends CI_Controller
 			$this->session->set_flashdata('message_errorabs', '<div class="alert alert-danger my-5" role="alert">
             File Abstrak belum terunggah!</div>');
 		}
-		//Upload Foto paten yang ingin ditampilkan
-		// $cgambar['file_name']          =  $ipmancode . 'gambar_paten_';
+
 		$cgambar['file_name']  =  $ipmancode . '_gambar_paten';
 		$name = $_FILES["gambar"]["name"];
 		$ext = explode('.', $name);
@@ -163,11 +160,8 @@ class Paten extends CI_Controller
 			'abstrak_name' => $name_abstrak,
 			'gambar_name' => $name_gambar,
 		];
-		// print_r(json_encode($data));exit;
 
 		$insert = $this->lapan_api_library->call('patens/addpaten', $data);
-
-		// print_r(json_encode($insert));exit;
 
 		if ($insert) {
 			$data = array(
@@ -177,8 +171,6 @@ class Paten extends CI_Controller
 			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
 			$i = 1;
 			$dokpaten = $dokpaten['data']['rows'];
-
-			// print_r(json_encode($dokpaten));exit;
 			
 			foreach ($dokpaten as $dp) {
 				$config['file_name']          = $ipmancode . '_' . $dp['penamaan_file'];
@@ -191,10 +183,6 @@ class Paten extends CI_Controller
 				}
 				$dokumen_base64 = base64_encode($data_getcontent);
 
-
-				// print_r(json_encode($dokumen_base64));exit;
-
-
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					$size = $_FILES['dokumen' . $i]['size'];
 					$type = $_FILES['dokumen' . $i]['type'];
@@ -205,7 +193,6 @@ class Paten extends CI_Controller
 					$ext = explode('.', $filename);
 					$type = end($ext);
 
-					// $filename = filename;
 				} else {
 					$filename = $ipmancode . '_' . $dp['penamaan_file'];
 					$size = '';
@@ -227,11 +214,7 @@ class Paten extends CI_Controller
 				$md['name'] = $dokumen[6];
 				$md['size'] = $dokumen[7];
 
-				// print_r(json_encode($md));exit;
-
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
-
-				// print_r(json_encode($insert_doc));exit;
 				$i++;
 			}
 
