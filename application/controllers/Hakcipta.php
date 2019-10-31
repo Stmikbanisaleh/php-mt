@@ -59,16 +59,14 @@ class Hakcipta extends CI_Controller
 
 	public function edit($id)
 	{
-
+		$return_object = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 4]);
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
 		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
 		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 
-		$return_pendesain = $this->lapan_api_library->call('mereks/getpendesainbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
-		$return_merekdraftbyid = $this->lapan_api_library->call('mereks/getmerekdraftdetail', ['token' => $this->session->userdata('token'),'id' => $id]);
-		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
-		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
-		$return_object = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 4]);
+		$return_draftbyid = $this->lapan_api_library->call('hakciptas/gethakciptadraftdetail', ['token' => $this->session->userdata('token'),'id' => $id]);
 
+		$return_pencipta = $this->lapan_api_library->call('hakciptas/getpenciptabyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 
 		$data['hakciptaid'] = $id;
 
@@ -77,14 +75,16 @@ class Hakcipta extends CI_Controller
 		$data['pegawai'] = $return_pegawai['data']['rows'];
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
-		$this->load->model('Hakcipta_model', 'hakcipta');
-		$data['draft'] = $this->hakcipta->gethakciptaDraftDetail($id);
-		$data['pencipta'] = $this->hakcipta->getPenciptaById($id);
+		$data['draft'] = $return_draftbyid['data'][0][0];
+		$data['pencipta'] = $return_pencipta['data'][0];
 
-		$code = $data['draft']['IPMAN_CODE'];
+		$code = $data['draft']['ipman_code'];
 
-		$data['dokumen'] = $this->hakcipta->getDokumen($code);
-		$this->load->view('templates/header', $data);
+		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
+
+		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
+
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
 		$this->load->view('hakcipta/edit', $data);
 		$this->load->view('templates/footer');
@@ -202,30 +202,54 @@ class Hakcipta extends CI_Controller
 
 	public function update()
 	{
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-
-		$this->load->model('Hakcipta_model', 'hakcipta');
+		$userid =  $this->session->userdata('user_id');
+		$date = date('Y-m-d h:i:s');
 		$ipman = $this->input->post('ipman_code');
-		$dokhakcipta = $this->hakcipta->getDokumen($ipman);
-		$jumlahdok = count($dokhakcipta);
 
+		$data_dokumen = [
+                    'token' => $this->session->userdata('token'),
+                    'code' => $ipman
+				];
+				
+        $dokhakcipta = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
+		$dokhakcipta = $dokhakcipta['data'][0];
+
+		// print_r(json_encode($dokhakcipta));exit;
+
+		$jumlahdok = count($dokhakcipta);
 		$post = $this->input->post();
+
+		// $user = $this->db->get_where('msuser', ['email' =>
+		// $this->session->userdata('email')])->row_array();
+
+		// $this->load->model('Hakcipta_model', 'hakcipta');
+		// $ipman = $this->input->post('ipman_code');
+
+		// $dokhakcipta = $this->hakcipta->getDokumen($ipman);
+		// $jumlahdok = count($dokhakcipta);
+
+		// $post = $this->input->post();
 
 
 
 		$data = [
-			'JUDUL' => htmlspecialchars($this->input->post('judul', true)),
-			'UNIT_KERJA' => $this->input->post('unit_kerja'),
-			'OBJECT' => $this->input->post('object'),
-			'STATUS' => 19,
-			'NO_HANDPHONE' => $this->input->post('no_handphone'),
-			'IPMAN_CODE' => $this->input->post('ipman_code'),
-			'KODE_UBAH' => $user['id'],
-			'TGL_UBAH' => date('Y-m-d h:i:s'),
+			'token' => $this->session->userdata('token'),
+			'judul' => htmlspecialchars($this->input->post('judul', true)),
+			'unit_kerja' => $this->input->post('unit_kerja'),
+			'object' => $this->input->post('object'),
+			'status' => 19,
+			'no_handphone' => $this->input->post('no_handphone'),
+			'ipman_code' => $this->input->post('ipman_code'),
+			'kode_ubah' => $userid,
+			'tgl_ubah' => date('Y-m-d h:i:s'),
+			'nomor_pendaftar' => $post['id'],
 		];
 
-		$this->db->where('ID', $post['id']);
+		$update_hakcipta = $this->lapan_api_library->call('hakciptas/updatehakciptasave', $data);
+
+		print_r(json_encode($update_hakcipta));exit;
+
+		// $this->db->where('ID', $post['id']);
 		if ($this->db->update('mshakcipta', $data)) {
 			$this->db->delete('dhakcipta', array('ID_HAKCIPTA' => $post['id']));
 			$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
