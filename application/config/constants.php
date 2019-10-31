@@ -86,6 +86,8 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 
 //Define API URL MT
 // define('URL_API_MT', 'https://api-mt.herokuapp.com');
-// define('URL_API_MT', 'http://192.168.137.231:3000');
+// define('URL_API_MT', 'http://192.168.137.69:3000');
+// define('URL_API_MT', 'http://192.168.137.69:3000');
+// define('URL_API_DOWNLOAD', 'http://192.168.137.69:3000/download/download/');
 define('URL_API_MT', 'http://localhost:3000');
 define('URL_API_DOWNLOAD', 'http://localhost:3000/download/download/');

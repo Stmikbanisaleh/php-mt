@@ -250,7 +250,7 @@ class Paten extends CI_Controller
 				
         $dokpaten = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
 		$dokpaten = $dokpaten['data'][0];
-		// print_r(json_encode($dokpaten));exit;
+
 		$jumlahdok = count($dokpaten);
 		$post = $this->input->post();
 
@@ -289,6 +289,7 @@ class Paten extends CI_Controller
 			$gambar_base64 ='';
 		}
 		if(!empty($fileabstrak) && !empty($gambarpaten)){
+			
 			$data = [
 				'token' => $this->session->userdata('token'),
 				'judul' => htmlspecialchars($this->input->post('judul', true)),
@@ -305,7 +306,9 @@ class Paten extends CI_Controller
 				'gambar_name' => $gambarpaten,
 				'id' => $post['id']
 			];
+
 		}else {
+			
 			$data = [
 				'token' => $this->session->userdata('token'),
 				'judul' => htmlspecialchars($this->input->post('judul', true)),
@@ -324,41 +327,12 @@ class Paten extends CI_Controller
 			];
 		}
 
+		$array_date['abstrak_gambar'] = $data;
+
 		$update_paten = $this->lapan_api_library->call('patens/updatepatensave', $data);
-		// print_r(json_encode($data));exit;
 
-		// $this->db->where('ID', $post['id']);
-
-		// $upload_gambar = $this->upload->initialize($cgambar);
-		// if (!empty($_FILES['gambar']['tmp_name'])) {
-		// 	$name_gambar = $cgambar['file_name'].".".$ext;
-		// 	$file_tmp = $_FILES['gambar']['tmp_name'];
-		// 	$data = file_get_contents($file_tmp);
-		// 	$gambar_base64 = base64_encode($data);
-		// } else {
-		// 	$this->session->set_flashdata('message_errorgam', '<div class="alert alert-danger my-5" role="alert">
-  //           Gambar belum terunggah!</div>');
-		// 	redirect('paten/input');
-		// }
-		// $data = [
-		// 	'token' => $this->session->userdata('token'),
-		// 	'judul' => htmlspecialchars($this->input->post('judul', true)),
-		// 	'unit_kerja' => $this->input->post('unit_kerja'),
-		// 	'jenis_paten' => $this->input->post('jenis_paten'),
-		// 	'bidang_invensi' => htmlspecialchars($this->input->post('bidang_invensi', true)),
-		// 	'status' => 19,
-		// 	'no_handphone' => $this->input->post('no_handphone'),
-		// 	'ipman_code' => $ipmancode,
-		// 	'kode_input' => $this->session->userdata('user_id'),
-		// 	'gambar' => $gambar_base64,
-		// 	'abstrak' => $abstrak_base64,
-		// 	'abstrak_name' => $name_abstrak,
-		// 	'gambar_name' => $name_gambar,
-		// ];
-		$update_paten = 'ya';
 		if ($update_paten) {
 
-			// $this->db->delete('dpaten', array('ID_PATEN' => $post['id']));
 			$datad = [
 				'id' => $post['id'],
 				'token' => $this->session->userdata('token')
@@ -371,9 +345,9 @@ class Paten extends CI_Controller
 				'token' => $this->session->userdata('token')
 			];
 			$deletemsdokumen = $this->lapan_api_library->call('lib/deletedokumenbyip', $data3);
-			// $this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
 
 			$i = 1;
+
 			foreach ($dokpaten as $dp) {
 				$versi = $dp['rev'] + 1;
 				if ($dp['size']) {
@@ -390,8 +364,9 @@ class Paten extends CI_Controller
 					$filename[$i] = $_FILES['dokumen' . $i]['name'];
 					$size[$i] = $_FILES['dokumen' . $i]['size'];
 					$type[$i] = $_FILES['dokumen' . $i]['type'];
-					$dokumena[$i] = $_FILES['dokumen' . $i]['tmp_name'];
-					$dokumenx[$i] = base64_encode($dokumena[$i]);
+					$file_tmp = $_FILES['dokumen' . $i]['tmp_name'];
+					$data_base64 = file_get_contents($file_tmp);
+					$dokumenx[$i] = base64_encode($data_base64);
 
 					if ($dp['size']) {
 						$rev[$i] = $dp['rev'] + 1;
@@ -400,26 +375,29 @@ class Paten extends CI_Controller
 					}
 					$jenisdok[$i] = $dp['id'];
 					$downloadable[$i] = $dp['downloadable'];
-					$dateinput[$i] = $dp['tgl_input'];
+					$dateinput[$i] = $dp['createdAt'];
 					$userinput[$i] = $dp['kode_input'];
 					$dateubah[$i] = date('Y-m-d h:i:s');
 					$userubah[$i] =  $this->session->userdata('user_id');
 				} else {
 					$filename[$i] = $dp['name'];
 					$size[$i] = $dp['size'];
-					// $type[$i] = $dp['type'];
+					$type[$i] = 'application/pdf';
 					$rev[$i] = $dp['rev'];
 					$jenisdok[$i] = $dp['id'];
 					$downloadable[$i] = $dp['downloadable'];
 					$dateinput[$i] = $dp['tgl_input'];
 					$userinput[$i] = $dp['kode_input'];
-					$dateubah[$i] = $dp['tgl_ubah'];
+					$dateubah[$i] = $dp['updatedAt'];
 					$userubah[$i] =  $dp['kode_ubah'];
 					$dokumenx[$i] = '';
 				}
-				$dokumen[$i] = array($dokumenx[$i], $filename[$i], $size[$i] ,'', $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
+				$dokumen[$i] = array($dokumenx[$i], $filename[$i], $size[$i] , $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
+				
 				$i++;
 			}
+
+			
 			switch ($jumlahdok) {
 				case "1":
 					$arraydokumen = array($dokumen[1]);
@@ -492,15 +470,17 @@ class Paten extends CI_Controller
 				$md['kode_input'] = $dok[9];
 				$md['tgl_ubah'] = $dok[10];
 				$md['kode_ubah'] = $dok[11];
+				$md['token'] = $this->session->userdata('token');
 
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 			endforeach;
 
 			$kp = array();
 			foreach ($post['inventor'] as $kopeg) {
+				$kp['token'] = $this->session->userdata('token');
 				$kp['id_paten'] = $post['id'];
 				$kp['nik'] = $kopeg['nik'];
-				$insert = $this->lapan_api_library->call('patens/adddpaten', $kp);				
+				$insert = $this->lapan_api_library->call('patens/adddpaten', $kp);		
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
