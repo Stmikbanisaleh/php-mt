@@ -955,38 +955,23 @@ class Desain extends CI_Controller
 	}
 	public function input_pendesain()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
-		$this->load->view('desain/input_pendesain', $data);
+		$this->load->view('desain/input_pendesain');
 		$this->load->view('templates/footer');
 	}
 	public function save_pendesain()
 	{
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('nik', 'NIK', 'required|is_unique[msnonpegawai.NIK]|numeric');
-		$this->form_validation->set_rules('nama', 'nama', 'required');
-		if ($this->form_validation->run($this) == false) {
-			$data['user'] = $this->db->get_where('msuser', ['email' =>
-			$this->session->userdata('email')])->row_array();
-			$roleId = $data['user']['role_id'];
-			$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-			$this->load->view('templates/header', $data);
-			$this->load->view('templates/side_menu');
-			$this->load->view('desain/input_pendesain', $data);
-			$this->load->view('templates/footer');
-		} else {
 			$data = [
-				'NIK' => htmlspecialchars($this->input->post('nik', true)),
-				'NAMA' => htmlspecialchars($this->input->post('nama', true))
+				'nik' => htmlspecialchars($this->input->post('nik', true)),
+				'nama' => htmlspecialchars($this->input->post('nama', true)),
+				'token' => $this->session->userdata('token')
 			];
-			$this->db->insert('msnonpegawai', $data);
+			// $this->db->insert('msnonpegawai', $data);
+			$insertpendesain = $this->lapan_api_library->call('nonpegawai/insertpendesain', $data);
+
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Pendesain baru telah ditambahkan! <a type="button" href="input" class="my-5 btn btn-success btn-sm">Tambah Desain Industri</a></div>');
 			redirect('desain/input_pendesain');
-		}
 	}
 }

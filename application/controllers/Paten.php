@@ -55,7 +55,9 @@ class Paten extends CI_Controller
 					];
 		$return_inventor = $this->lapan_api_library->call('patens/getinventorbyid', $data_inventor);
 		$return_patenbyid = $this->lapan_api_library->call('patens/getpatenbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
+
 		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
+		// print_r($return_patendraftdetail);exit;
 
 		// $return_role = $this->lapan_api_library->call('patens/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
@@ -70,7 +72,6 @@ class Paten extends CI_Controller
 		$data['pegawai'] = $return_pegawai['data']['rows'];
 		// print_r($data['pegawai']);exit;
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
-
 		$data['draft'] = $return_patendraftdetail['data'][0][0];
 		// print_r($return_inventor);exit;
 		$data['inventor'] = $return_inventor['data'][0];
@@ -80,7 +81,7 @@ class Paten extends CI_Controller
 		$code = $data['draft']['ipman_code'];
 		// // print_r($code);exit;
 		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
-		// // print_r($return_dokumenbyipmancode);exit;
+		// print_r($return_dokumenbyipmancode);exit;
 		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
 
 
@@ -216,6 +217,7 @@ class Paten extends CI_Controller
 				$md['downloadable'] = $downloadable;
 				$md['name'] = $dokumen[6];
 				$md['size'] = $dokumen[7];
+				// $insert = $this->lapan_api_library->call('patens/adddpaten', $kp);
 
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				$i++;
@@ -239,26 +241,18 @@ class Paten extends CI_Controller
 	{
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
-
-		// $this->load->model('Paten_model', 'paten');
 		$ipman = $this->input->post('ipman_code');
 
 		$data_dokumen = [
                     'token' => $this->session->userdata('token'),
                     'code' => $ipman
-                ];
+				];
+				
         $dokpaten = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
-        $dokpaten = $dokpaten['data'][0];
-
-
-		// $dokpaten = $this->paten->getDokumen($ipman);
-		$jumlahdok = count($dokpaten);
-
+		$dokpaten = $dokpaten['data'][0];
 		// print_r(json_encode($dokpaten));exit;
-
+		$jumlahdok = count($dokpaten);
 		$post = $this->input->post();
-
-
 
 		//Upload Dokumen Asbstrak
 		$configab['file_name']          = $ipman . '_abstrak';
@@ -268,18 +262,7 @@ class Paten extends CI_Controller
 
 		$this->upload->initialize($configab);
 
-		// $configab['file_name'] =  $ipmancode . '_abstrak';
-		// $name = $_FILES["abstrak"]["name"];
-		// $ext = explode('.', $name);
-		// $ext = end($ext);
-
-		// $upload_abstrak = $this->upload->initialize($configab);
-		// if (!empty($_FILES['abstrak']['tmp_name'])) {
-		// 	$name_abstrak = $configab['file_name'].".".$ext;
-		// 	$file_tmp = $_FILES['abstrak']['tmp_name'];
-		// 	$data = file_get_contents($file_tmp);
-
-		if (!empty($_FILES['abstrak']['tmp_name'])) {
+		if (!empty($_FILES['abstrak']['name'])) {
 			$fileabstrak = $_FILES["abstrak"]["name"];
 			$file_tmp = $_FILES['abstrak']['tmp_name'];
 			$data = file_get_contents($file_tmp);
@@ -305,26 +288,44 @@ class Paten extends CI_Controller
 			$gambarpaten = '';
 			$gambar_base64 ='';
 		}
-
-		$data = [
-			'token' => $this->session->userdata('token'),
-			'judul' => htmlspecialchars($this->input->post('judul', true)),
-			'abstrak' => $file_base64,
-			'gambar' => $gambar_base64,
-			'bidang_invensi' => htmlspecialchars($this->input->post('bidang_invensi', true)),
-			'unit_kerja' => $this->input->post('unit_kerja'),
-			'status' => 19,
-			'no_handphone' => $this->input->post('no_handphone'),
-			'ipman_code' => $this->input->post('ipman_code'),
-			'kode_ubah' => $this->session->userdata('user_id'),
-			'tgl_ubah' => date('Y-m-d h:i:s'),
-			'abstrak_name' => $fileabstrak,
-			'gambar_name' => $gambarpaten,
-			'id' => $post['id']
-		];
+		if(!empty($fileabstrak) && !empty($gambarpaten)){
+			$data = [
+				'token' => $this->session->userdata('token'),
+				'judul' => htmlspecialchars($this->input->post('judul', true)),
+				'abstrak' => $file_base64,
+				'gambar' => $gambar_base64,
+				'bidang_invensi' => htmlspecialchars($this->input->post('bidang_invensi', true)),
+				'unit_kerja' => $this->input->post('unit_kerja'),
+				'status' => 19,
+				'no_handphone' => $this->input->post('no_handphone'),
+				'ipman_code' => $this->input->post('ipman_code'),
+				'kode_ubah' => $this->session->userdata('user_id'),
+				'tgl_ubah' => date('Y-m-d h:i:s'),
+				'abstrak_name' => $fileabstrak,
+				'gambar_name' => $gambarpaten,
+				'id' => $post['id']
+			];
+		}else {
+			$data = [
+				'token' => $this->session->userdata('token'),
+				'judul' => htmlspecialchars($this->input->post('judul', true)),
+				'abstrak' => $file_base64,
+				'gambar' => $gambar_base64,
+				'bidang_invensi' => htmlspecialchars($this->input->post('bidang_invensi', true)),
+				'unit_kerja' => $this->input->post('unit_kerja'),
+				'status' => 19,
+				'no_handphone' => $this->input->post('no_handphone'),
+				'ipman_code' => $this->input->post('ipman_code'),
+				'kode_ubah' => $this->session->userdata('user_id'),
+				'tgl_ubah' => date('Y-m-d h:i:s'),
+				// 'abstrak_name' => $fileabstrak,
+				// 'gambar_name' => $gambarpaten,
+				'id' => $post['id']
+			];
+		}
 
 		$update_paten = $this->lapan_api_library->call('patens/updatepatensave', $data);
-		print_r(json_encode($update_paten));exit;
+		// print_r(json_encode($data));exit;
 
 		// $this->db->where('ID', $post['id']);
 
@@ -356,55 +357,66 @@ class Paten extends CI_Controller
 		// ];
 		if ($update_paten) {
 
-
 			// $this->db->delete('dpaten', array('ID_PATEN' => $post['id']));
-			$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
+			$datad = [
+				'id' => $post['id'],
+				'token' => $this->session->userdata('token')
+			];
+
+			$deletedpaten = $this->lapan_api_library->call('patens/deletedpatenbyip', $datad);
+
+			$data3 = [
+				'nomor_pendaftar' => $this->input->post('ipman_code'),
+				'token' => $this->session->userdata('token')
+			];
+			$deletemsdokumen = $this->lapan_api_library->call('lib/deletedokumenbyip', $data3);
+			// $this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
 
 			$i = 1;
 			foreach ($dokpaten as $dp) {
-				$versi = $dp['REV'] + 1;
-				if ($dp['SIZE']) {
-					$config['file_name']          =  $ipman . '_' .  $dp['PENAMAAN_FILE'] . '_v' . $versi;
-					$config['upload_path']          = './assets/dokumen/dokumen_paten/';
-					$config['allowed_types']        = 'doc|docx|pdf';
+				$versi = $dp['rev'] + 1;
+				if ($dp['size']) {
+					$config['file_name']          =  $ipman . '_' .  $dp['penamaan_file'] . '_v' . $versi;
 				} else {
-					$config['file_name']          = $ipman . '_' . $dp['PENAMAAN_FILE'];
-					$config['upload_path']          = './assets/dokumen/dokumen_paten/';
-					$config['allowed_types']        = 'doc|docx|pdf';
+					$config['file_name']          = $ipman . '_' . $dp['penamaan_file'];
 				}
 
 				$this->upload->initialize($config);
 
 				// script upload dokumen
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
-					$this->upload->do_upload('dokumen' . $i);
-					$filename[$i] = $this->upload->data('file_name');
-					$size[$i] = $this->upload->data('file_size');
-					$type[$i] = $this->upload->data('file_ext');
-					if ($dp['SIZE']) {
-						$rev[$i] = $dp['REV'] + 1;
+					// $this->upload->do_upload('dokumen' . $i);
+					$filename[$i] = $_FILES['dokumen' . $i]['name'];
+					$size[$i] = $_FILES['dokumen' . $i]['size'];
+					$type[$i] = $_FILES['dokumen' . $i]['type'];
+					$dokumena[$i] = $_FILES['dokumen' . $i]['tmp_name'];
+					$dokumenx[$i] = base64_encode($dokumena[$i]);
+
+					if ($dp['size']) {
+						$rev[$i] = $dp['rev'] + 1;
 					} else {
-						$rev[$i] = $dp['REV'];
+						$rev[$i] = $dp['rev'];
 					}
-					$jenisdok[$i] = $dp['ID'];
-					$downloadable[$i] = $dp['DOWNLOADABLE'];
-					$dateinput[$i] = $dp['TGL_INPUT'];
-					$userinput[$i] = $dp['KODE_INPUT'];
+					$jenisdok[$i] = $dp['id'];
+					$downloadable[$i] = $dp['downloadable'];
+					$dateinput[$i] = $dp['tgl_input'];
+					$userinput[$i] = $dp['kode_input'];
 					$dateubah[$i] = date('Y-m-d h:i:s');
-					$userubah[$i] =  $user['id'];
+					$userubah[$i] =  $this->session->userdata('user_id');
 				} else {
-					$filename[$i] = $dp['NAME'];
-					$size[$i] = $dp['SIZE'];
-					$type[$i] = $dp['TYPE'];
-					$rev[$i] = $dp['REV'];
-					$jenisdok[$i] = $dp['ID'];
-					$downloadable[$i] = $dp['DOWNLOADABLE'];
-					$dateinput[$i] = $dp['TGL_INPUT'];
-					$userinput[$i] = $dp['KODE_INPUT'];
-					$dateubah[$i] = $dp['TGL_UBAH'];
-					$userubah[$i] =  $dp['KODE_UBAH'];
+					$filename[$i] = $dp['name'];
+					$size[$i] = $dp['size'];
+					// $type[$i] = $dp['type'];
+					$rev[$i] = $dp['rev'];
+					$jenisdok[$i] = $dp['id'];
+					$downloadable[$i] = $dp['downloadable'];
+					$dateinput[$i] = $dp['tgl_input'];
+					$userinput[$i] = $dp['kode_input'];
+					$dateubah[$i] = $dp['tgl_ubah'];
+					$userubah[$i] =  $dp['kode_ubah'];
+					$dokumenx[$i] = '';
 				}
-				$dokumen[$i] = array($filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
+				$dokumen[$i] = array($dokumenx[$i], $filename[$i], $size[$i] ,'', $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
 				$i++;
 			}
 			switch ($jumlahdok) {
@@ -466,26 +478,28 @@ class Paten extends CI_Controller
 
 			$md = array();
 			foreach ($arraydokumen as $dok) :
-				$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-				$md['NAME'] = $dok[0];
-				$md['SIZE'] = $dok[1];
-				$md['TYPE'] = $dok[2];
-				$md['REV'] = $dok[3];
-				$md['ROLE'] = $dok[4];
-				$md['JENIS_DOKUMEN'] = $dok[5];
-				$md['DOWNLOADABLE'] = $dok[6];
-				$md['TGL_INPUT'] = $dok[7];
-				$md['KODE_INPUT'] = $dok[8];
-				$md['TGL_UBAH'] = $dok[9];
-				$md['KODE_UBAH'] = $dok[10];
-				$this->db->insert('msdokumen', $md);
+				$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+				$md['dokumen'] = $dok[0];
+				$md['name'] = $dok[1];
+				$md['size'] = $dok[2];
+				$md['type'] = $dok[3];
+				$md['rev'] = $dok[4];
+				$md['role'] = $dok[5];
+				$md['jenis_dokumen'] = $dok[6];
+				$md['downloadable'] = $dok[7];
+				$md['tgl_input'] = $dok[8];
+				$md['kode_input'] = $dok[9];
+				$md['tgl_ubah'] = $dok[10];
+				$md['kode_ubah'] = $dok[11];
+
+				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 			endforeach;
 
 			$kp = array();
 			foreach ($post['inventor'] as $kopeg) {
-				$kp['ID_PATEN'] = $post['id'];
-				$kp['NIK'] = $kopeg['nik'];
-				$this->db->insert('dpaten', $kp);
+				$kp['id_paten'] = $post['id'];
+				$kp['nik'] = $kopeg['nik'];
+				$insert = $this->lapan_api_library->call('patens/adddpaten', $kp);				
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
@@ -587,77 +601,77 @@ class Paten extends CI_Controller
 		$no = 1; // Untuk penomoran tabel, di awal set dengan 1
 		$numrow = 2; // Set baris pertama untuk isi tabel adalah baris ke 4
 		foreach ($paten as $pat) { // Lakukan looping pada variabel paten
-			$peg = array($this->paten->getInventorExport($pat['ID']));
+			$peg = array($this->paten->getInventorExport($pat['id']));
 			foreach ($peg as $pp) {
 				$c = count($pp);
 				switch ($c) {
 					case "1":
-						$arrayinventor = array($pp[0]['NAMA']);
+						$arrayinventor = array($pp[0]['nama']);
 						break;
 					case "2":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama']);
 						break;
 					case "3":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama']);
 						break;
 					case "4":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama']);
 						break;
 					case "5":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama']);
 						break;
 					case "6":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama']);
 						break;
 					case "7":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama']);
 						break;
 					case "8":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama']);
 						break;
 					case "9":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama']);
 						break;
 					case "10":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama']);
 						break;
 					case "11":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama']);
 						break;
 					case "12":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama']);
 						break;
 					case "13":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama']);
 						break;
 					case "14":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama']);
 						break;
 					case "15":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA'], $pp[14]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama'], $pp[14]['nama']);
 						break;
 					case "16":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA'], $pp[14]['NAMA'], $pp[15]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama'], $pp[14]['nama'], $pp[15]['nama']);
 						break;
 					case "17":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA'], $pp[14]['NAMA'], $pp[15]['NAMA'], $pp[16]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama'], $pp[14]['nama'], $pp[15]['nama'], $pp[16]['nama']);
 						break;
 					case "18":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA'], $pp[14]['NAMA'], $pp[15]['NAMA'], $pp[16]['NAMA'], $pp[17]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama'], $pp[14]['nama'], $pp[15]['nama'], $pp[16]['nama'], $pp[17]['nama']);
 						break;
 					case "19":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA'], $pp[14]['NAMA'], $pp[15]['NAMA'], $pp[16]['NAMA'], $pp[17]['NAMA'], $pp[18]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama'], $pp[14]['nama'], $pp[15]['nama'], $pp[16]['nama'], $pp[17]['nama'], $pp[18]['nama']);
 						break;
 					case "20":
-						$arrayinventor = array($pp[0]['NAMA'], $pp[1]['NAMA'], $pp[2]['NAMA'], $pp[3]['NAMA'], $pp[4]['NAMA'], $pp[5]['NAMA'], $pp[6]['NAMA'], $pp[7]['NAMA'], $pp[8]['NAMA'], $pp[9]['NAMA'], $pp[10]['NAMA'], $pp[11]['NAMA'], $pp[12]['NAMA'], $pp[13]['NAMA'], $pp[14]['NAMA'], $pp[15]['NAMA'], $pp[16]['NAMA'], $pp[17]['NAMA'], $pp[18]['NAMA'], $pp[19]['NAMA']);
+						$arrayinventor = array($pp[0]['nama'], $pp[1]['nama'], $pp[2]['nama'], $pp[3]['nama'], $pp[4]['nama'], $pp[5]['nama'], $pp[6]['nama'], $pp[7]['nama'], $pp[8]['nama'], $pp[9]['nama'], $pp[10]['nama'], $pp[11]['nama'], $pp[12]['nama'], $pp[13]['nama'], $pp[14]['nama'], $pp[15]['nama'], $pp[16]['nama'], $pp[17]['nama'], $pp[18]['nama'], $pp[19]['nama']);
 						break;
 				}
 				$inventor = implode(" , ", $arrayinventor);
 				$excel->setActiveSheetIndex(0)->setCellValue('A' . $numrow, $no);
-				$excel->setActiveSheetIndex(0)->setCellValue('B' . $numrow, $pat['JUDUL']);
-				$excel->setActiveSheetIndex(0)->setCellValue('C' . $numrow, $pat['UNIT_KERJA']);
-				$excel->setActiveSheetIndex(0)->setCellValue('D' . $numrow, date('d-m-Y', strtotime($pat['FILLING'])));
-				$excel->setActiveSheetIndex(0)->setCellValue('E' . $numrow, $pat['STATUS']);
+				$excel->setActiveSheetIndex(0)->setCellValue('B' . $numrow, $pat['judul']);
+				$excel->setActiveSheetIndex(0)->setCellValue('C' . $numrow, $pat['unit_kerja']);
+				$excel->setActiveSheetIndex(0)->setCellValue('D' . $numrow, date('d-m-Y', strtotime($pat['filling'])));
+				$excel->setActiveSheetIndex(0)->setCellValue('E' . $numrow, $pat['status']);
 				$excel->setActiveSheetIndex(0)->setCellValue('F' . $numrow, $inventor);
 
 				// Apply style row yang telah kita buat tadi ke masing-masing baris (isi tabel)
@@ -1200,57 +1214,30 @@ class Paten extends CI_Controller
 
 	public function timeline()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
-		$this->load->view('paten/timeline', $data);
+		$this->load->view('paten/timeline');
 		$this->load->view('templates/footer');
 	}
 
 	public function input_inventor()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
-		$this->load->view('paten/input_inventor', $data);
+		$this->load->view('paten/input_inventor');
 		$this->load->view('templates/footer');
 	}
 
 	public function save_inventor()
 	{
-		$this->load->library('form_validation');
-
-		$this->form_validation->set_rules('nik', 'NIK', 'required|is_unique[msnonpegawai.NIK]|numeric');
-		$this->form_validation->set_rules('nama', 'nama', 'required');
-
-		if ($this->form_validation->run($this) == false) {
-			$data['user'] = $this->db->get_where('msuser', ['email' =>
-			$this->session->userdata('email')])->row_array();
-			$roleId = $data['user']['role_id'];
-			$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
-			$this->load->view('templates/header', $data);
-			$this->load->view('templates/side_menu');
-			$this->load->view('paten/input_inventor', $data);
-			$this->load->view('templates/footer');
-		} else {
 			$data = [
-				'NIK' => htmlspecialchars($this->input->post('nik', true)),
-				'NAMA' => htmlspecialchars($this->input->post('nama', true))
+				'nik' => htmlspecialchars($this->input->post('nik', true)),
+				'nama' => htmlspecialchars($this->input->post('nama', true)),
+				'token' => $this->session->userdata('token')
 			];
 
-			$this->db->insert('msnonpegawai', $data);
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Inventor Baru telah ditambahkan! <a type="button" href="input" class="my-5 btn btn-success btn-sm">Tambah Paten</a></div>');
 			redirect('paten/input_inventor');
-		}
 	}
 }

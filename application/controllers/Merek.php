@@ -224,15 +224,15 @@ class Merek extends CI_Controller
 		];
 
 		// $this->db->where('id', $post['id']);
-		$updatemerek = $this->lapan_api_library->call('merek/updatemereksave', $data);
-
-		if ($updatemerek['status'] == 200) {
+		$updatemerek = $this->lapan_api_library->call('mereks/updatemereksave', $data);
+		// print_r($data);exit;
+		if ($updatemerek) {
 			$data2 = [
 				'token' => $this->session->userdata('token'),
 				'id_merek' => $post['id']
 			];
-			$deletedmerek = $this->lapan_api_library->call('merek/deletedmerek', $data2);
-			
+			$deletedmerek = $this->lapan_api_library->call('mereks/deletedmerek', $data2);
+			// print_r($deletedmerek);exit;
 			$data3 = [
 				'nomor_pendaftar' => $this->input->post('ipman_code'),
 				'token' => $this->session->userdata('token')
@@ -245,26 +245,29 @@ class Merek extends CI_Controller
 			// $this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
 
 			$i = 1;
-			foreach ($dokmerek as $dm) {
+			// print_r($dokmerek);exit;
+			foreach ($dokmerek['data'][0] as $dm) {
 				$versi = $dm['rev'] + 1;
-				if ($dm['size']) {
-					$config['file_name']          = $ipman . '_' . $dm['penamaan_file'] . '_v' . $versi;
-					$config['upload_path']          = './assets/dokumen/dokumen_merek/';
-					$config['allowed_types']        = 'doc|docx|pdf';
-				} else {
-					$config['file_name']          = $ipman . '_' . $dm['penamaan_file'];
-					$config['upload_path']          = './assets/dokumen/dokumen_merek/';
-					$config['allowed_types']        = 'doc|docx|pdf';
-				}
+				// if ($dm['size']) {
+				// 	$config['file_name']          = $ipman . '_' . $dm['penamaan_file'] . '_v' . $versi;
+				// 	$config['upload_path']          = './assets/dokumen/dokumen_merek/';
+				// 	$config['allowed_types']        = 'doc|docx|pdf';
+				// } else {
+				// 	$config['file_name']          = $ipman . '_' . $dm['penamaan_file'];
+				// 	$config['upload_path']          = './assets/dokumen/dokumen_merek/';
+				// 	$config['allowed_types']        = 'doc|docx|pdf';
+				// }
 
-				$this->upload->initialize($config);
+				// $this->upload->initialize($config);
 
 				// script upload dokumen
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					// $this->upload->do_upload('dokumen' . $i);
-					$filename[$i] = $_FILES['dokumen' . $i]['name'];
-					$size[$i] = $_FILES['dokumen' . $i]['size'];
-					$type[$i] = $_FILES['dokumen' . $i]['type'];
+					$filename[$i] = $_FILES['dokumen'.$i]['name'];
+					$size[$i] = $_FILES['dokumen'.$i]['size'];
+					$type[$i] = $_FILES['dokumen'.$i]['type'];
+					$dokumena[$i] = $_FILES['dokumen'.$i]['tmp_name'];
+
 					if ($dm['size']) {
 						$rev[$i] = $dm['rev'] + 1;
 					} else {
@@ -288,7 +291,7 @@ class Merek extends CI_Controller
 					$dateubah[$i] = $dm['tgl_ubah'];
 					$userubah[$i] =  $this->session->userdata('user_id');
 				}
-				$dokumen[$i] = array($filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
+				$dokumen[$i] = array($dokumenx[$i],$filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
 				$i++;
 			}
 			switch ($jumlahdok) {
