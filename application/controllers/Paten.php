@@ -355,6 +355,7 @@ class Paten extends CI_Controller
 		// 	'abstrak_name' => $name_abstrak,
 		// 	'gambar_name' => $name_gambar,
 		// ];
+		$update_paten = 'ya';
 		if ($update_paten) {
 
 			// $this->db->delete('dpaten', array('ID_PATEN' => $post['id']));
