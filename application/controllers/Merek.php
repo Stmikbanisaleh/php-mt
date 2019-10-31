@@ -69,6 +69,7 @@ class Merek extends CI_Controller
 
 		$return_pendesain = $this->lapan_api_library->call('mereks/getpendesainbyid', ['token' => $this->session->userdata('token'), 'id' => $id]);
 		$return_merekdraftbyid = $this->lapan_api_library->call('mereks/getmerekdraftdetail', ['token' => $this->session->userdata('token'), 'id' => $id]);
+		// print_r($return_merekdraftbyid);exit;
 		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'), 'id' => $id]);
 
 		// $return_role = $this->lapan_api_library->call('patens/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
@@ -248,19 +249,6 @@ class Merek extends CI_Controller
 			// print_r($dokmerek);exit;
 			foreach ($dokmerek['data'][0] as $dm) {
 				$versi = $dm['rev'] + 1;
-				// if ($dm['size']) {
-				// 	$config['file_name']          = $ipman . '_' . $dm['penamaan_file'] . '_v' . $versi;
-				// 	$config['upload_path']          = './assets/dokumen/dokumen_merek/';
-				// 	$config['allowed_types']        = 'doc|docx|pdf';
-				// } else {
-				// 	$config['file_name']          = $ipman . '_' . $dm['penamaan_file'];
-				// 	$config['upload_path']          = './assets/dokumen/dokumen_merek/';
-				// 	$config['allowed_types']        = 'doc|docx|pdf';
-				// }
-
-				// $this->upload->initialize($config);
-
-				// script upload dokumen
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					// $this->upload->do_upload('dokumen' . $i);
 					$filename[$i] = $_FILES['dokumen'.$i]['name'];
@@ -282,7 +270,7 @@ class Merek extends CI_Controller
 				} else {
 					$filename[$i] = $dm['name'];
 					$size[$i] = $dm['size'];
-					$type[$i] = $dm['type'];
+					$type[$i] = 'application/pdf';
 					$rev[$i] = $dm['rev'];
 					$jenisdok[$i] = $dm['id'];
 					$downloadable[$i] = $dm['downloadable'];

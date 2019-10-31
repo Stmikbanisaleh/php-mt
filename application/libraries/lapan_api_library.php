@@ -8,7 +8,7 @@
  * @author Agung Trilaksono Suwarto Putra <agungtrilaksonosp@gmail.com>
  * @version 1.0
  */
-class lapan_api_library
+class Lapan_api_library
 {
 	// private $api_endpoint = URL_API_LAPAN_MT;
 	private $api_endpoint = URL_API_MT;
