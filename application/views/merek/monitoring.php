@@ -210,7 +210,6 @@
                                                                       <a data-toggle="modal" href="#modal_<?= $m3['id'] ?>" class="text-info"><i class="fa fa-user"> Lihat</i></a>
                                                                   </td>
                                                                   <td></td>
-                                                                  <td></td>
                                                                   <td><?= date('d-m-Y', strtotime($m3['createdAt'])) ?></td>
                                                                   <td><?= $diff->m; ?></td>
                                                                   <td></td>

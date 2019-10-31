@@ -36,13 +36,13 @@
                                        <?php foreach ($pembayaran  as $b ) : ?>
                                     <tr>
                                         <td><?= $i; ?></td>
-                                        <td><?= $b['NOMOR_PENDAFTAR']?></td>
-                                        <td><?= $b['UNIT']?></td>
+                                        <td><?= $b['nomor_pendaftar']?></td>
+                                        <td><?= $b['unit']?></td>
                                         <td></td>
                                         <td></td>
+                                        <td><?= $b['jenis_pembayaran']?></td>
                                         <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td><?= $b['pembayaran']?></td>
                                         <td></td>
                                     </tr>
                                         <?php $i++; ?>
