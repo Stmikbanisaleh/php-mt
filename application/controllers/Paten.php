@@ -934,7 +934,7 @@ class Paten extends CI_Controller
 		if ($dokpatenver) {
 			if (!empty($_FILES['dokumen2']['name'])) {
 				$filename2 = $_FILES['dokumen2']['name'];
-				$size2 = $_FILES['dokumen2']['size2'];
+				$size2 = $_FILES['dokumen2']['size'];
 				$type2 = $_FILES['dokumen2']['type'];
 				$file_tmp2 = $_FILES['dokumen2']['tmp_name'];
 				$data2 = file_get_contents($file_tmp2);
@@ -1034,7 +1034,6 @@ class Paten extends CI_Controller
 			}
 		} else {
 			if (!empty($_FILES['dokumen4']['name'])) {
-				$this->upload->do_upload('dokumen4');
 				$filename4 = $_FILES['dokumen4']['name'];
 				$size4 = $_FILES['dokumen4']['size'];
 				$type4 = $_FILES['dokumen4']['type'];
@@ -1118,7 +1117,6 @@ class Paten extends CI_Controller
 		];
 
 		$updateverifikasi = $this->lapan_api_library->call('patens/updateverifikasipatensave', $data);
-
 		if ($updateverifikasi['status'] == 200) {
 			if ($dokpatenver) {
 				$delete = [
@@ -1128,7 +1126,6 @@ class Paten extends CI_Controller
 				];
 
 				$deletedokumen = $this->lapan_api_library->call('dokumen/deletedokumenbynomorpendaftar', $delete);
-
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
 						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
@@ -1144,7 +1141,6 @@ class Paten extends CI_Controller
 						$md['token'] = $this->session->userdata('token');
 
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
-						print_r($insertdokumen);exit;
 					}
 				endforeach;
 			} else {

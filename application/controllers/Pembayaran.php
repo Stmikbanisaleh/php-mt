@@ -27,18 +27,18 @@ class Pembayaran extends CI_Controller
 		// $this->session->userdata('email')])->row_array();
 		// $roleId = $data['user']['role_id'];
 		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
-		$return_jenispembayaran = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 4]);
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'), 'golongan' => 3]);
+		$return_jenispembayaran = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'), 'golongan' => 4]);
 		$return_dokhakcipta = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 3]);
 		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
 		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
-		
+
 		$data['jenispembayaran'] = $return_jenispembayaran['data']['rows'];
 
 		// $data['user'] = $this->db->get_where('msuser', ['email' =>
 		// $this->session->userdata('email')])->row_array();
 		// $roleId = $data['user']['role_id'];
-		$return_role = $this->lapan_api_library->call('rev/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $this->session->userdata('role_id')]);
+		$return_role = $this->lapan_api_library->call('rev/getrevbyid', ['token' => $this->session->userdata('token'), 'id' => $this->session->userdata('role_id')]);
 		$return_pembayaran = $this->lapan_api_library->call('pembayaran/getpembayaran', ['token' => $this->session->userdata('token')]);
 
 		// print_r($return_pembayaran);exit;
@@ -47,7 +47,7 @@ class Pembayaran extends CI_Controller
 		// $this->load->model('Pembayaran_model', 'bayar');
 		$data['pembayaran'] = $return_pembayaran['data'][0];
 
-		if ($this->session->userdata('role_id') == 15 or $this->session->userdata('role_id')== 17) {
+		if ($this->session->userdata('role_id') == 15 or $this->session->userdata('role_id') == 17) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
 			$this->load->view('pembayaran/input', $data);
@@ -69,9 +69,13 @@ class Pembayaran extends CI_Controller
 		$this->upload->initialize($config);
 
 		if (!empty($_FILES['bukti_pembayaran']['name'])) {
-			$this->upload->do_upload('bukti_pembayaran');
-			$name = $this->upload->data('raw_name');
-			$ext = $this->upload->data('file_ext');
+			// $this->upload->do_upload('bukti_pembayaran');
+			$name = $_FILES['bukti_pembayaran']['name'];
+			$ext = $_FILES['bukti_pembayaran']['type'];
+			$file_tmp5 = $_FILES['dokumen5']['tmp_name'];
+			$data5 = file_get_contents($file_tmp5);
+			$dokumen5base64 = base64_encode($data5);
+
 			$filename = $name . '_' . $this->input->post('no_paten') . $ext;
 		} else {
 			$filename = 'error';
@@ -82,11 +86,12 @@ class Pembayaran extends CI_Controller
 			'tgl_input' => date('Y-m-d h:i:s'),
 			'jenis_pembayaran' => htmlspecialchars($this->input->post('jenis_pembayaran', true)),
 			'bukti_pembayaran' => $filename,
+			'dokumen' => $dokumen5base64,
 			'pembayaran' => htmlspecialchars($this->input->post('dibayar', true)),
 			'token' => $this->session->userdata('token'),
 		];
 
-		$insert = $this->lapan_api_library->call('pembayaran/addpembayaran',$data);
+		$insert = $this->lapan_api_library->call('pembayaran/addpembayaran', $data);
 
 		// $this->db->insert('trpembayaran', $data);
 		// $this->db->insert('trpembayaran_backup', $data);
@@ -129,18 +134,18 @@ class Pembayaran extends CI_Controller
 		}
 	}
 
-	function reload_paten($id = '')
+	function reload_paten()
 	{
-		$nopaten = $this->input->post('no_paten');
-		if ($id != '') {
-			$nopaten = $id;
-		}
+		$nopaten = $this->input->post('nomor_paten');
+		// if ($id != '') {
+		// 	$nopaten = $id;
+		// }
 		$data = [
 			'nomor_paten' => $nopaten,
 			'token' => $this->session->userdata('token')
 		];
-		$detail = $this->lapan_api_library->call('pembayaran/getdetail',$data);
-		// print_r(json_encode($detail['data'][0][0]));exit;
+		$detail = $this->lapan_api_library->call('pembayaran/getdetail', $data);
+		// print_r(json_encode($detail['data']));exit;
 		$detail = $detail['data'][0][0];
 		// $this->load->model('Pembayaran_model', 'bayar');
 		// $detail = $this->bayar->getDetail($nopaten);

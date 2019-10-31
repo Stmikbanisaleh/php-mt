@@ -118,11 +118,9 @@
           contentType: 'application/x-www-form-urlencoded',
           data: 'nomor_paten=' + this_val,
           success: function(data) {
-            $.each(data.header, function(v) {
-              $('#unit_kerja').val(v.nama_rev);
-              $('#judul').val(v.judul);
-              $('#tahun').val(v.tahun_granted);
-            });
+              $('#unit_kerja').val(data.header.nama_rev);
+              $('#judul').val(data.header.judul);
+              $('#tahun').val(data.header.tahun);
           },
           error: function() {
             console.log('Faiure on Reload Enquiry');
