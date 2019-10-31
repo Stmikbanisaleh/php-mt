@@ -323,8 +323,8 @@ class Paten extends CI_Controller
 			'id' => $post['id']
 		];
 
-		$update_paten = $this->lapan_api_library->call('patens/updatepatensave', $data);
-		print_r(json_encode($update_paten));exit;
+		// $update_paten = $this->lapan_api_library->call('patens/updatepatensave', $data);
+		// print_r(json_encode($update_paten));exit;
 
 		// $this->db->where('ID', $post['id']);
 
@@ -354,21 +354,32 @@ class Paten extends CI_Controller
 		// 	'abstrak_name' => $name_abstrak,
 		// 	'gambar_name' => $name_gambar,
 		// ];
+		$update_paten = 'ya';
 		if ($update_paten) {
+
+			$data = [
+			'token' => $this->session->userdata('token'),
+			'nomor_pendaftar' => $this->input->post('ipman_code'),
+		];
+
+		// $delete_dokumenbyip = $this->lapan_api_library->call('lib/deletedokumenbyip', $data);
+		print_r(json_encode($dokpaten));exit;
+
+
 
 
 			// $this->db->delete('dpaten', array('ID_PATEN' => $post['id']));
-			$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
+			// $this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
 
 			$i = 1;
 			foreach ($dokpaten as $dp) {
 				$versi = $dp['REV'] + 1;
 				if ($dp['SIZE']) {
-					$config['file_name']          =  $ipman . '_' .  $dp['PENAMAAN_FILE'] . '_v' . $versi;
+					$config['file_name']          =  $ipman . '_' .  $dp['penamaan_file'] . '_v' . $versi;
 					$config['upload_path']          = './assets/dokumen/dokumen_paten/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				} else {
-					$config['file_name']          = $ipman . '_' . $dp['PENAMAAN_FILE'];
+					$config['file_name']          = $ipman . '_' . $dp['penamaan_file'];
 					$config['upload_path']          = './assets/dokumen/dokumen_paten/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				}
@@ -382,11 +393,11 @@ class Paten extends CI_Controller
 					$size[$i] = $this->upload->data('file_size');
 					$type[$i] = $this->upload->data('file_ext');
 					if ($dp['SIZE']) {
-						$rev[$i] = $dp['REV'] + 1;
+						$rev[$i] = $dp['rev'] + 1;
 					} else {
-						$rev[$i] = $dp['REV'];
+						$rev[$i] = $dp['rev'];
 					}
-					$jenisdok[$i] = $dp['ID'];
+					$jenisdok[$i] = $dp['id'];
 					$downloadable[$i] = $dp['DOWNLOADABLE'];
 					$dateinput[$i] = $dp['TGL_INPUT'];
 					$userinput[$i] = $dp['KODE_INPUT'];
