@@ -214,21 +214,8 @@ class Hakcipta extends CI_Controller
         $dokhakcipta = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
 		$dokhakcipta = $dokhakcipta['data'][0];
 
-		// print_r(json_encode($dokhakcipta));exit;
-
 		$jumlahdok = count($dokhakcipta);
 		$post = $this->input->post();
-
-		// $user = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-
-		// $this->load->model('Hakcipta_model', 'hakcipta');
-		// $ipman = $this->input->post('ipman_code');
-
-		// $dokhakcipta = $this->hakcipta->getDokumen($ipman);
-		// $jumlahdok = count($dokhakcipta);
-
-		// $post = $this->input->post();
 
 
 
@@ -242,34 +229,43 @@ class Hakcipta extends CI_Controller
 			'ipman_code' => $this->input->post('ipman_code'),
 			'kode_ubah' => $userid,
 			'tgl_ubah' => date('Y-m-d h:i:s'),
-			'nomor_pendaftar' => $post['id'],
+			'id' => $post['id'],
 		];
 
 		$update_hakcipta = $this->lapan_api_library->call('hakciptas/updatehakciptasave', $data);
 
-		print_r(json_encode($update_hakcipta));exit;
+		if ($update_hakcipta) {
+			$datad = [
+				'id' => $post['id'],
+				'token' => $this->session->userdata('token')
+			];
 
-		// $this->db->where('ID', $post['id']);
-		if ($this->db->update('mshakcipta', $data)) {
-			$this->db->delete('dhakcipta', array('ID_HAKCIPTA' => $post['id']));
-			$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
+			$deletedpaten = $this->lapan_api_library->call('hakciptas/deletedhakciptabyid', $datad);
+
+			$data3 = [
+				'nomor_pendaftar' => $this->input->post('ipman_code'),
+				'token' => $this->session->userdata('token')
+			];
+			$deletemsdokumen = $this->lapan_api_library->call('lib/deletedokumenbyip', $data3);
 
 			$kp = array();
 			foreach ($post['pencipta'] as $kopeg) {
-				$kp['ID_HAKCIPTA'] = $post['id'];
-				$kp['NIK'] = $kopeg['nik'];
-				$this->db->insert('dhakcipta', $kp);
+				$kp['token'] = $this->session->userdata('token');
+				$kp['id_hakcipta'] = $post['id'];
+				$kp['nik'] = $kopeg['nik'];
+
+				$insert = $this->lapan_api_library->call('hakciptas/adddhakcipta', $kp);	
 			}
 
 			$i = 1;
 			foreach ($dokhakcipta as $dh) {
-				$versi = $dh['REV'] + 1;
-				if ($dh['SIZE']) {
-					$config['file_name']          = $ipman . '_' . $dh['PENAMAAN_FILE'] . '_v' . $versi;
+				$versi = $dh['rev'] + 1;
+				if ($dh['size']) {
+					$config['file_name']          = $ipman . '_' . $dh['penamaan_file'] . '_v' . $versi;
 					$config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				} else {
-					$config['file_name']          = $ipman . '_' . $dh['PENAMAAN_FILE'];
+					$config['file_name']          = $ipman . '_' . $dh['penamaan_file'];
 					$config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				}
@@ -283,30 +279,35 @@ class Hakcipta extends CI_Controller
 					$filename[$i] = $this->upload->data('file_name');
 					$size[$i] = $this->upload->data('file_size');
 					$type[$i] = $this->upload->data('file_ext');
-					if ($dh['SIZE']) {
-						$rev[$i] = $dh['REV'] + 1;
+					$file_tmp = $_FILES['dokumen' . $i]['tmp_name'];
+					$data_base64 = file_get_contents($file_tmp);
+					$dokumenx[$i] = base64_encode($data_base64);
+					if ($dh['size']) {
+						$rev[$i] = $dh['rev'] + 1;
 					} else {
-						$rev[$i] = $dh['REV'];
+						$rev[$i] = $dh['rev'];
 					}
-					$jenisdok[$i] = $dh['ID'];
-					$downloadable[$i] = $dh['DOWNLOADABLE'];
-					$dateinput[$i] = $dh['TGL_INPUT'];
-					$userinput[$i] = $dh['KODE_INPUT'];
+					$jenisdok[$i] = $dh['id'];
+					$downloadable[$i] = $dh['downloadable'];
+					$dateinput[$i] = $dh['tgl_input'];
+					$userinput[$i] = $dh['kode_input'];
 					$dateubah[$i] = date('Y-m-d h:i:s');
-					$userubah[$i] =  $user['id'];
+					$userubah[$i] =  $userid;
 				} else {
-					$filename[$i] = $dh['NAME'];
-					$size[$i] = $dh['SIZE'];
-					$type[$i] = $dh['TYPE'];
-					$rev[$i] = $dh['REV'];
-					$jenisdok[$i] = $dh['ID'];
-					$downloadable[$i] = $dh['DOWNLOADABLE'];
-					$dateinput[$i] = $dh['TGL_INPUT'];
-					$userinput[$i] = $dh['KODE_INPUT'];
-					$dateubah[$i] = $dh['TGL_UBAH'];
-					$userubah[$i] =  $dh['KODE_UBAH'];
+					$filename[$i] = $dh['name'];
+					$size[$i] = $dh['size'];
+					$type[$i] = 'application/pdf';
+					$rev[$i] = $dh['rev'];
+					$jenisdok[$i] = $dh['id'];
+					$downloadable[$i] = $dh['downloadable'];
+					$dateinput[$i] = $dh['tgl_input'];
+					$userinput[$i] = $dh['kode_input'];
+					$dateubah[$i] = $dh['tgl_ubah'];
+					$userubah[$i] =  $dh['kode_ubah'];
+					$dokumenx[$i] = '';
 				}
-				$dokumen[$i] = array($filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
+
+				$dokumen[$i] = array($dokumenx[$i], $filename[$i], $size[$i] , $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
 				$i++;
 			}
 			switch ($jumlahdok) {
@@ -368,19 +369,24 @@ class Hakcipta extends CI_Controller
 
 			$md = array();
 			foreach ($dokumen as $dok) :
-				$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-				$md['NAME'] = $dok[0];
-				$md['SIZE'] = $dok[1];
-				$md['TYPE'] = $dok[2];
-				$md['REV'] = $dok[3];
-				$md['ROLE'] = $dok[4];
-				$md['JENIS_DOKUMEN'] = $dok[5];
-				$md['DOWNLOADABLE'] = $dok[6];
-				$md['TGL_INPUT'] = $dok[7];
-				$md['KODE_INPUT'] = $dok[8];
-				$md['TGL_UBAH'] = $dok[9];
-				$md['KODE_UBAH'] = $dok[10];
-				$this->db->insert('msdokumen', $md);
+				$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+				$md['dokumen'] = $dok[0];
+				$md['name'] = $dok[1];
+				$md['size'] = $dok[2];
+				$md['type'] = $dok[3];
+				$md['rev'] = $dok[4];
+				$md['role'] = $dok[5];
+				$md['jenis_dokumen'] = $dok[6];
+				$md['downloadable'] = $dok[7];
+				$md['tgl_input'] = $dok[8];
+				$md['kode_input'] = $dok[9];
+				$md['tgl_ubah'] = $dok[10];
+				$md['kode_ubah'] = $dok[11];
+				$md['token'] = $this->session->userdata('token');
+
+				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
+
+
 			endforeach;
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
