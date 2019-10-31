@@ -262,11 +262,11 @@ class Hakcipta extends CI_Controller
 				$versi = $dh['rev'] + 1;
 				if ($dh['size']) {
 					$config['file_name']          = $ipman . '_' . $dh['penamaan_file'] . '_v' . $versi;
-					$config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
+					// $config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				} else {
 					$config['file_name']          = $ipman . '_' . $dh['penamaan_file'];
-					$config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
+					// $config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				}
 
@@ -274,7 +274,7 @@ class Hakcipta extends CI_Controller
 
 				// script upload dokumen
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
-					$this->upload->do_upload('dokumen' . $i);
+					// $this->upload->do_upload('dokumen' . $i);
 
 					$filename[$i] = $this->upload->data('file_name');
 					$size[$i] = $this->upload->data('file_size');
