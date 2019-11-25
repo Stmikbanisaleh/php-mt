@@ -35,7 +35,6 @@ class Merek extends CI_Controller
 		$data['pegawai'] = $return_pegawai['data']['rows'];
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
 
-		// $this->load->model('Merek_model', 'merek');
 		$data_getcode = array(
 			'token' => $this->session->userdata('token'),
 			'kode' => 'MR',
@@ -49,7 +48,6 @@ class Merek extends CI_Controller
 		$ipmancode = $ipm;
 
 		$data['ipmancode'] = $ipmancode;
-		// print_r($ipmancode);exit;
 
 		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
@@ -59,20 +57,14 @@ class Merek extends CI_Controller
 
 	public function edit($id)
 	{
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-		// $roleId = $data['user']['role_id'];
 		$data['merekid'] = $id;
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
 		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
 		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 
 		$return_pendesain = $this->lapan_api_library->call('mereks/getpendesainbyid', ['token' => $this->session->userdata('token'), 'id' => $id]);
 		$return_merekdraftbyid = $this->lapan_api_library->call('mereks/getmerekdraftdetail', ['token' => $this->session->userdata('token'), 'id' => $id]);
-		// print_r($return_merekdraftbyid);exit;
 		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'), 'id' => $id]);
 
-		// $return_role = $this->lapan_api_library->call('patens/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'), 'golongan' => 3]);
 		$data['unitkerja'] = $return_unitkerja['data']['rows'];
 		$data['pegawai'] = $return_pegawai['data']['rows'];
@@ -234,7 +226,6 @@ class Merek extends CI_Controller
 			$deletemsdokumen = $this->lapan_api_library->call('lib/deletedokumenbyip', $data3);
 
 			$i = 1;
-			// print_r($dokmerek);exit;
 			foreach ($dokmerek['data'][0] as $dm) {
 				$versi = $dm['rev'] + 1;
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
@@ -411,8 +402,6 @@ class Merek extends CI_Controller
 		$return_ditangguhkan = $this->lapan_api_library->call('mereks/getmerekstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
 		$return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
 		$return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
-		// $return_paten = $this->lapan_api_library->call('patens/getpaten', ['token' => $this->session->userdata('token')]);
-
 		$data['getDraft'] = $return_draft['data'][0];
 		$data['getDiajukan'] = $return_diajukan['data'][0];
 		$data['getDisetujui'] = $return_disetujui['data'][0];
@@ -420,7 +409,6 @@ class Merek extends CI_Controller
 		$data['getDitangguhkan'] = $return_ditangguhkan['data'][0];
 		$data['getInventor'] = $return_inventor['data'][0];
 		$data['getInventorNon'] = $return_noninventor['data'][0];
-		// $data['data'] = $return_paten['data']['rows'];
 
 
 
@@ -667,31 +655,6 @@ class Merek extends CI_Controller
 		$data['dokver'] = $this->lapan_api_library->call('patens/getdokumenver', $data_dokver);
 		$data['dokver'] = $data['dokver']['data'][0];
 
-		// print_r(json_encode($data['pendesain']));exit;
-
-
-
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-
-		// $roleId = $data['user']['role_id'];
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		// $data['unitkerja'] = $this->db->get_where('msrev', array('golongan' => 3))->result_array();
-		// $data['status'] = $this->db->get_where('msrev', array('golongan' => 6))->result_array();
-		// $data['pegawai'] = $this->db->get('mspegawai')->result_array();
-		// $data['nonpegawai'] = $this->db->get('msnonpegawai')->result_array();
-		// $data['merek'] = $this->db->get_where('msmerek', array('ID' => $id))->row_array();
-		// $data['dokmerek'] = $this->db->get_where('msjenisdokumen', array('ID_HAKI' => 2))->result_array();
-		// $data['newdokver'] = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
-
-		// $this->load->model('Merek_model', 'merek');
-		// $data['diajukan'] = $this->merek->getMerekDiajukanDetail($id);
-		// $data['pendesain'] = $this->merek->getPendesainById($id);
-
-		// $code = $data['diajukan']['IPMAN_CODE'];
-		// $data['dokumen'] = $this->merek->getDokumen($code);
-		// $data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
-
 		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
@@ -707,16 +670,6 @@ class Merek extends CI_Controller
 
 	public function save_verifikasi()
 	{
-		// $user = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-		// $return_draft = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 19]);
-		// $return_diajukan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 20]);
-		// $return_disetujui = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 21]);
-		// $return_ditolak = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 22]);
-		// $return_ditangguhkan = $this->lapan_api_library->call('patens/getpatenstatus', ['token' => $this->session->userdata('token'), 'userId' => $this->session->userdata('user_id'), 'role_id' => $this->session->userdata('role_id'), 'status' => 23]);
-		// $return_inventor = $this->lapan_api_library->call('patens/getinventor', ['token' => $this->session->userdata('token')]);
-		// $return_noninventor = $this->lapan_api_library->call('patens/getnoninventor', ['token' => $this->session->userdata('token')]);
-
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 
@@ -731,12 +684,8 @@ class Merek extends CI_Controller
 			'id_role' => 2
 		];
 
-		// print_r($ipman);exit;
 		$dokmerekver = $this->lapan_api_library->call('mereks/getdokumenver', $data_dokumen);
-		// print_r($data_dokumen);exit;
 		$dokuver = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', $data_dokumen2);
-		// print_r($dokmerekver['data'][0][0]);exit;
-		// $dokuver = $this->db->get_where('msjenisdokumen', array('ID_ROLE' => 2))->result_array();
 
 		$config1['file_name']          	= $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 		$config1['upload_path']          = './assets/dokumen/dokumen_verifikator/';
@@ -744,7 +693,6 @@ class Merek extends CI_Controller
 		$config1['overwrite']        = TRUE;
 
 		$this->upload->initialize($config1);
-		// print_r(json_encode($dokmerekver));exit;
 		if ($dokmerekver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
 				$this->upload->do_upload('dokumen1');
@@ -757,7 +705,6 @@ class Merek extends CI_Controller
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
 				$dokumen1 = array($dokumen1base64, $filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
-				// print_r($dokmerekver);exit;
 				$filename1 = $dokmerekver['data'][0][0]['name'];
 				$size1 = $dokmerekver['data'][0][0]['size'];
 				$type1 = $dokmerekver['data'][0][0]['type'];
@@ -791,7 +738,6 @@ class Merek extends CI_Controller
 		$config2['allowed_types']        = 'doc|docx|pdf';
 		$config2['overwrite']        = TRUE;
 
-		// print_r($dokumen1);exit;
 		$this->upload->initialize($config2);
 
 		// script upload dokumen kedua
@@ -966,9 +912,6 @@ class Merek extends CI_Controller
 		}
 
 		$dokumen = array($dokumen1, $dokumen2, $dokumen3, $dokumen4, $dokumen5);
-		// print_r($dokumen1);exit;
-		//var_dump($dokumen);
-		//die;
 
 		$data = [
 			'pemeriksa_merek' => htmlspecialchars($this->input->post('pemeriksa_merek', true)),
@@ -983,8 +926,6 @@ class Merek extends CI_Controller
 			'id' =>  $this->input->post('id'),
 			'token' => $this->session->userdata('token')
 		];
-		// print_r($data);exit;
-		// $this->db->where('id', $this->input->post('id'));
 		$updateverifikasi = $this->lapan_api_library->call('mereks/updateverifikasisave', $data);
 		// print_r($updateverifikasi['status']);exit;
 		if ($updateverifikasi['status'] == 200) {
@@ -996,12 +937,8 @@ class Merek extends CI_Controller
 				];
 
 				$deletedokumen = $this->lapan_api_library->call('dokumen/deletedokumenbynomorpendaftar', $delete);
-				// print_r($deletedokumen);exit;
-				// $this->db->delete('msdokumen', array('nomor_pendaftar' => $this->input->post('ipman_code'), 'role' => 2));
-				// print_r(json_encode($dokumen));exit;
 				foreach ($dokumen as $dok) :
 					if (!empty($dok)) {
-						// print_r($dok);exit;
 						$md['nomor_pendaftar'] = $this->input->post('ipman_code');
 						$md['dokumen'] = $dok[0];
 						$md['name'] = $dok[1];
@@ -1014,11 +951,7 @@ class Merek extends CI_Controller
 						$md['downloadable'] = 1;
 						$md['token'] = $this->session->userdata('token');
 
-						// print_r($md);exit;
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
-						// print_r($insertdokumen);exit;
-
-						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			} else {
@@ -1036,8 +969,6 @@ class Merek extends CI_Controller
 						$md['kode_input'] = $dok[6];
 
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
-
-						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			}

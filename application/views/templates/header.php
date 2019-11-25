@@ -113,7 +113,7 @@
             <a class="nav-link navbar-avatar" data-toggle="dropdown" href="#" aria-expanded="false" data-animation="scale-up" role="button">
 
               <span class="avatar avatar-online">
-                <img src="<?= base_url('assets/img/profile/') . $this->session->userdata('image'); ?>" alt="...">
+                <img src="<?= base_url('assets/img/profile/default.jpg') ?>" alt="...">
                 <i></i>
 
               </span>

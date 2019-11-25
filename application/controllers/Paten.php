@@ -28,10 +28,9 @@ class Paten extends CI_Controller
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
 		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
 		$return_dokpaten = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 1]);
-		// print_r(json_encode($return_dokpaten));exit;
 		$return_pegawai = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
 		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
-		// print_r($return_dokpaten);exit;
+
 		$data['unitkerja'] = $return_unitkerja['data']['rows'];
 		$data['jenispaten'] = $return_jenispaten['data']['rows'];
 		$data['dokpaten'] = $return_dokpaten['data']['rows'];
@@ -57,31 +56,21 @@ class Paten extends CI_Controller
 		$return_patenbyid = $this->lapan_api_library->call('patens/getpatenbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 
 		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'),'id' => $id]);
-		// print_r($return_patendraftdetail);exit;
-
-		// $return_role = $this->lapan_api_library->call('patens/getrevbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
 		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
 
-		// print_r(json_encode($return_pegawai));exit;
 		$data['patenid'] = $id;
 		$data['paten'] = $return_patenbyid['data']['rows'][0];
-		// $data['role'] = $return_role['data']['rows'];
 		$data['unitkerja'] = $return_unitkerja['data']['rows'];
 		$data['jenispaten'] = $return_jenispaten['data']['rows'];
 		$data['pegawai'] = $return_pegawai['data']['rows'];
-		// print_r($data['pegawai']);exit;
 		$data['nonpegawai'] = $return_nonpegawai['data']['rows'];
+
 		$data['draft'] = $return_patendraftdetail['data'][0][0];
-		// print_r($return_inventor);exit;
 		$data['inventor'] = $return_inventor['data'][0];
-	
-		// print_r(json_encode($data['pegawai']));exit;
 
 		$code = $data['draft']['ipman_code'];
-		// // print_r($code);exit;
 		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
-		// print_r($return_dokumenbyipmancode);exit;
 		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
 
 
@@ -217,18 +206,19 @@ class Paten extends CI_Controller
 				$md['downloadable'] = $downloadable;
 				$md['name'] = $dokumen[6];
 				$md['size'] = $dokumen[7];
-				// $insert = $this->lapan_api_library->call('patens/adddpaten', $kp);
 
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				$i++;
 			}
 
 			$kp = array();
+			$id_paten = $insert['id'];
 			foreach ($post['inventor'] as $kopeg) {
-				$kp['id_paten'] = $insert['id'];
+				$kp['id_paten'] = $id_paten;
 				$kp['nik'] = $kopeg['nik'];
 				$kp['token'] = $this->session->userdata('token');
-				$insert = $this->lapan_api_library->call('patens/adddpaten', $kp);
+				$insert = $this->lapan_api_library->call('dpatens/adddpaten', $kp);
+
 			}
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
@@ -725,8 +715,6 @@ class Paten extends CI_Controller
 		$data['getInventor'] = $return_inventor['data'][0];
 		$data['getInventorNon'] = $return_noninventor['data'][0];
 
-		// print_r(json_encode($data['getInventorNon']));exit;
-
 		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header', $data);
 			$this->load->view('templates/side_menu');
@@ -815,10 +803,6 @@ class Paten extends CI_Controller
         $data['dokumen'] = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
         $data['dokumen'] = $data['dokumen']['data'][0];
 
-
-
-        // print_r(json_encode($data['dokumen']));exit;
-
         $data_dokver = [
                     'token' => $this->session->userdata('token'),
                     'nomor_pendaftar' => $code,
@@ -845,7 +829,6 @@ class Paten extends CI_Controller
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
 
-		// $this->load->model('Paten_model', 'paten');
 		$ipman = $this->input->post('ipman_code');
 
 		$data_dokpatenver = [
@@ -1204,6 +1187,7 @@ class Paten extends CI_Controller
 				'nama' => htmlspecialchars($this->input->post('nama', true)),
 				'token' => $this->session->userdata('token')
 			];
+			$insertpendesain = $this->lapan_api_library->call('nonpegawai/insertpendesain', $data);
 
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Inventor Baru telah ditambahkan! <a type="button" href="input" class="my-5 btn btn-success btn-sm">Tambah Paten</a></div>');

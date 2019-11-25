@@ -17,7 +17,9 @@ class Pegawai extends CI_Controller
 
     public function index()
     {
-        $data['getPegawai'] = $this->lapan_api_library->call('pegawai/', ['token' => $this->session->userdata('token')]);
+        $data['getPegawai'] = $this->lapan_api_library->call('pegawai', ['token' => $this->session->userdata('token')]);
+
+        // print_r(json_encode($data['getPegawai']));exit;
 
         if ($this->session->userdata('role_id') == 15) {
             $this->load->view('templates/header');
@@ -60,16 +62,20 @@ class Pegawai extends CI_Controller
         } else {
             if ($this->session->userdata('token')) {
                 $data = [
-                    'kode_kepegawaian' => htmlspecialchars($this->input->post('kode_kepegawaian', true)),
-                    'nik' => htmlspecialchars($this->input->post('nik', true)),
+                    'kode_kepegawaian' => strtoupper(htmlspecialchars($this->input->post('kode_kepegawaian', true))),
+                    'nik' => strtoupper(htmlspecialchars($this->input->post('nik', true))),
                     'nama' => htmlspecialchars($this->input->post('nama', true)),
                     'token' => $this->session->userdata('token')
                 ];
 
-                $this->lapan_api_library->call('pegawai/addpegawai', $data);
-
-                $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-                Pegawai Baru telah ditambahkan! </div>');
+                $insert = $this->lapan_api_library->call('pegawai/addpegawai', $data);
+                if($insert['status'] == 200){
+                    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+                    Pegawai Baru telah ditambahkan! </div>');
+                }else{
+                    $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+                    '.$insert['messages'].' </div>');
+                }
                 redirect('pegawai/index');
             } else {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">

@@ -16,8 +16,8 @@ class User extends CI_Controller
 	{
 		$data['getRole'] = $this->lapan_api_library->call('rev/getrolenotpengembang', ['token' => $this->session->userdata('token')]);
 		$data['getRole'] = $data['getRole']['data'][0];
-		$get_alluser = $this->lapan_api_library->call('users/getalluser', ['token' => $this->session->userdata('token')]);
-		$data['getRoleStatus'] = $this->lapan_api_library->call('users/getuserrole', ['token' => $this->session->userdata('token')]);
+		$get_alluser = $this->lapan_api_library->call_gateway('users/getalluser', ['token' => $this->session->userdata('token')]);
+		$data['getRoleStatus'] = $this->lapan_api_library->call_gateway('users/getuserrole', ['token' => $this->session->userdata('token')]);
 		$data['getRoleStatus'] = $data['getRoleStatus']['data'][0];
 
 		if ($this->session->userdata('role_id') == 15) {
@@ -47,13 +47,14 @@ class User extends CI_Controller
 
 	public function adduser()
 	{
-		$this->load->model('User_model', 'usermod');
-		$data['getRoleStatus'] = $this->usermod->getUserRoleAndStatus();
+		$data['getRole'] = $this->lapan_api_library->call('rev/getrolenotpengembang', ['token' => $this->session->userdata('token')]);
+		$data['getRole'] = $data['getRole']['data'][0];
+
+		$data['getRoleStatus'] = $this->lapan_api_library->call_gateway('users/getuserrole', ['token' => $this->session->userdata('token')]);
+		$data['getRoleStatus'] = $data['getRoleStatus']['data'][0];
 
 		$this->form_validation->set_rules('name', 'Name', 'required|trim');
-		$this->form_validation->set_rules('email', 'Email', 'required|valid_email|trim|is_unique[msuser.email]', [
-			'is unique' => 'This email is already registered'
-		]);
+
 		$this->form_validation->set_rules('password1', 'Password', 'required|trim|min_length[3]|matches[password2]', [
 			'matches' => 'Password dont match!',
 			'min_length' => 'Password too short!'
@@ -78,26 +79,18 @@ class User extends CI_Controller
 				'is_active' => 4,
 			];
 
-			$insert = $this->lapan_api_library->call('users/register', $datauser);
+			$insert = $this->lapan_api_library->call_gateway('users/register', $datauser);
 
-			// print_r(json_encode($insert));exit;
-			// $email = $this->input->post('email');
+			if($insert['status'] == 200 ){
+				redirect('user');
+			}else{
+				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+															'.$insert['messages'].'
+															</div>');
+				redirect('user');
+			}
 
-			//siapkan token
-			// $token = $this->_token();
-			// $user_token = [
-			// 	'email' => 'dediprasetio03@gmail.com',
-			// 	'token' => $token,
-			// 	'date_created' => time()
-			// ];
-
-			// $this->db->insert('msuser', $datauser);
-			// $this->db->insert('msusertoken', $user_token);
-
-
-			// $this->_send_email($token, 'verify');
-
-			redirect('user');
+			
 		}
 	}
 

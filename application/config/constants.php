@@ -89,5 +89,6 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 // define('URL_API_MT', 'http://192.168.137.69:3000');
 // define('URL_API_MT', 'http://192.168.137.69:3000');
 // define('URL_API_DOWNLOAD', 'http://192.168.137.69:3000/download/download/');
-define('URL_API_MT', 'http://localhost:3000');
-define('URL_API_DOWNLOAD', 'http://localhost:3000/download/download/');
+define('URL_API_MT', 'http://localhost:3001');
+define('URL_API_GATEWAY', 'http://localhost:3000');
+define('URL_API_DOWNLOAD', 'http://localhost:3001/download/download/');

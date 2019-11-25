@@ -33,13 +33,10 @@ class Auth extends CI_Controller
 			'email' => $email,
 			'password' => $password);
 		$user = $this->lapan_api_library->call('users/login',$data2);
-		// print_r($user['status_rev']);
-		// exit;
+		$user = $user['data'];
+
 		if ($user['status'] == 200) {
-			//cek aktif
 			if ($user['is_active'] == 3) {
-				// print_r($user['role_id']);
-				// exit;
 				if ($user['token']) {
 					$data = [
 						'email' => $user['email'],
@@ -56,7 +53,6 @@ class Auth extends CI_Controller
 
 
 					$this->session->set_userdata($data);
-					// echo "berhasil";
 					redirect('dashboard');
 				} else {
 					$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
@@ -68,7 +64,6 @@ class Auth extends CI_Controller
                     Akun belum aktif!</div>');
 				redirect('auth');
 			}
-			//cek password
 
 		} else {
 			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">

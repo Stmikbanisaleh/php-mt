@@ -11,6 +11,7 @@
           <div class="row row-lg">
             <div class="col-xl">
               <div class="panel">
+                <?= $this->session->flashdata('message'); ?>
                 <a href="" class="btn btn-primary my-3" data-toggle="modal" data-target="#newUserModal"><i class="fa fa-plus"></i> New User</a>
                 <div class="table-responsive">
                   <table class="table dataTable table-striped w-full" data-plugin="dataTable">
@@ -67,7 +68,6 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <?= $this->session->flashdata('message'); ?>
         <form action="<?= base_url('user/adduser'); ?>" method="post">
           <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" style="display: none">
           <div class="modal-body">

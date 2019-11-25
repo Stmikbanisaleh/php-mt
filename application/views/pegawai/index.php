@@ -11,6 +11,7 @@
                   <div class="row row-lg">
                       <div class="col-xl">
                           <div class="panel">
+                              <?= $this->session->flashdata('message')."<br>"; ?>
                               <a href="<?= base_url('pegawai/input_pegawai') ?>" class="btn btn-primary mb-10"><i class="fa fa-plus"></i> Tambah Pegawai</a>
                               <div class="table-responsive">
                                   <table class="table dataTable table-striped table-bordered w-full" data-plugin="dataTable">

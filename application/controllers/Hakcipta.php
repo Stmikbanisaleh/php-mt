@@ -683,7 +683,6 @@ class Hakcipta extends CI_Controller
                 ];
         $data['pencipta'] = $this->lapan_api_library->call('hakciptas/getpenciptabyid', $data_pencipta);
         $data['pencipta'] = $data['pencipta']['data'][0];
-        // print_r(json_encode($data['pencipta']));exit;
 
         $code = $data['diajukan']['ipman_code'];
         $data_dokumen = [
@@ -702,19 +701,6 @@ class Hakcipta extends CI_Controller
                 ];
         $data['dokver'] = $this->lapan_api_library->call('patens/getdokumenver', $data_dokver);
         $data['dokver'] = $data['dokver']['data'][0];
-
-        // exit;
-
-		// $this->load->model('hakcipta_model', 'hakcipta');
-		// $data['diajukan'] = $this->hakcipta->getHakciptaDiajukanDetail($id);
-		// $data['pencipta'] = $this->hakcipta->getPenciptaById($id);
-
-		// $code = $data['diajukan']['ipman_code'];
-
-		// $code = $data['diajukan']['IPMAN_CODE'];
-		// $data['dokumen'] = $this->hakcipta->getDokumen($code);
-		// $data['dokver'] = $this->db->get_where('msdokumen', array('NOMOR_PENDAFTAR' => $code, 'ROLE' => 2))->result_array();
-
 
 		if ($this->session->userdata('role_id') == 18) {
 			$this->load->view('templates/header');
@@ -1031,8 +1017,6 @@ class Hakcipta extends CI_Controller
 						$md['kode_input'] = $dok[6];
 
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
-
-						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			}
@@ -1064,11 +1048,6 @@ class Hakcipta extends CI_Controller
 
 	public function input_pencipta()
 	{
-		// $data['user'] = $this->db->get_where('msuser', ['email' =>
-		// $this->session->userdata('email')])->row_array();
-		// $roleId = $data['user']['role_id'];
-		// $data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-
 		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
 		$this->load->view('hakcipta/input_pencipta');

@@ -14,9 +14,6 @@ class Dashboard extends CI_Controller
 
 	public function index()
 	{
-
-		$this->load->model('Dashboard_model', 'dashboard');
-
 		$data['jumlahPaten'] = $this->lapan_api_library->call('patens/getpaten', ['token' => $this->session->userdata('token')]);
 		$data['jumlahMerek'] = $this->lapan_api_library->call('mereks/getmerek', ['token' => $this->session->userdata('token')]);
 		$data['jumlahHakcipta'] = $this->lapan_api_library->call('hakciptas/gethakcipta', ['token' => $this->session->userdata('token')]);
@@ -24,7 +21,6 @@ class Dashboard extends CI_Controller
 
 		$data['grafikPaten'] = $this->lapan_api_library->call('patens/getpatenbyyear', ['token' => $this->session->userdata('token')]);
 		$data['grafikPaten'] = $data['grafikPaten']['data'][0];
-
 
 		$data['grafikMerek'] = $this->lapan_api_library->call('mereks/getmerekbyyear', ['token' => $this->session->userdata('token')]);
 		$data['grafikMerek'] = $data['grafikMerek']['data'][0];
