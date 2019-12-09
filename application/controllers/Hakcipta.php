@@ -65,7 +65,6 @@ class Hakcipta extends CI_Controller
 		$return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 
 		$return_draftbyid = $this->lapan_api_library->call('hakciptas/gethakciptadraftdetail', ['token' => $this->session->userdata('token'),'id' => $id]);
-
 		$return_pencipta = $this->lapan_api_library->call('hakciptas/getpenciptabyid', ['token' => $this->session->userdata('token'),'id' => $id]);
 
 		$data['hakciptaid'] = $id;
@@ -79,7 +78,7 @@ class Hakcipta extends CI_Controller
 		$data['pencipta'] = $return_pencipta['data'][0];
 
 		$code = $data['draft']['ipman_code'];
-
+		
 		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
 
 		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
@@ -651,7 +650,6 @@ class Hakcipta extends CI_Controller
 
         $data['nonpegawai'] = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
         $data['nonpegawai'] = $data['nonpegawai']['data']['rows'];
-
         $data_paten = [
                     'token' => $this->session->userdata('token'),
                     'id' => $id

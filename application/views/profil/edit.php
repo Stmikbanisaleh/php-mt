@@ -36,7 +36,7 @@
                             <div class="row">
                                 <div class="col-sm-4">
                                     <h5 class="text-center">Current Pic</h5>
-                                    <img src="<?= base_url('assets/img/profile/').$getUser['image']; ?>" width="85" height="85">
+                                    <img src="<?= URL_API_DOWNLOAD.$getUser['image']; ?>" width="85" height="85">
                                 </div>
                                 <div class="col-sm-8">
                                     <h5 class="text-center">New Pic</h5>

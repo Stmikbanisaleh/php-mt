@@ -238,6 +238,13 @@ class Desain extends CI_Controller
 					$size[$i] = $_FILES['dokumen' . $i]['size'];
 					$path = $_FILES['dokumen' . $i]['name'];
 					$type[$i]  = pathinfo($path, PATHINFO_EXTENSION);
+					if(!empty($_FILES['dokumen'.$i]['tmp_name']) 
+				     && file_exists($_FILES['dokumen'.$i]['tmp_name'])) {
+						$data_getcontent = file_get_contents($_FILES['dokumen'.$i]['tmp_name']);
+						$dokumen_base64[$i] = base64_encode($data_getcontent);
+					} else {
+						$dokumen_base64[$i] = null;
+					}
 					if ($dd['size']) {
 						$rev[$i] = $dd['rev'] + 1;
 					} else {
@@ -250,6 +257,7 @@ class Desain extends CI_Controller
 					$dateubah[$i] = date('Y-m-d h:i:s');
 					$userubah[$i] =  $this->session->userdata('user_id');
 				} else {
+					$dokumen_base64[$i] = null;
 					$filename[$i] = $dd['name'];
 					$size[$i] = $dd['size'];
 					$type[$i] = 'application/pdf';
@@ -261,7 +269,7 @@ class Desain extends CI_Controller
 					$dateubah[$i] = $dd['tgl_ubah'];
 					$userubah[$i] =  $dd['kode_ubah'];
 				}
-				$dokumen[$i] = array($filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
+				$dokumen[$i] = array($filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i],$dokumen_base64[$i]);
 				$i++;
 			}
 			switch ($jumlahdok) {
@@ -334,7 +342,10 @@ class Desain extends CI_Controller
 				$md['kode_input'] = $dok[8];
 				$md['tgl_ubah'] = $dok[9];
 				$md['kode_ubah'] = $dok[10];
+				$md['dokumen'] = $dok[11];
 				$md['token'] = $this->session->userdata('token');
+				// print_r($md);exit;
+
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
 				// print_r($insert_doc);exit;
 				// $this->db->insert('msdokumen', $md);

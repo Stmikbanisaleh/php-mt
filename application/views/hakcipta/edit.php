@@ -92,7 +92,7 @@
                                     <?php foreach ($pencipta as $penc) { ?>
                                         <tr>
                                             <td>
-                                                <select name='pencipta[<?= $n; ?>][nik]' class="selectfield form-control">
+                                                <select name='pencipta[<?= $np; ?>][nik]' class="selectfield form-control">
                                                     <?php foreach ($pegawai as $p) {
                                                             if ($penc['nik'] == $p['nik']) {
                                                                 echo '<option selected value="' . $p['nik'] . '">' . $p['nik'] . ' - '  . $p['nama'] . '</option>';
@@ -101,7 +101,7 @@
                                                             }
                                                         } ?>
                                                     <?php foreach ($nonpegawai as $np) {
-                                                            if ($penc['NIK'] == $np['nik']) {
+                                                            if ($penc['nik'] == $np['nik']) {
                                                                 echo '<option selected value="' . $np['nik'] . '">' . $np['nik'] . ' - '  . $np['nama'] . '</option>';
                                                             } else {
                                                                 echo '<option value="' . $np['nik'] . '">'  . $np['nik'] . ' - ' . $np['nama'] . '</option>';

@@ -210,8 +210,6 @@
                                         <?php } ?>
                                         <?php } ?>
                                     </td>
-                                    <td></td>
-                                    <td></td>
                                     <td><?= date('d-m-Y', strtotime($m3['createdAt']))?></td>
                                     <td><?=$diff->m;?></td>
                                     <td></td>

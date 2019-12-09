@@ -14,18 +14,9 @@ class Profil extends CI_Controller
 
 	public function index()
 	{
-		$data['user'] = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$roleId = $data['user']['role_id'];
-		$userId = $data['user']['id'];
-		$data['role'] = $this->db->get_where('msrev', array('ID' => $roleId))->row_array();
-		$this->load->model('User_model', 'usermod');
-		$data['getUser'] = $this->usermod->getUserById($userId);
-		$data['getRoleStatus'] = $this->usermod->getUserRoleAndStatus();
-
-		$this->load->view('templates/header', $data);
+		$this->load->view('templates/header');
 		$this->load->view('templates/side_menu');
-		$this->load->view('profil/index', $data);
+		$this->load->view('profil/index');
 		$this->load->view('templates/footer');
 	}
 

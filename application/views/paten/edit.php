@@ -78,7 +78,7 @@
                                                     <a class="btn btn-warning disabled" target="#"><i class="fa fa-exclamation"></i> File tidak ditemukan</a>
                                                 <?php } ?>
                                         </div>
-                                        <input type="text" name="abstrak_lama" value="<?= $paten['abstrak']?>">
+                                        <input type="hidden" name="abstrak_lama" value="<?= $paten['abstrak']?>">
                                         <div class="col-sm-7">
                                             <p class="text-center">Ganti File Abstrak</p>
                                             <input type="file" name="abstrak" data-plugin="dropify" data-height="60">
@@ -102,7 +102,7 @@
                                         <div class="col-sm-7">
                                             <p class="text-center">Ganti gambar</p>
                                             <input type="file" name="gambar" data-plugin="dropify" data-height="60">
-                                            <input type="text" name="gambar_lama" value="<?= $paten['gambar']?>">
+                                            <input type="hidden" name="gambar_lama" value="<?= $paten['gambar']?>">
                                         </div>
                                     </div>
                                 <?php } else { ?>

@@ -211,7 +211,7 @@
                                                             </td>
                                                             <td></td>
                                                             <td><?= $p3['keterangan']; ?></td>
-                                                            <td><?= date('d-m-Y', strtotime($p3['createdat'])) ?></td>
+                                                            <td><?= date('d-m-Y', strtotime($p3['createdAt'])) ?></td>
                                                             <td><?= $diff->m; ?></td>
                                                             <td></td>
 
