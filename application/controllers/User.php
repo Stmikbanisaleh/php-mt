@@ -14,11 +14,12 @@ class User extends CI_Controller
 
 	public function index()
 	{
-		$data['getRole'] = $this->lapan_api_library->call('rev/getrolenotpengembang', ['token' => $this->session->userdata('token')]);
-		$data['getRole'] = $data['getRole']['data'][0];
+		$role = $this->lapan_api_library->call('rev/getrolenotpengembang', ['token' => $this->session->userdata('token')]);
+		$data['getRole'] = $role['data'];
 		$get_alluser = $this->lapan_api_library->call_gateway('users/getalluser', ['token' => $this->session->userdata('token')]);
-		$data['getRoleStatus'] = $this->lapan_api_library->call_gateway('users/getuserrole', ['token' => $this->session->userdata('token')]);
-		$data['getRoleStatus'] = $data['getRoleStatus']['data'][0];
+		$status = $this->lapan_api_library->call_gateway('users/getuserrole', ['token' => $this->session->userdata('token')]);
+		// print_r($status);exit;
+		$data['getRoleStatus'] = $status['data'];
 
 		if ($this->session->userdata('role_id') == 15) {
 			$this->load->view('templates/header');
@@ -80,7 +81,17 @@ class User extends CI_Controller
 			];
 
 			$insert = $this->lapan_api_library->call_gateway('users/register', $datauser);
+			$email = $this->input->post('email');
 
+			//siapkan token
+			$token = $this->_token();
+			$user_token = [
+				'email' => $email,
+				'token' => $token,
+				'date_created' => time()
+			];
+			$inserttoken = $this->lapan_api_library->call_gateway('users/inserttoken', $user_token);
+			$this->_send_email($token, 'verify');
 			if($insert['status'] == 200 ){
 				redirect('user');
 			}else{

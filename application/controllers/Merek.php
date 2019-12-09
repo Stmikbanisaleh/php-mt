@@ -63,6 +63,7 @@ class Merek extends CI_Controller
 
 		$return_pendesain = $this->lapan_api_library->call('mereks/getpendesainbyid', ['token' => $this->session->userdata('token'), 'id' => $id]);
 		$return_merekdraftbyid = $this->lapan_api_library->call('mereks/getmerekdraftdetail', ['token' => $this->session->userdata('token'), 'id' => $id]);
+		// print_r($return_merekdraftbyid);exit;
 		$return_patendraftdetail = $this->lapan_api_library->call('patens/getpatendraft', ['token' => $this->session->userdata('token'), 'id' => $id]);
 
 		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'), 'golongan' => 3]);
@@ -74,8 +75,9 @@ class Merek extends CI_Controller
 		$data['pendesain'] = $return_pendesain['data'][0];
 
 		$code = $data['draft']['ipman_code'];
+		// print_r($code);exit;
 		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'), 'code' => $code]);
-
+		// print_r($return_dokumenbyipmancode);exit;
 		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
 
 		$this->load->view('templates/header', $data);
@@ -177,7 +179,7 @@ class Merek extends CI_Controller
 				$kp['token'] = $this->session->userdata('token');
 				$kp['id_merek'] = $insert['id'];
 				$kp['nik'] = $kopeg['nik'];
-
+				// print_r($kp);exit;
 				$insert = $this->lapan_api_library->call('mereks/adddmerek', $kp);
 			}
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
@@ -260,7 +262,7 @@ class Merek extends CI_Controller
 					$userinput[$i] = $dm['kode_input'];
 					$dateubah[$i] = $dm['tgl_ubah'];
 					$userubah[$i] =  $dm['kode_ubah'];
-					$dokumenx[$i] = '';
+					$dokumenx[$i] = null;
 				}
 				$dokumen[$i] = array($dokumenx[$i],$filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
 				$i++;
@@ -327,7 +329,6 @@ class Merek extends CI_Controller
 				$kp['token'] = $this->session->userdata('token');
 				$kp['id_merek'] = $post['id'];
 				$kp['nik'] = $kopeg['nik'];
-
 				$insert = $this->lapan_api_library->call('mereks/adddmerek', $kp);
 			}
 
@@ -347,7 +348,6 @@ class Merek extends CI_Controller
 				$md['tgl_ubah'] = $dok[10];
 				$md['kode_ubah'] = $dok[11];
 				$md['token'] = $this->session->userdata('token');
-
 				$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
 				
 			endforeach;

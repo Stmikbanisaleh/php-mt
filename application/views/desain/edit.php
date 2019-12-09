@@ -37,7 +37,6 @@
 
 <!-- Page -->
 <div class="page">
-
     <div class="page-content container-fluid">
         <!-- Panel Tabs -->
         <div class="panel">
@@ -54,16 +53,16 @@
                             <div class="tab">
                                 <input type="hidden" name="id" value="<?= $desainid ?>">
                                 <!-- tambah class inputfield untuk validasi -->
-                                <input type="hidden" class="inputfield form-control" value="<?= $draft['IPMAN_CODE']; ?>" name="ipman_code" id="" readonly>
+                                <input type="text" class="inputfield form-control" value="<?=  $draft['ipman_code']; ?>" name="ipman_code" id="" readonly>
                                 Judul
-                                <textarea class="inputfield form-control" input placeholder="Judul..." name="judul" id="judul"><?= $draft['JUDUL'] ?></textarea>
+                                <textarea class="inputfield form-control" input placeholder="Judul..." name="judul" id="judul"><?= $draft['judul'] ?></textarea>
                                 Unit Kerja
                                 <select id="unit_kerja" class="form-control my-10" name="unit_kerja" onchange="this.className" data-fv-notempty="true">
                                     <?php foreach ($unitkerja as $uk) {
-                                        if ($draft['UNIT_KERJA'] == $uk['ID']) {
-                                            echo '<option selected value="' . $uk['ID'] . '">' . $uk['NAMA_REV'] . '</option>';
+                                        if ($draft['unit_kerja'] == $uk['id']) {
+                                            echo '<option selected value="' . $uk['id'] . '">' . $uk['nama_rev'] . '</option>';
                                         } else {
-                                            echo '<option value="' . $uk['ID'] . '">' . $uk['NAMA_REV'] . '</option>';
+                                            echo '<option value="' . $uk['id'] . '">' . $uk['nama_rev'] . '</option>';
                                         }
                                     } ?>
                                 </select>
@@ -75,7 +74,7 @@
                             </div>
                             <div class="tab">
                                 No Handhone
-                                <input type="text" class="inputfield form-control" name="no_handphone" id="no_handphone" value="<?= $draft['NO_HANDPHONE']; ?>">
+                                <input type="text" class="inputfield form-control" name="no_handphone" id="no_handphone" value="<?= $draft['no_handphone']; ?>">
                                 Jumlah Pendesain
                                 <?php
                                 $totalPegawai = count($pendesain);
@@ -89,17 +88,17 @@
                                                 <!--Tambah class selectfield untuk validasi-->
                                                 <select name='pendesain[<?= $i; ?>][nik]' class="selectfield form-control">
                                                     <?php foreach ($pegawai as $p) {
-                                                            if ($kp['NIK'] == $p['NIK']) {
-                                                                echo '<option selected value="' . $p['NIK'] . '">' . $p['NIK'] . ' - '  . $p['NAMA'] . '</option>';
+                                                            if ($kp['nik'] == $p['nik']) {
+                                                                echo '<option selected value="' . $p['nik'] . '">' . $p['nik'] . ' - '  . $p['nama'] . '</option>';
                                                             } else {
-                                                                echo '<option value="' . $p['NIK'] . '">'  . $p['NIK'] . ' - ' . $p['NAMA'] . '</option>';
+                                                                echo '<option value="' . $p['nik'] . '">'  . $p['nik'] . ' - ' . $p['nama'] . '</option>';
                                                             }
                                                         } ?>
                                                     <?php foreach ($nonpegawai as $np) {
-                                                            if ($kp['NIK'] == $np['NIK']) {
-                                                                echo '<option selected value="' . $np['NIK'] . '">' . $np['NIK'] . ' - '  . $np['NAMA'] . '</option>';
+                                                            if ($kp['nik'] == $np['nik']) {
+                                                                echo '<option selected value="' . $np['nik'] . '">' . $np['nik'] . ' - '  . $np['NAMA'] . '</option>';
                                                             } else {
-                                                                echo '<option value="' . $np['NIK'] . '">'  . $np['NIK'] . ' - ' . $np['NAMA'] . '</option>';
+                                                                echo '<option value="' . $np['nik'] . '">'  . $np['nik'] . ' - ' . $np['NAMA'] . '</option>';
                                                             }
                                                         } ?>
                                                 </select>
@@ -134,25 +133,25 @@
                                         $j = 1;
                                         foreach ($dokumen as $dok) {
                                             ?>
-                                            <h4 class="table-info">Jenis Dokumen (<?= $dok['JENIS_DOKUMEN']; ?>)</h4>
-                                            <?php if ($dok['SIZE'] > 0) { ?>
+                                            <h4 class="table-info">Jenis Dokumen (<?= $dok['jenis_dokumen']; ?>)</h4>
+                                            <?php if ($dok['size'] > 0) { ?>
                                                 <div class="col-sm-12">
                                                     <div class="row">
                                                         <div class="col-sm-5">
                                                             <h5 class="text-center">Dokumen Terunggah</h5>
-                                                            <a class="btn btn-default" target="_blank" href="<?= base_url('assets/dokumen/dokumen_desain/') . $dok['NAME'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
+                                                            <a class="btn btn-default" target="_blank" href="<?=URL_API_DOWNLOAD.$dok['name'] ?>"><i class="fa fa-eye"></i> Lihat Dokumen</a>
                                                         </div>
                                                         <div class="col-sm-7">
                                                             <h5 class="text-center">Ganti Dokumen</h5>
                                                             <input type="file" name="dokumen<?= $j ?>" data-plugin="dropify" data-height="60">
-                                                            <input type="hidden" name="jenis_dokumen<?= $j ?>" id="dokumen<?= $j; ?>" value="<?= $dok['JENIS_DOKUMEN'] ?>">
+                                                            <input type="hidden" name="jenis_dokumen<?= $j ?>" id="dokumen<?= $j; ?>" value="<?= $dok['jenis_dokumen'] ?>">
                                                         </div>
                                                     </div>
                                                 </div>
 
                                             <?php } else { ?>
                                                 <input type="file" name="dokumen<?= $j ?>" data-plugin="dropify" data-height="75">
-                                                <input type="hidden" name="jenis_dokumen<?= $j ?>" id="dokumen<?= $j; ?>" value="<?= $dok['JENIS_DOKUMEN'] ?>">
+                                                <input type="hidden" name="jenis_dokumen<?= $j ?>" id="dokumen<?= $j; ?>" value="<?= $dok['jenis_dokumen'] ?>">
                                         <?php }
                                             $i++;
                                             $j++;
@@ -196,7 +195,7 @@
             var nextRow = row + 1;
             var markup = "<tr id='tr_" + nextRow + "'><td><select name='pendesain[" + nextRow + "][nik]' id='kode_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Pendesain</option>";
             <?php foreach ($pegawai as $pg) : ?>
-                markup += "<option value='<?php echo $pg['NIK'] ?>'><?php echo $pg['KODE_KEPEGAWAIAN'] . ' - ' . $pg['NAMA']; ?></option>";
+                markup += "<option value='<?php echo $pg['nik'] ?>'><?php echo $pg['kode_kepegawaian'] . ' - ' . $pg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\
@@ -217,7 +216,7 @@
             var nextRow = row + 1;
             var markup = "<tr id='tr_" + nextRow + "'><td><select name='pendesain[" + nextRow + "][nik]' id='kode_" + nextRow + "' class='selectfield form-control'><option value=''>Pilih Pendesain Non Pegawai</option>";
             <?php foreach ($nonpegawai as $npg) : ?>
-                markup += "<option value='<?php echo $npg['NIK'] ?>'><?php echo $npg['NAMA']; ?></option>";
+                markup += "<option value='<?php echo $npg['nik'] ?>'><?php echo $npg['nama']; ?></option>";
             <?php endforeach; ?>
             markup += "</select></td>";
             markup += "<td><button class='btn btn-danger remRow'><i class='fa fa-trash'></i>\

@@ -253,7 +253,7 @@
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($d1['createdAt'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($d3['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>
@@ -311,7 +311,7 @@
                                                                   <?php } ?>
                                                               </td>
                                                               <td></td>
-                                                              <td><?= date('d-m-Y', strtotime($d1['createdAt'])) ?></td>
+                                                              <td><?= date('d-m-Y', strtotime($d4['createdAt'])) ?></td>
                                                               <td><?= $diff->m; ?></td>
                                                               <td></td>
                                                           </tr>

@@ -129,7 +129,7 @@ class Hakcipta extends CI_Controller
 				'token' => $this->session->userdata('token'),
 				'kode' => 'HC',
 			);
-			// $update = $this->lapan_api_library->call('lib/updatenourut', $data);
+			$update = $this->lapan_api_library->call('lib/updatenourut', $data);
 
 			$i = 1;
 			$dokmerek = $dokmerek['data']['rows'];
@@ -263,11 +263,11 @@ class Hakcipta extends CI_Controller
 				if ($dh['size']) {
 					$config['file_name']          = $ipman . '_' . $dh['penamaan_file'] . '_v' . $versi;
 					// $config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
-					$config['allowed_types']        = 'doc|docx|pdf';
+					$config['allowed_types']        = 'pdf';
 				} else {
 					$config['file_name']          = $ipman . '_' . $dh['penamaan_file'];
 					// $config['upload_path']          = './assets/dokumen/dokumen_hakcipta/';
-					$config['allowed_types']        = 'doc|docx|pdf';
+					$config['allowed_types']        = 'pdf';
 				}
 
 				$this->upload->initialize($config);
@@ -276,9 +276,13 @@ class Hakcipta extends CI_Controller
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
 					// $this->upload->do_upload('dokumen' . $i);
 
-					$filename[$i] = $this->upload->data('file_name');
-					$size[$i] = $this->upload->data('file_size');
-					$type[$i] = $this->upload->data('file_ext');
+					// $filename[$i] = $this->upload->data('file_name');
+					$filename[$i] = $config['file_name'].'.pdf';
+					$size[$i] = $_FILES['dokumen' . $i]['size'];
+					$path = $_FILES['dokumen' . $i]['name'];
+					$type[$i]  = pathinfo($path, PATHINFO_EXTENSION);
+					// print_r($type);exit;
+					// $type[$i] = $this->upload->data('file_ext');
 					$file_tmp = $_FILES['dokumen' . $i]['tmp_name'];
 					$data_base64 = file_get_contents($file_tmp);
 					$dokumenx[$i] = base64_encode($data_base64);
@@ -296,7 +300,7 @@ class Hakcipta extends CI_Controller
 				} else {
 					$filename[$i] = $dh['name'];
 					$size[$i] = $dh['size'];
-					$type[$i] = 'application/pdf';
+					$type[$i] = 'pdf';
 					$rev[$i] = $dh['rev'];
 					$jenisdok[$i] = $dh['id'];
 					$downloadable[$i] = $dh['downloadable'];
@@ -304,7 +308,7 @@ class Hakcipta extends CI_Controller
 					$userinput[$i] = $dh['kode_input'];
 					$dateubah[$i] = $dh['tgl_ubah'];
 					$userubah[$i] =  $dh['kode_ubah'];
-					$dokumenx[$i] = '';
+					$dokumenx[$i] = null;
 				}
 
 				$dokumen[$i] = array($dokumenx[$i], $filename[$i], $size[$i] , $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
@@ -385,7 +389,7 @@ class Hakcipta extends CI_Controller
 				$md['token'] = $this->session->userdata('token');
 
 				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
-
+				// print_r($insert_doc);exit;
 
 			endforeach;
 
@@ -743,7 +747,7 @@ class Hakcipta extends CI_Controller
 
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
-				$filename1 = $_FILES['dokumen1']['name'];
+				$filename1 = $config1['file_name'].'.pdf';
 				$size1 = $_FILES['dokumen1']['size'];
 				$type1 = $_FILES['dokumen1']['type'];
 				$file_tmp = $_FILES['dokumen1']['tmp_name'];
@@ -756,7 +760,7 @@ class Hakcipta extends CI_Controller
 				$size1 = $dokhakciptaver['data'][0][0]['size'];
 				$type1 = $dokhakciptaver['data'][0][0]['type'];
 				$jenisdok = $dokhakciptaver['data'][0][0]['id'];
-				$dokumen1 = array('',$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$dokumen1 = array(null,$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen1']['name'])) {
@@ -773,7 +777,7 @@ class Hakcipta extends CI_Controller
 			} else {
 				$filename1 = $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
-				$dokumen1 = array('',$filename1, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen1 = array(null,$filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -789,7 +793,7 @@ class Hakcipta extends CI_Controller
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen2']['name'])) {
 				// $this->upload->do_upload('dokumen2');
-				$filename2 = $_FILES['dokumen2']['name'];
+				$filename2 = $config2['file_name'].'.pdf';
 				$size2 = $_FILES['dokumen2']['size'];
 				$type2 =  $_FILES['dokumen2']['type'];
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
@@ -802,7 +806,7 @@ class Hakcipta extends CI_Controller
 				$size2 = $dokhakciptaver['data'][0][1]['size'];
 				$type2 = $dokhakciptaver['data'][0][1]['type'];
 				$jenisdok = $dokhakciptaver['data'][0][1]['id'];
-				$dokumen2 = array('',$filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$dokumen2 = array(null,$filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen2']['name'])) {
@@ -819,7 +823,7 @@ class Hakcipta extends CI_Controller
 			} else {
 				$filename2 = $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
-				$dokumen2 = array('',$filename2, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen2 = array(null,$filename2, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -833,7 +837,8 @@ class Hakcipta extends CI_Controller
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen3']['name'])) {
 				// $this->upload->do_upload('dokumen3');
-				$filename3 = $_FILES['dokumen3']['name'];
+				// $filename3 = $_FILES['dokumen3']['name'];
+				$filename3 = $config3['file_name'].'.pdf';
 				$size3 = $_FILES['dokumen3']['size'];
 				$type3 = $_FILES['dokumen3']['type'];
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
@@ -846,7 +851,7 @@ class Hakcipta extends CI_Controller
 				$size3 = $dokhakciptaver['data'][0][2]['size'];
 				$type3 = $dokhakciptaver['data'][0][2]['type'];
 				$jenisdok = $dokhakciptaver['data'][0][2]['id'];
-				$dokumen3 = array('',$filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$dokumen3 = array(null,$filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen3']['name'])) {
@@ -863,7 +868,7 @@ class Hakcipta extends CI_Controller
 			} else {
 				$filename3 = $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
-				$dokumen3 = array('',$filename3, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen3 = array(null,$filename3, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -876,21 +881,20 @@ class Hakcipta extends CI_Controller
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen4']['name'])) {
 				// $this->upload->do_upload('dokumen4');
-				$filename4 = $_FILES['dokumen4']['name'];
+				$filename4 = $config4['file_name'].'.pdf';
 				$size4 = $_FILES['dokumen4']['size'];
 				$type4 = $_FILES['dokumen4']['type'];
 				$jenisdok =$dokuver['data']['rows'][3]['id'];
 				$file_tmp = $_FILES['dokumen4']['tmp_name'];
 				$data = file_get_contents($file_tmp);
 				$dokumen4base64 = base64_encode($data);
-
 				$dokumen4 = array($dokumen4base64, $filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename4 = $dokhakciptaver['data'][0][3]['name'];
 				$size4 = $dokhakciptaver['data'][0][3]['size'];
 				$type4 = $dokhakciptaver['data'][0][3]['type'];
 				$jenisdok = $dokhakciptaver['data'][0][3]['id'];
-				$dokumen4 = array($filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				$dokumen4 = array(null,$filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen4']['name'])) {
@@ -907,7 +911,7 @@ class Hakcipta extends CI_Controller
 			} else {
 				$filename4 = $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][3]['id'];
-				$dokumen4 = array('',$filename4, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen4 = array(null,$filename4, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -920,7 +924,7 @@ class Hakcipta extends CI_Controller
 		if ($dokhakciptaver) {
 			if (!empty($_FILES['dokumen5']['name'])) {
 				// $this->upload->do_upload('dokumen5');
-				$filename5 = $_FILES['dokumen5']['name'];
+				$filename5 = $config5['file_name'].'.pdf'; 
 				$size5 = $_FILES['dokumen5']['size'];
 				$type5 = $_FILES['dokumen5']['type'];
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
@@ -933,7 +937,7 @@ class Hakcipta extends CI_Controller
 				$size5 = $dokhakciptaver['data'][0][4]['size'];
 				$type5 = $dokhakciptaver['data'][0][4]['type'];
 				$jenisdok = $dokhakciptaver['data'][0][4]['id'];
-				$dokumen5 = array('',$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$dokumen5 = array(null,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen5']['name'])) {
@@ -950,12 +954,12 @@ class Hakcipta extends CI_Controller
 			} else {
 				$filename5 = $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
-				$dokumen5 = array('',$filename5, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen5 = array(null,$filename5, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
 		$dokumen = array($dokumen1, $dokumen2, $dokumen3, $dokumen4, $dokumen5);
-
+		// print_r($dokumen3);exit;
 		$data = [
 			'pemeriksa_hakcipta' => htmlspecialchars($this->input->post('pemeriksa_hakcipta', true)),
 			'kontak_pemeriksa' => htmlspecialchars($this->input->post('kontak_pemeriksa', true)),
@@ -996,10 +1000,8 @@ class Hakcipta extends CI_Controller
 						$md['jenis_dokumen'] = $dok[4];
 						$md['tgl_input'] = $dok[5];
 						$md['kode_input'] = $dok[6];
-
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
 						// print_r($insertdokumen);exit;
-						// $this->db->insert('msdokumen', $md);
 					}
 				endforeach;
 			} else {
@@ -1015,7 +1017,6 @@ class Hakcipta extends CI_Controller
 						$md['jenis_dokumen'] = $dok[4];
 						$md['tgl_input'] = $dok[5];
 						$md['kode_input'] = $dok[6];
-
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
 					}
 				endforeach;

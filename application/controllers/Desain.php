@@ -53,7 +53,9 @@ class Desain extends CI_Controller
 	}
 	public function edit($id)
 	{
-        $return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		$return_unitkerja = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 3]);
+		// print_r($return_unitkerja);exit;
+		$data['desainid'] = $id;
 		$return_object = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 4]);
 		$return_jenispaten = $this->lapan_api_library->call('rev/', ['token' => $this->session->userdata('token'),'golongan' => 7]);
 		$return_dokhakcipta = $this->lapan_api_library->call('jenisdokumen/getjenisdokumen', ['token' => $this->session->userdata('token'), 'id_role' => 1, 'id_haki' => 3]);
@@ -61,16 +63,19 @@ class Desain extends CI_Controller
         $return_nonpegawai = $this->lapan_api_library->call('nonpegawai', ['token' => $this->session->userdata('token')]);
 		$return_desaindraftdetail = $this->lapan_api_library->call('desain/getdesaindraftdetail', ['token' => $this->session->userdata('token'),'id' => $id]);
 		$return_pendesainbyid = $this->lapan_api_library->call('desain/getpendesainbyid', ['token' => $this->session->userdata('token'),'id' => $id]);
-        
-		$data['unitkerja'] =     $return_unitkerja ['data']['rows'];
+		// print_r($return_pendesainbyid['data']);exit;
+		$data['unitkerja'] = $return_unitkerja ['data']['rows'];
 		$data['pegawai'] = $return_pegawai['data']['rows'];
         $data['nonpegawai'] = $return_nonpegawai['data']['rows'];
-        
-		$data['draft'] = $return_desaindraftdetail['data']['rows'];
-		$data['pendesain'] = $return_pendesainbyid['data']['rows'];
-        $code = $data['draft']['ipman_code'];
-        
-		$data['dokumen'] = $this->desain->getDokumen($code);
+        // print_r($return_desaindraftdetail['data']);exit;
+		$data['draft'] = $return_desaindraftdetail['data'][0];
+		// print_r($data['draft']);exit;
+		$data['pendesain'] = $return_pendesainbyid['data'];
+		$code = $data['draft']['ipman_code'];
+		$return_dokumenbyipmancode = $this->lapan_api_library->call('dokumen/getdokumenbyipman', ['token' => $this->session->userdata('token'),'code' => $code]);
+		
+        // getdokumenbyipman
+		$data['dokumen'] = $return_dokumenbyipmancode['data'][0];
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/side_menu');
 		$this->load->view('desain/edit', $data);
@@ -172,66 +177,89 @@ class Desain extends CI_Controller
 	
 	public function update()
 	{
-		$user = $this->db->get_where('msuser', ['email' =>
-		$this->session->userdata('email')])->row_array();
-		$this->load->model('Desain_model', 'desain');
 		$ipman = $this->input->post('ipman_code');
-		$dokdesain = $this->desain->getDokumen($ipman);
+		$data_dokumen = [
+			'token' => $this->session->userdata('token'),
+			'code' => $ipman
+		];
+		// print_r($data_dokumen);exit;
+		$dokdesain = $this->lapan_api_library->call('dokumen/getdokumenbyipman', $data_dokumen);
+		// print_r($dokdesain);exit;
+		$dokdesain = $dokdesain['data'][0];
 		$jumlahdok = count($dokdesain);
 		$post = $this->input->post();
 		$data = [
-			'JUDUL' => htmlspecialchars($this->input->post('judul', true)),
-			'UNIT_KERJA' => $this->input->post('unit_kerja'),
-			'STATUS' => 19,
-			'NO_HANDPHONE' => $this->input->post('no_handphone'),
-			'KODE_UBAH' => $user['id'],
-			'TGL_UBAH' => date('Y-m-d h:i:s'),
+			'judul' => htmlspecialchars($this->input->post('judul', true)),
+			'unit_kerja' => $this->input->post('unit_kerja'),
+			'status' => 19,
+			'no_handphone' => $this->input->post('no_handphone'),
+			'kode_ubah' => $this->session->userdata('user_id'),
+			'tgl_ubah' => date('Y-m-d h:i:s'),
+			'token' => $this->session->userdata('token'),
+			'id' => $post['id'],
 		];
-		$this->db->where('ID', $post['id']);
-		if ($this->db->update('msdesainindustri', $data)) {
-			$this->db->delete('ddesainindustri', array('ID_DESAIN_INDUSTRI' => $post['id']));
-			$this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
+		$update_desain = $this->lapan_api_library->call('desain/updatedesainsave', $data);
+		// print_r($update_desain);exit;
+		// $this->db->where('ID', $post['id']);
+		if ($update_desain) {
+			$data = [
+				'id' => $post['id'],
+				'token' => $this->session->userdata('token')
+			];
+			$deletedesain = $this->lapan_api_library->call('desain/deleteddesainbyid', $data);
+			// // print_r($deletedesain);exit;
+			$data2 = [
+				'nomor_pendaftar' => $this->input->post('ipman_code'),
+				'token' => $this->session->userdata('token'),
+			];
+			$deletemsdokumen = $this->lapan_api_library->call('lib/deletedokumenbyip', $data2);
+			///
+			// print_r($dokdesain);exit;
+			// print_r($deletedesain);
+			// $this->db->delete('ddesainindustri', array('ID_DESAIN_INDUSTRI' => $post['id']));
+			// $this->db->delete('msdokumen', array('NOMOR_PENDAFTAR' => $this->input->post('ipman_code'), 'REV' => 0, 'ROLE' => 1));
 			$i = 1;
 			foreach ($dokdesain as $dd) {
-				$versi = $dd['REV'] + 1;
-				if ($dd['SIZE']) {
-					$config['file_name']          = $ipman . '_' . $dd['PENAMAAN_FILE'] . '_v' . $versi;
+				$versi = $dd['rev'] + 1;
+				if ($dd['size']) {
+					$config['file_name']          = $ipman . '_' . $dd['penamaan_file'] . '_v' . $versi;
 					$config['upload_path']          = './assets/dokumen/dokumen_desainindustri/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				} else {
-					$config['file_name']          = $ipman . '_' . $dd['PENAMAAN_FILE'];
+					$config['file_name']          = $ipman . '_' . $dd['penamaan_file'];
 					$config['upload_path']          = './assets/dokumen/dokumen_desainindustri/';
 					$config['allowed_types']        = 'doc|docx|pdf';
 				}
 				$this->upload->initialize($config);
 				// script upload dokumen
 				if (!empty($_FILES['dokumen' . $i]['name'])) {
-					$this->upload->do_upload('dokumen' . $i);
-					$filename[$i] = $this->upload->data('file_name');
-					$size[$i] = $this->upload->data('file_size');
-					$type[$i] = $this->upload->data('file_ext');
-					if ($dd['SIZE']) {
-						$rev[$i] = $dd['REV'] + 1;
+					// $this->upload->do_upload('dokumen' . $i);
+					$filename[$i] = $config['file_name'].'.pdf';
+					$size[$i] = $_FILES['dokumen' . $i]['size'];
+					$path = $_FILES['dokumen' . $i]['name'];
+					$type[$i]  = pathinfo($path, PATHINFO_EXTENSION);
+					if ($dd['size']) {
+						$rev[$i] = $dd['rev'] + 1;
 					} else {
-						$rev[$i] = $dd['REV'];
+						$rev[$i] = $dd['rev'];
 					}
-					$jenisdok[$i] = $dd['ID'];
-					$downloadable[$i] = $dd['DOWNLOADABLE'];
-					$dateinput[$i] = $dd['TGL_INPUT'];
-					$userinput[$i] = $dd['KODE_INPUT'];
+					$jenisdok[$i] = $dd['id'];
+					$downloadable[$i] = $dd['downloadable'];
+					$dateinput[$i] = $dd['tgl_input'];
+					$userinput[$i] = $dd['kode_input'];
 					$dateubah[$i] = date('Y-m-d h:i:s');
-					$userubah[$i] =  $user['id'];
+					$userubah[$i] =  $this->session->userdata('user_id');
 				} else {
-					$filename[$i] = $dd['NAME'];
-					$size[$i] = $dd['SIZE'];
-					$type[$i] = $dd['TYPE'];
-					$rev[$i] = $dd['REV'];
-					$jenisdok[$i] = $dd['ID'];
-					$downloadable[$i] = $dd['DOWNLOADABLE'];
-					$dateinput[$i] = $dd['TGL_INPUT'];
-					$userinput[$i] = $dd['KODE_INPUT'];
-					$dateubah[$i] = $dd['TGL_UBAH'];
-					$userubah[$i] =  $dd['KODE_UBAH'];
+					$filename[$i] = $dd['name'];
+					$size[$i] = $dd['size'];
+					$type[$i] = 'application/pdf';
+					$rev[$i] = $dd['rev'];
+					$jenisdok[$i] = $dd['id'];
+					$downloadable[$i] = $dd['downloadable'];
+					$dateinput[$i] = $dd['tgl_input'];
+					$userinput[$i] = $dd['kode_input'];
+					$dateubah[$i] = $dd['tgl_ubah'];
+					$userubah[$i] =  $dd['kode_ubah'];
 				}
 				$dokumen[$i] = array($filename[$i], $size[$i], $type[$i], $rev[$i], '1', $jenisdok[$i], $downloadable[$i], $dateinput[$i], $userinput[$i], $dateubah[$i], $userubah[$i]);
 				$i++;
@@ -294,25 +322,30 @@ class Desain extends CI_Controller
 			}
 			$md = array();
 			foreach ($arraydokumen as $dok) :
-				$md['NOMOR_PENDAFTAR'] = $this->input->post('ipman_code');
-				$md['NAME'] = $dok[0];
-				$md['SIZE'] = $dok[1];
-				$md['TYPE'] = $dok[2];
-				$md['REV'] = $dok[3];
-				$md['ROLE'] = $dok[4];
-				$md['JENIS_DOKUMEN'] = $dok[5];
-				$md['DOWNLOADABLE'] = $dok[6];
-				$md['TGL_INPUT'] = $dok[7];
-				$md['KODE_INPUT'] = $dok[8];
-				$md['TGL_UBAH'] = $dok[9];
-				$md['KODE_UBAH'] = $dok[10];
-				$this->db->insert('msdokumen', $md);
+				$md['nomor_pendaftar'] = $this->input->post('ipman_code');
+				$md['name'] = $dok[0];
+				$md['size'] = $dok[1];
+				$md['type'] = $dok[2];
+				$md['rev'] = $dok[3];
+				$md['role'] = $dok[4];
+				$md['jenis_dokumen'] = $dok[5];
+				$md['downloadable'] = $dok[6];
+				$md['tgl_input'] = $dok[7];
+				$md['kode_input'] = $dok[8];
+				$md['tgl_ubah'] = $dok[9];
+				$md['kode_ubah'] = $dok[10];
+				$md['token'] = $this->session->userdata('token');
+				$insert_doc = $this->lapan_api_library->call('lib/adddokumen', $md);
+				// print_r($insert_doc);exit;
+				// $this->db->insert('msdokumen', $md);
 			endforeach;
 			$kp = array();
 			foreach ($post['pendesain'] as $kopeg) {
-				$kp['ID_DESAIN_INDUSTRI'] = $post['id'];
-				$kp['NIK'] = $kopeg['nik'];
-				$this->db->insert('ddesainindustri', $kp);
+				$kp['id_desain_industri'] = $post['id'];
+				$kp['nik'] = $kopeg['nik'];
+				$kp['token'] = $this->session->userdata('token');
+				$insert_ddesain = $this->lapan_api_library->call('desain/addddesainindustri', $kp);
+				// $this->db->insert('ddesainindustri', $kp);
 			}
 			$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
 				Desain Industri telah diubah!</div>');
@@ -578,8 +611,9 @@ class Desain extends CI_Controller
                     'token' => $this->session->userdata('token'),
                     'id' => $id
                 ];
-        $data['pendesain'] = $this->lapan_api_library->call('desain/getpendesainbyid', $data_pendesain);
-        $data['pendesain'] = $data['pendesain']['data'][0];
+		$data['pendesain'] = $this->lapan_api_library->call('desain/getpendesainbyid', $data_pendesain);
+		// print_r($data['pendesain']);exit;
+        $data['pendesain'] = $data['pendesain']['data'];
         $code = $data['diajukan']['ipman_code'];
         $data_dokumen = [
                     'token' => $this->session->userdata('token'),
@@ -613,18 +647,16 @@ class Desain extends CI_Controller
 	{
 		$userid =  $this->session->userdata('user_id');
 		$date = date('Y-m-d h:i:s');
-
-		$this->load->model('Paten_model', 'paten');
 		$ipman = $this->input->post('ipman_code');
 
 		$data_dokdesainver = [
                     'token' => $this->session->userdata('token'),
                     'nomor_pendaftar' => $ipman,
-                    'role' => 1
+                    'role' => 2
                 ];
         $dokdesainver = $this->lapan_api_library->call('patens/getdokumenver', $data_dokdesainver);
         $dokdesainver = $dokdesainver['data'][0];
-
+				// print_r($dokdesainver);exit;
 		$data_dokuver = [
                     'token' => $this->session->userdata('token'),
                     'id_role' => 2
@@ -640,7 +672,7 @@ class Desain extends CI_Controller
 		if ($dokdesainver) {
 			if (!empty($_FILES['dokumen1']['name'])) {
 				$this->upload->do_upload('dokumen1');
-				$filename1 = $_FILES['dokumen1']['name'];
+				$filename1 =$config1['file_name'].'.pdf';
 				$size1 = $_FILES['dokumen1']['size'];
 				$type1 = $_FILES['dokumen1']['type'];
 				$file_tmp = $_FILES['dokumen1']['tmp_name'];
@@ -650,11 +682,11 @@ class Desain extends CI_Controller
 				$dokumen1 = array($dokumen1base64, $filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
 				// print_r($dokdesainver);exit;
-				$filename1 = $dokdesainver['data'][0][0]['name'];
-				$size1 = $dokdesainver['data'][0][0]['size'];
-				$type1 = $dokdesainver['data'][0][0]['type'];
-				$jenisdok = $dokdesainver['data'][0][0]['id'];
-				$dokumen1 = array('', $filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
+				$filename1 = $dokdesainver[0]['name'];
+				$size1 = $dokdesainver[0]['size'];
+				$type1 = $dokdesainver[0]['type'];
+				$jenisdok = $dokdesainver[0]['id'];
+				$dokumen1 = array(null, $filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen1']['name'])) {
@@ -666,13 +698,12 @@ class Desain extends CI_Controller
 				$data = file_get_contents($file_tmp);
 				$dokumen1base64 = base64_encode($data);
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
-
 				//nama, size, type, role, jenis_dok, tgl_input, kode_input
 				$dokumen1 = array($dokumen1base64,$filename1, $size1, $type1, '2', $jenisdok, $date, $userid);
 			} else {
 				$filename1 = $dokuver['data']['rows'][0]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][0]['id'];
-				$dokumen1 = array('',$filename1, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen1 = array(null,$filename1, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -690,7 +721,7 @@ class Desain extends CI_Controller
 		if ($dokdesainver) {
 			if (!empty($_FILES['dokumen2']['name'])) {
 				$this->upload->do_upload('dokumen2');
-				$filename2 = $_FILES['dokumen2']['name'];
+				$filename2 = $config2['file_name'].'.pdf';
 				$size2 = $_FILES['dokumen2']['size'];
 				$type2 = $_FILES['dokumen2']['type'];
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
@@ -700,11 +731,11 @@ class Desain extends CI_Controller
 				$dokumen2 = array($dokumen2base64, $filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			} else {
 				// print_r($dokdesainver['data'][0][1]['name']);exit;
-				$filename2 = $dokdesainver['data'][0][1]['name'];
-				$size2 = $dokdesainver['data'][0][1]['size'];
-				$type2 = $dokdesainver['data'][0][1]['type'];
-				$jenisdok = $dokdesainver['data'][0][1]['id'];
-				$dokumen2 = array('',$filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
+				$filename2 = $dokdesainver[1]['name'];
+				$size2 = $dokdesainver[1]['size'];
+				$type2 = $dokdesainver[1]['type'];
+				$jenisdok = $dokdesainver[1]['id'];
+				$dokumen2 = array(null,$filename2, $size2, $type2, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen2']['name'])) {
@@ -721,7 +752,7 @@ class Desain extends CI_Controller
 			} else {
 				$filename2 = $dokuver['data']['rows'][1]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][1]['id'];
-				$dokumen2 = array('',$filename2, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen2 = array(null,$filename2, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -736,7 +767,7 @@ class Desain extends CI_Controller
 		if ($dokdesainver) {
 			if (!empty($_FILES['dokumen3']['name'])) {
 				// $this->upload->do_upload('dokumen3');
-				$filename3 = $_FILES['dokumen3']['name'];
+				$filename3 =  $config3['file_name'].'.pdf';
 				$size3 = $_FILES['dokumen3']['size'];
 				$type3 = $_FILES['dokumen3']['type'];
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
@@ -746,11 +777,11 @@ class Desain extends CI_Controller
 
 				$dokumen3 = array($dokumen3base64, $filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename3 = $dokdesainver['data'][0][2]['name'];
-				$size3 = $dokdesainver['data'][0][2]['size'];
-				$type3 = $dokdesainver['data'][0][2]['type'];
-				$jenisdok = $dokdesainver['data'][0][2]['id'];
-				$dokumen3 = array('',$filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
+				$filename3 = $dokdesainver[2]['name'];
+				$size3 = $dokdesainver[2]['size'];
+				$type3 = $dokdesainver[2]['type'];
+				$jenisdok = $dokdesainver[2]['id'];
+				$dokumen3 = array(null,$filename3, $size3, $type3, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen3']['name'])) {
@@ -767,7 +798,7 @@ class Desain extends CI_Controller
 			} else {
 				$filename3 = $dokuver['data']['rows'][2]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][2]['id'];
-				$dokumen3 = array('',$filename3, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen3 = array(null,$filename3, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -778,10 +809,11 @@ class Desain extends CI_Controller
 
 		$this->upload->initialize($config4);
 		// script uplaod dokumen keempat
+		// print_r(json_encode($dokdesainver));exit;
 		if ($dokdesainver) {
 			if (!empty($_FILES['dokumen4']['name'])) {
-				$this->upload->do_upload('dokumen4');
-				$filename4 = $this->upload->data('file_name');
+				// $this->upload->do_upload('dokumen4');
+				$filename4 = 	$config4['file_name'].'.pdf';
 				$size4 = $_FILES['dokumen4']['size'];
 				$type4 = $_FILES['dokumen4']['type'];
 				$jenisdok = $dokuver['data']['rows'][3]['id'];
@@ -790,11 +822,12 @@ class Desain extends CI_Controller
 				$dokumen4base64 = base64_encode($data4);
 				$dokumen4 = array($dokumen4base64,$filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename4 = $dokdesainver['data'][0][3]['name'];
-				$size4 = $dokdesainver['data'][0][3]['size'];
-				$type4 = $dokdesainver['data'][0][3]['type'];
-				$jenisdok = $dokdesainver['data'][0][3]['id'];
-				$dokumen4 = array('',$filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
+				// print_r($dokdesainver);exit;
+				$filename4 = $dokdesainver[3]['name'];
+				$size4 = $dokdesainver[3]['size'];
+				$type4 = $dokdesainver[3]['type'];
+				$jenisdok = $dokdesainver[3]['id'];
+				$dokumen4 = array(null,$filename4, $size4, $type4, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen4']['name'])) {
@@ -810,7 +843,7 @@ class Desain extends CI_Controller
 			} else {
 				$filename4 = $dokuver['data']['rows'][3]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][3]['id'];
-				$dokumen4 = array('',$filename4, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen4 = array(null,$filename4, '', '', '2', $jenisdok, $date, $userid);
 				
 			}
 		}
@@ -825,7 +858,7 @@ class Desain extends CI_Controller
 		if ($dokdesainver) {
 			if (!empty($_FILES['dokumen5']['name'])) {
 				$this->upload->do_upload('dokumen5');
-				$filename5 = $_FILES['dokumen5']['name'];
+				$filename5 = $config5['file_name'].'.pdf';
 				$size5 = $_FILES['dokumen5']['size'];
 				$type5 = $_FILES['dokumen5']['type'];
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
@@ -834,11 +867,11 @@ class Desain extends CI_Controller
 				$dokumen5base64 = base64_encode($data5);
 				$dokumen5 = array($dokumen5base64,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			} else {
-				$filename5 = $dokdesainver['data'][0][4]['name'];
-				$size5 = $dokdesainver['data'][0][4]['size'];
-				$type5 = $dokdesainver['data'][0][4]['type'];
-				$jenisdok = $dokdesainver['data'][0][4]['id'];
-				$dokumen5 = array('',$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
+				$filename5 = $dokdesainver[4]['name'];
+				$size5 = $dokdesainver[4]['size'];
+				$type5 = $dokdesainver[4]['type'];
+				$jenisdok = $dokdesainver[4]['id'];
+				$dokumen5 = array(null,$filename5, $size5, $type5, '2', $jenisdok, $date, $userid);
 			}
 		} else {
 			if (!empty($_FILES['dokumen5']['name'])) {
@@ -854,7 +887,7 @@ class Desain extends CI_Controller
 			} else {
 				$filename5 = $dokuver['data']['rows'][4]['penamaan_file'] . '_' . $this->input->post('ipman_code');
 				$jenisdok = $dokuver['data']['rows'][4]['id'];
-				$dokumen5 = array('',$filename5, '', '', '2', $jenisdok, $date, $userid);
+				$dokumen5 = array(null,$filename5, '', '', '2', $jenisdok, $date, $userid);
 			}
 		}
 
@@ -876,7 +909,7 @@ class Desain extends CI_Controller
 		];
 
 		$updateverifikasi = $this->lapan_api_library->call('desain/updateverifikasidesainsave', $data);
-
+		// print_r($updateverifikasi);exit;
 		if ($updateverifikasi['status'] == 200) {
 			if ($dokdesainver) {
 				$delete = [
@@ -907,7 +940,6 @@ class Desain extends CI_Controller
 						$md['kode_input'] = $dok[6];
 						$md['downloadable'] = 1;
 						$md['token'] = $this->session->userdata('token');
-
 						$insertdokumen = $this->lapan_api_library->call('lib/adddokumen', $md);
 
 					}

@@ -194,7 +194,7 @@
                             <td>Dokumen 4</td>
                             <td>
                               <?php if ($dokver[3]['size'] > 0) { ?>
-                                <?php $dokumen4 = $dokver[3]['NAME'] ?>
+                                <?php $dokumen4 = $dokver[3]['name'] ?>
                                 <a class="btn btn-info" target="_blank" href="<?= URL_API_DOWNLOAD. $dokumen4 ?>"><i class="fa fa-download"></i></a>
                               <?php } else { ?>
                                 <input type="file" name="dokumen4" id="dokumen4" data-plugin="dropify" data-height="60">

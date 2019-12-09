@@ -41,7 +41,7 @@
                 <form id="regForm" enctype="multipart/form-data" method="post" action="<?= base_url('hakcipta/save_verifikasi') ?>">
                   <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>" style="display: none">
                   <div class="tab">
-                    <input type="text" name="id" value="<?= $diajukan['id_hakcipta'] ?>">
+                    <input type="hidden" name="id" value="<?= $diajukan['id_hakcipta'] ?>">
                     Ip-Man Code
                     <input name="ipman_code" class="form-control" value="<?= $diajukan['ipman_code']; ?>" id="" readonly>
                     Judul
